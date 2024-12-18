@@ -1,0 +1,84 @@
+#include <cstdlib>  // For malloc and free
+#include <cstring>  // For memcpy
+#include <iostream>
+
+//USING MEMORY OF UNKNOWN TYPE WITH MEMSET
+int main() {
+    size_t size; // Size of the struct, determined at runtime
+    std::cout << "Enter the size of the struct: ";
+    std::cin >> size;
+
+    // Allocate memory for 8 structs
+    void* memory = malloc(8 * size);
+    if (!memory) {
+        std::cerr << "Memory allocation failed\n";
+        return 1;
+    }
+
+    // Example struct to store in the allocated memory
+    void* exampleStruct = malloc(size);
+    if (!exampleStruct) {
+        std::cerr << "Example struct memory allocation failed\n";
+        free(memory);
+        return 1;
+    }
+
+    // Fill the exampleStruct with some data (example)
+    memset(exampleStruct, 0xAB, size); // Fill with arbitrary data for demonstration
+
+    // Store the example struct in the allocated memory
+    // For example, storing it at the first slot
+    memcpy(memory, exampleStruct, size);
+
+    // Accessing and verifying the stored struct
+    // Cast to char* for pointer arithmetic
+    char* data = static_cast<char*>(memory);
+    std::cout << "First byte of the stored struct: " << std::hex << +data[0] << "\n";
+
+    // Clean up
+    free(exampleStruct);
+    free(memory);
+
+    return 0;
+}
+
+
+//INCREASING SIZE OF MEMORY (DATA WILL BE COPIED, UNFORTUNATELY)
+#include <cstdlib>  // For malloc, realloc, free
+#include <cstring>  // For memcpy
+#include <iostream>
+
+int main() {
+    size_t size; // Size of each struct, determined at runtime
+    size_t currentCount = 8; // Current number of elements
+    std::cout << "Enter the size of the struct: ";
+    std::cin >> size;
+
+    // Allocate memory for 8 structs
+    void* memory = malloc(currentCount * size);
+    if (!memory) {
+        std::cerr << "Initial memory allocation failed\n";
+        return 1;
+    }
+
+    // Example: Increasing the size to store 4 more structs
+    size_t newCount = currentCount + 4;
+    void* newMemory = realloc(memory, newCount * size);
+    if (!newMemory) {
+        std::cerr << "Memory reallocation failed\n";
+        free(memory); // Free the old memory to avoid a leak
+        return 1;
+    }
+
+    memory = newMemory; // Update the pointer to the reallocated memory
+
+    // Initialize the new elements (optional)
+    void* startOfNewElements = static_cast<char*>(memory) + (currentCount * size);
+    memset(startOfNewElements, 0, 4 * size); // Example: Zero-initialize new elements
+
+    std::cout << "Memory successfully resized to store " << newCount << " elements.\n";
+
+    // Clean up
+    free(memory);
+    return 0;
+}
