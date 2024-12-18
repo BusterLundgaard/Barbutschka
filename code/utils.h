@@ -1,7 +1,10 @@
+#ifndef UTILS_H
+#define UTILS_H
+
 #include <stdlib.h>
 #include <vector>
 #include <set>
-#include <map>
+#include <unordered_map>
 
 template<typename T>
 bool exists(const std::vector<T>& v, const T& value) {
@@ -10,7 +13,8 @@ bool exists(const std::vector<T>& v, const T& value) {
         if(v[i]==value){return true;}
     } 
     return false;
-}
+};
+
 template<typename T>
 bool exists(const std::set<T>& v, const T& value) {
     if(v.size()==0){return false;}
@@ -18,11 +22,13 @@ bool exists(const std::set<T>& v, const T& value) {
         if(*iter == value){return true;}
     }
     return false;
-}
+};
 
 template <typename K, typename V, typename... Maps>
 std::unordered_map<K, V>union_maps(const std::unordered_map<K, V>& first, const Maps&... rest) {
     std::unordered_map<K, V> result = first; 
     (result.insert(rest.begin(), rest.end()), ...);
     return result;
-}
+};
+
+#endif

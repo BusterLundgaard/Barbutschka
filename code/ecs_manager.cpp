@@ -1,5 +1,6 @@
 #include "ecs_manager.h"
 #include <sstream>
+#include "exceptions.h"
 
 void ECS_manager::remove_component(std::type_index typ, int16_t comp_id){
     component_maps[typ]->remove(comp_id);
@@ -11,6 +12,12 @@ void ECS_manager::remove_components(std::type_index typ, int16_t entity_id){
 ECS_manager::ECS_manager(std::unordered_map<std::type_index, BaseComponentMap*> typ_map, std::vector<System*> systems) : component_maps(typ_map), systems(systems) {}
 
 void ECS_manager::add_component(int16_t entity_id, Component* comp){
+    if( !comp->allows_multiplicity && 
+        component_maps[typeid(*comp)]->contains_entity_id(entity_id)){
+            
+        __raise IllegalMultipleComponents(comp->name, entity_id);
+    }
+
     component_maps[typeid(*comp)]->add(comp, entity_id);
 }
 
@@ -29,6 +36,8 @@ Component* ECS_manager::get_global_component(std::type_index typ){
     return get_component(0, typ);
 }
 
+static bool print_calls = false;
+
 void ECS_manager::update() {
     for(auto sys : systems){
         if (Entity_System_Individual* esys = dynamic_cast<Entity_System_Individual*>(sys)){
@@ -45,6 +54,13 @@ void ECS_manager::update() {
                 std::vector<std::vector<Component*>> comps(esys->typs.size());
                 for(int j=0; j<esys->typs.size(); j++){
                     comps[j]=component_maps[esys->typs[j]]->get_all(id);
+                }
+                if(print_calls){
+                    std::cout << "Calling indvidual-system " << sys->name << " for id " << id << " with: ";
+                    for(int j=0; j<esys->typs.size(); j++){
+                        std::cout << comps[j][0]->name << "[" << comps[j].size() << "], ";
+                    }
+                    std::cout << std::endl;
                 }
                 esys->update(id, this, comps);
             }
@@ -69,6 +85,9 @@ void ECS_manager::update() {
                 }
                 all_comps.push_back(comps);
             }
+            if(print_calls){
+                std::cout << "Calling all-system " << esys->name << " with " << all_comps.size() << " different id's." << std::endl;
+            }
             esys->update(ids_vec, this, all_comps);
         }
         
@@ -76,6 +95,13 @@ void ECS_manager::update() {
             std::vector<std::vector<Component*>> comps(wsys->typs.size());
             for(int i = 0; i < wsys->typs.size(); i++){
                 comps[i]=component_maps[wsys->typs[i]]->get_all_components();
+            }
+            if(print_calls){
+                std::cout << "Calling world-system " << sys->name << " with: ";
+                for(int j=0; j<esys->typs.size(); j++){
+                    std::cout << comps[j][0]->name << "[" << comps[j].size() << "], ";
+                }
+                std::cout << std::endl;
             }
             wsys->update(this, comps);
         } 

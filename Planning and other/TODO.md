@@ -1,11 +1,11 @@
--[] Backup "old code" somewhere else
--[] Setup git for the project
--[] Make it so that "update" function prints every time it calls a system like:
+-[x] Backup "old code" somewhere else
+-[x] Setup git for the project
+-[x] Make it so that "update" function prints every time it calls a system like:
 "Velocity_system(Transform[1], Velocity[1])"
 where the numbers are how many are in the list, so these are lists of one element.
--[] Add property to component that specifies if it is possible to have multiple on a single entity, enforce a crash/exception if you try to add multiple.
+-[x] Add property to component that specifies if it is possible to have multiple on a single entity, enforce a crash/exception if you try to add multiple.
 
--[] Add collision component
+-[x] Add collision component
 -[] Create system for drawing collisions
 -[?] Create the collision hit algorithm
 -[] Test collision hit algorithm with other collider examples

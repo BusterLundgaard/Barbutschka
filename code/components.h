@@ -9,9 +9,11 @@
 #include <algorithm>
 #include <typeindex>
 #include <set>
+#include "utils.h"
 #include <raylib.h>
 
-#define add_to_map(comp) auto comp ## _COMPONENT_LIST = new ComponentMap<comp>; component_lists[typeid(comp)]= comp ## _COMPONENT_LIST;
+#define make_list(comp) static ComponentMap<comp> comp ## _COMPONENT_LIST 
+#define add_to_map(comp) component_lists[typeid(comp)]= &comp ## _COMPONENT_LIST;
 #define entity_individual_signature [](int id, ECS_manager* em, std::vector<std::vector<Component*>> comps)
 #define param(typ, var) typ* var = static_cast<typ*>
 
@@ -24,9 +26,9 @@ class Component {
     public:
     int16_t component_id;
     std::string name;
-    Component(std::string name) : name(name), component_id(generate_id()) {
-        std::cout << "created a component with id: " << component_id << std::endl;
-    };
+    bool allows_multiplicity;
+    Component(std::string name, bool allows_multiplicity) : name(name), component_id(generate_id()), allows_multiplicity(allows_multiplicity) {};
+    Component(std::string name) : name(name), component_id(generate_id()), allows_multiplicity(false) {};
     virtual ~Component() = default;
 
     private:
@@ -47,6 +49,9 @@ class BaseComponentMap {
     virtual std::vector<Component*> get_all(int16_t entity_id)=0;
     virtual void remove(int16_t component_id)=0;
     virtual void remove_all(int16_t entity_id)=0;
+
+    virtual bool contains_entity_id(int16_t entity_id)=0;
+    virtual bool contains_comp_id(int16_t comp_id)=0;
     virtual std::set<int16_t> get_all_ids()=0;
     virtual std::vector<Component*> get_all_components()=0;
     virtual std::set<Component*> get_all_components_with_id(int16_t entity_id)=0;
@@ -95,8 +100,10 @@ class ComponentMap : public BaseComponentMap {
 
     virtual void remove_all(int16_t entity_id) override;
 
-    virtual std::set<int16_t> get_all_ids();
+    virtual bool contains_entity_id(int16_t entity_id);
+    virtual bool contains_comp_id(int16_t comp_id);
 
+    virtual std::set<int16_t> get_all_ids();
     virtual std::vector<Component*> get_all_components();
     virtual std::set<Component*> get_all_components_with_id(int16_t entity_id);
     
@@ -178,6 +185,19 @@ void ComponentMap<T>::remove_all(int16_t entity_id) {
 }
 
 template <typename T>
+bool ComponentMap<T>::contains_entity_id(int16_t entity_id) {
+    for(const auto& [key, value] : id_map){
+        if(value == entity_id){return true;}
+    }
+    return false;
+}
+
+template <typename T>
+bool ComponentMap<T>::contains_comp_id(int16_t comp_id) {
+    return id_map.find(comp_id) != id_map.end()
+}
+
+template <typename T>
 std::set<int16_t> ComponentMap<T>::get_all_ids() {
     return added_ids;
 }
@@ -225,12 +245,56 @@ class _Velocity : public Component {
     _Velocity(int x, int y) : Component("Velocity"), x(x), y(y) {}
 };
 
-static ComponentMap<_Sprite> _Sprite_COMPONENT_LIST;
+class _HitCollider : public Component {
+    //entity id's of other hit colliders it hit
+    public:
+    int x, y, w, h;
+    int gx, gy;
+
+    std::set<int16_t> hit; 
+    std::set<int16_t> p_hit; 
+    
+    _HitCollider(int offset_x, int offset_y, int w, int h) : 
+        Component("HitCollider", true), 
+        x(offset_x),
+        y(offset_y),
+        w(w),
+        h(h),
+        hit({}), p_hit({}) {}
+    
+    std::set<int16_t> entered() {
+        std::set<int16_t> entered = {};
+        for(auto h : hit){
+            if(!exists(p_hit, h)){
+                entered.insert(h);
+            }
+        }
+        return entered;
+    }
+    std::set<int16_t>& inside() {
+        return hit;
+    }
+    std::set<int16_t> left() {
+        std::set<int16_t> left = {};
+        for(auto h : p_hit){
+            if(!exists(hit, h)){
+                left.insert(h);
+            }
+        }
+        return left;
+    }
+};
+
+make_list(_Sprite);
+make_list(_Transform);
+make_list(_Velocity);
+make_list(_HitCollider);
 
 static void set_component_lists(std::unordered_map<std::type_index, BaseComponentMap*>& component_lists) {
-    component_lists[typeid(_Sprite)]=&_Sprite_COMPONENT_LIST;
-    add_to_map(_Transform)
-    add_to_map(_Velocity)
+    add_to_map(_Sprite);
+    add_to_map(_Transform);
+    add_to_map(_Velocity);
+    add_to_map(_HitCollider);
 };
 
 #endif
