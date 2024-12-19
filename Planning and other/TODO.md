@@ -17,7 +17,7 @@ where the numbers are how many are in the list, so these are lists of one elemen
 -[X] Create system to draw the level
 
 -[D] Update ECS manager to be able to handle singletons
--[] Create and test collision hit algorithm with static terrain
+-[D] Create and test collision hit algorithm with static terrain
 -[] Test that checking for collision events in a basic player charachter without gravity works well enough
 
 -[] Create SolidCollision component

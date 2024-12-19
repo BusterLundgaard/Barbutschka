@@ -53,6 +53,8 @@ All_Component_System sys_find_collider_hits(
         for(int i = 0; i < cs.size(); i++){
             cs[i]->p_hit = cs[i]->hit;
             cs[i]->hit = {};
+
+            //Other colliders
             std::vector<int> potential = {};
             int j = i-1;
             while(j >= 0 && cs[j]->gx + cs[j]->w > cs[i]->gx){
@@ -71,6 +73,25 @@ All_Component_System sys_find_collider_hits(
                     cs[i]->hit.insert(cs[z]->component_id);
                    }
             }
+
+            //Static terrain
+            if(!cs[i]->hits_terrain){continue;}
+            if(!em->singleton_exists(typeid(_Level))){continue;}
+            _Level* lvl = static_cast<_Level*>(em->get_singleton(typeid(_Level)));
+
+            int bx0 = int(cs[i]->gx)/BLOCK_SIZE;
+            int bx1 = int(cs[i]->gx+cs[i]->w)/BLOCK_SIZE;
+            int by0 = int(cs[i]->gy)/BLOCK_SIZE;
+            int by1 = int(cs[i]->gy+cs[i]->h)/BLOCK_SIZE;
+            for(int i = bx0; i < bx1; i++){
+                for(int j = by0; j < by1; j++){
+                    if(lvl->grid[j][i]){
+                        cs[i]->hit.insert(lvl->component_id);
+                        goto done_checking_collisions;
+                    }
+                }
+            }
+            done_checking_collisions:
         }       
     }
 );
@@ -91,8 +112,13 @@ Entity_System_Individual sys_DEBUG_draw_hit_collider(
 
             //Draw hits:
             for(int16_t hit_id : col->hit){
-                auto hit_col = get_comp(_HitCollider, hit_id);
-                draw_arrow(col->gx, col->gy, hit_col->gx, hit_col->gy, RED);
+                if(em->is_typ(hit_id, typeid(_HitCollider))){
+                    auto hit_col = get_comp(_HitCollider, hit_id);
+                    draw_arrow(col->gx, col->gy, hit_col->gx, hit_col->gy, RED);
+                } else if(em->is_typ(hit_id, typeid(_Level))){
+                    auto lvl = em->get_singleton(typeid(_Level));
+                    DrawRectangle(0,0,10,10, BLUE);
+                }              
             }
 
         }  

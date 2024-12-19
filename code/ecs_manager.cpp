@@ -39,9 +39,8 @@ std::vector<Component*> ECS_manager::get_components(int16_t entity_id, std::type
     return component_maps[typ]->get_all(entity_id);
 }
 
-bool ECS_manager::is_singleton(int16_t comp_id, std::type_index typ) {
-    if(component_maps[typ]->id_map.size() == 0){return false;}
-    return component_maps[typ]->get_first()->component_id == comp_id; 
+bool ECS_manager::singleton_exists(std::type_index typ){
+    return component_maps[typ]->id_map.size() == 0;
 }
 Component* ECS_manager::get_singleton(std::type_index typ) {
     if(component_maps[typ]->id_map.size() == 0){
@@ -50,12 +49,12 @@ Component* ECS_manager::get_singleton(std::type_index typ) {
     return component_maps[typ]->get_first();
 }
 
-int16_t ECS_manager::get_entity(int16_t component_id, std::type_index typ){
-    return component_maps[typ]->id_map[component_id];
+bool ECS_manager::is_typ(int16_t comp_id, std::type_index typ) {
+    return component_maps[typ]->contains_comp_id(comp_id);
 }
 
-Component* ECS_manager::get_global_component(std::type_index typ){
-    return get_component(0, typ);
+int16_t ECS_manager::get_entity(int16_t component_id, std::type_index typ){
+    return component_maps[typ]->id_map[component_id];
 }
 
 static bool print_calls = false;

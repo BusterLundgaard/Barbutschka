@@ -266,16 +266,21 @@ class _HitCollider : public Component {
     float x, y, w, h;
     float gx, gy;
 
+    bool hits_terrain;
+
     std::set<int16_t> hit; 
     std::set<int16_t> p_hit; 
     
-    _HitCollider(float offset_x, float offset_y, float w, float h) : 
+    _HitCollider(float offset_x, float offset_y, float w, float h, bool hits_terrain) : 
         Component("HitCollider", true), 
         x(offset_x),
         y(offset_y),
         w(w),
         h(h),
+        hits_terrain(hits_terrain),
         hit({}), p_hit({}) {}
+
+    _HitCollider(float offset_x, float offset_y, float w, float h) : _HitCollider(offset_x, offset_y, w, h, false) {}
     
     std::set<int16_t> entered() {
         std::set<int16_t> entered = {};
