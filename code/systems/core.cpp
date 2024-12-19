@@ -78,11 +78,14 @@ Entity_System_Individual sys_DEBUG_draw_hit_collider(
     "DEBUG_draw_hit_collider",
     {typeid(_HitCollider)},
     entity_individual_signature{
-        param(_HitCollider, col)(comps[0][0]);
-        DrawLine(col->gx,        col->gy,        col->gx + col->w,  col->gy,        GREEN);
-        DrawLine(col->gx,        col->gy,        col->gx,           col->gy+col->h, GREEN);
-        DrawLine(col->gx,        col->gy+col->h, col->gx + col->w,  col->gy+col->h, GREEN);
-        DrawLine(col->gx+col->w, col->gy,        col->gx + col->w,  col->gy+col->h, GREEN);
+        std::vector<Component*> cols = comps[0];
+        for(auto col_comp : cols){
+            _HitCollider* col = static_cast<_HitCollider*>(col_comp);
+            DrawLine(col->gx,        col->gy,        col->gx + col->w,  col->gy,        GREEN);
+            DrawLine(col->gx,        col->gy,        col->gx,           col->gy+col->h, GREEN);
+            DrawLine(col->gx,        col->gy+col->h, col->gx + col->w,  col->gy+col->h, GREEN);
+            DrawLine(col->gx+col->w, col->gy,        col->gx + col->w,  col->gy+col->h, GREEN);
+        }  
     }
 );
 

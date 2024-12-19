@@ -82,5 +82,9 @@
         "list": "cpp",
         "unordered_set": "cpp",
         "sstream": "cpp"
+    },
+    "editor.tokenColorCustomizations": {
+        "comments": "",
+        "textMateRules": []
     }
 }
