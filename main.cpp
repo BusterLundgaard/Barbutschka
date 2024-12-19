@@ -7,7 +7,7 @@
 
 #define cast(var) static_cast<Component*>(&var)
 
-std::vector<System*> systems = {&sys_velocity, &sys_draw_sprite};
+std::vector<System*> systems = {&sys_velocity, &sys_update_collider_global_pos, &sys_draw_sprite, &sys_DEBUG_draw_hit_collider};
 
 int main() {
     
@@ -27,24 +27,25 @@ int main() {
     {
     _Sprite wabbit("../assets/wabbit_alpha.png");
     em.add_component(0, cast(wabbit));
-    }
-    {
     _Transform t(10, 30);
     em.add_component(0, cast(t));
-    }
-    {
     _Velocity v(2,1);
     em.add_component(0, cast(v));
+    _HitCollider col1(0, -5, 30, 40);
+    em.add_component(0, cast(col1));
+    _HitCollider col2(10, -30, 30, 40);
+    em.add_component(0, cast(col2));
     }
 
     {
     _Sprite wabbit("../assets/wabbit_alpha.png");
     em.add_component(1, cast(wabbit));
-    }
-    {
     _Transform t(100, 50);
     em.add_component(1, cast(t));
+    _HitCollider col(-10, -10, 40, 50);
+    em.add_component(1, cast(col));
     }
+
 
 
     while(!WindowShouldClose()){

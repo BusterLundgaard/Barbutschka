@@ -100,32 +100,32 @@ CMakeFiles/main.dir/code/ecs_manager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/main.dir/code/ecs_manager.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/buster/Desktop/Bartbushka/code/ecs_manager.cpp -o CMakeFiles/main.dir/code/ecs_manager.cpp.s
 
-CMakeFiles/main.dir/code/systems/sys1.cpp.o: CMakeFiles/main.dir/flags.make
-CMakeFiles/main.dir/code/systems/sys1.cpp.o: /home/buster/Desktop/Bartbushka/code/systems/sys1.cpp
-CMakeFiles/main.dir/code/systems/sys1.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/main.dir/code/systems/sys1.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/systems/sys1.cpp.o -MF CMakeFiles/main.dir/code/systems/sys1.cpp.o.d -o CMakeFiles/main.dir/code/systems/sys1.cpp.o -c /home/buster/Desktop/Bartbushka/code/systems/sys1.cpp
+CMakeFiles/main.dir/code/systems/core.cpp.o: CMakeFiles/main.dir/flags.make
+CMakeFiles/main.dir/code/systems/core.cpp.o: /home/buster/Desktop/Bartbushka/code/systems/core.cpp
+CMakeFiles/main.dir/code/systems/core.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/main.dir/code/systems/core.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/systems/core.cpp.o -MF CMakeFiles/main.dir/code/systems/core.cpp.o.d -o CMakeFiles/main.dir/code/systems/core.cpp.o -c /home/buster/Desktop/Bartbushka/code/systems/core.cpp
 
-CMakeFiles/main.dir/code/systems/sys1.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/main.dir/code/systems/sys1.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/buster/Desktop/Bartbushka/code/systems/sys1.cpp > CMakeFiles/main.dir/code/systems/sys1.cpp.i
+CMakeFiles/main.dir/code/systems/core.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/main.dir/code/systems/core.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/buster/Desktop/Bartbushka/code/systems/core.cpp > CMakeFiles/main.dir/code/systems/core.cpp.i
 
-CMakeFiles/main.dir/code/systems/sys1.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/main.dir/code/systems/sys1.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/buster/Desktop/Bartbushka/code/systems/sys1.cpp -o CMakeFiles/main.dir/code/systems/sys1.cpp.s
+CMakeFiles/main.dir/code/systems/core.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/main.dir/code/systems/core.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/buster/Desktop/Bartbushka/code/systems/core.cpp -o CMakeFiles/main.dir/code/systems/core.cpp.s
 
 # Object files for target main
 main_OBJECTS = \
 "CMakeFiles/main.dir/main.cpp.o" \
 "CMakeFiles/main.dir/code/ecs_manager.cpp.o" \
-"CMakeFiles/main.dir/code/systems/sys1.cpp.o"
+"CMakeFiles/main.dir/code/systems/core.cpp.o"
 
 # External object files for target main
 main_EXTERNAL_OBJECTS =
 
 main: CMakeFiles/main.dir/main.cpp.o
 main: CMakeFiles/main.dir/code/ecs_manager.cpp.o
-main: CMakeFiles/main.dir/code/systems/sys1.cpp.o
+main: CMakeFiles/main.dir/code/systems/core.cpp.o
 main: CMakeFiles/main.dir/build.make
 main: CMakeFiles/main.dir/compiler_depend.ts
 main: /usr/lib/libraylib.so

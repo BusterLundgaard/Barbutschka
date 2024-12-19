@@ -1,16 +1,18 @@
+**D** means "is coded, but hasn't actually been tested yet"
+
 -[x] Backup "old code" somewhere else
 -[x] Setup git for the project
--[x] Make it so that "update" function prints every time it calls a system like:
+-[X] Make it so that "update" function prints every time it calls a system like:
 "Velocity_system(Transform[1], Velocity[1])"
 where the numbers are how many are in the list, so these are lists of one element.
--[x] Add property to component that specifies if it is possible to have multiple on a single entity, enforce a crash/exception if you try to add multiple.
+-[X] Add property to component that specifies if it is possible to have multiple on a single entity, enforce a crash/exception if you try to add multiple.
 
 -[x] Add collision component
--[] Create system for drawing collisions
--[?] Create the collision hit algorithm
+-[X] Create system for drawing collisions
+-[D] Create the collision hit algorithm
 -[] Test collision hit algorithm with other collider examples
 
--[] Create system to draw the level
+-[D] Create system to draw the level
 
 -[] Test collision hit algorithm with static terrain
 -[] Test that checking for collision events in a basic player charachter without gravity works well enough

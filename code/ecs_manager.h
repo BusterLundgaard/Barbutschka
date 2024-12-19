@@ -16,6 +16,8 @@ class ECS_manager {
     Component* get_component(int16_t comp_id, std::type_index typ);
     std::vector<Component*> get_components(int16_t entity_id, std::type_index typ);
 
+    int16_t get_entity(int16_t component_id, std::type_index typ);
+
     Component* get_global_component(std::type_index typ);
 
     void update();

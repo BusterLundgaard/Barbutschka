@@ -9,7 +9,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/buster/Desktop/Bartbushka/code/ecs_manager.cpp" "CMakeFiles/main.dir/code/ecs_manager.cpp.o" "gcc" "CMakeFiles/main.dir/code/ecs_manager.cpp.o.d"
-  "/home/buster/Desktop/Bartbushka/code/systems/sys1.cpp" "CMakeFiles/main.dir/code/systems/sys1.cpp.o" "gcc" "CMakeFiles/main.dir/code/systems/sys1.cpp.o.d"
+  "/home/buster/Desktop/Bartbushka/code/systems/core.cpp" "CMakeFiles/main.dir/code/systems/core.cpp.o" "gcc" "CMakeFiles/main.dir/code/systems/core.cpp.o.d"
   "/home/buster/Desktop/Bartbushka/main.cpp" "CMakeFiles/main.dir/main.cpp.o" "gcc" "CMakeFiles/main.dir/main.cpp.o.d"
   "" "main" "gcc" "CMakeFiles/main.dir/link.d"
   )

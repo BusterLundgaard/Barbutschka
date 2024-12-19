@@ -12,7 +12,7 @@ include_directories(code)
 add_executable(main
     main.cpp
     code/ecs_manager.cpp
-    code/systems/sys1.cpp
+    code/systems/core.cpp
 )
 
 # Link libraries

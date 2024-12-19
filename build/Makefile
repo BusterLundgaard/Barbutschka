@@ -153,29 +153,29 @@ code/ecs_manager.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/ecs_manager.cpp.s
 .PHONY : code/ecs_manager.cpp.s
 
-code/systems/sys1.o: code/systems/sys1.cpp.o
-.PHONY : code/systems/sys1.o
+code/systems/core.o: code/systems/core.cpp.o
+.PHONY : code/systems/core.o
 
 # target to build an object file
-code/systems/sys1.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/systems/sys1.cpp.o
-.PHONY : code/systems/sys1.cpp.o
+code/systems/core.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/systems/core.cpp.o
+.PHONY : code/systems/core.cpp.o
 
-code/systems/sys1.i: code/systems/sys1.cpp.i
-.PHONY : code/systems/sys1.i
+code/systems/core.i: code/systems/core.cpp.i
+.PHONY : code/systems/core.i
 
 # target to preprocess a source file
-code/systems/sys1.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/systems/sys1.cpp.i
-.PHONY : code/systems/sys1.cpp.i
+code/systems/core.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/systems/core.cpp.i
+.PHONY : code/systems/core.cpp.i
 
-code/systems/sys1.s: code/systems/sys1.cpp.s
-.PHONY : code/systems/sys1.s
+code/systems/core.s: code/systems/core.cpp.s
+.PHONY : code/systems/core.s
 
 # target to generate assembly for a file
-code/systems/sys1.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/systems/sys1.cpp.s
-.PHONY : code/systems/sys1.cpp.s
+code/systems/core.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/systems/core.cpp.s
+.PHONY : code/systems/core.cpp.s
 
 main.o: main.cpp.o
 .PHONY : main.o
@@ -213,9 +213,9 @@ help:
 	@echo "... code/ecs_manager.o"
 	@echo "... code/ecs_manager.i"
 	@echo "... code/ecs_manager.s"
-	@echo "... code/systems/sys1.o"
-	@echo "... code/systems/sys1.i"
-	@echo "... code/systems/sys1.s"
+	@echo "... code/systems/core.o"
+	@echo "... code/systems/core.i"
+	@echo "... code/systems/core.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

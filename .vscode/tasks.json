@@ -4,7 +4,7 @@
         {
             "label": "build",
             "type": "shell",
-            "command":"make",
+            "command":"cd build && cmake .. && make",
             "problemMatcher": ["$tsc"],
             "group": {
                 "kind": "build",
@@ -12,10 +12,15 @@
             }
         },
         {
-            "label": "debug",
+            "label": "debug_build",
             "type": "shell",
-            "command":"make debug",
+            "command":"cd build && cmake -DCMAKE_BUILD_TYPE=Debug .. && make",
             "problemMatcher": ["$tsc"]
+        },
+        {
+            "label": "build_and_run",
+            "type": "shell",
+            "command":"cd build && cmake .. && make && ./main"
         }
     ]
 }

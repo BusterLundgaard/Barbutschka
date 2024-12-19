@@ -1,9 +1,8 @@
-CMakeFiles/main.dir/code/ecs_manager.cpp.o: \
- /home/buster/Desktop/Bartbushka/code/ecs_manager.cpp \
+CMakeFiles/main.dir/code/systems/core.cpp.o: \
+ /home/buster/Desktop/Bartbushka/code/systems/core.cpp \
  /usr/include/stdc-predef.h \
- /home/buster/Desktop/Bartbushka/code/ecs_manager.h \
- /home/buster/Desktop/Bartbushka/code/components.h \
- /home/buster/Desktop/Bartbushka/code/utils.h \
+ /home/buster/Desktop/Bartbushka/code/systems/../components.h \
+ /home/buster/Desktop/Bartbushka/code/systems/../utils.h \
  /usr/include/c++/14.2.1/stdlib.h /usr/include/c++/14.2.1/cstdlib \
  /usr/include/c++/14.2.1/x86_64-pc-linux-gnu/bits/c++config.h \
  /usr/include/c++/14.2.1/x86_64-pc-linux-gnu/bits/os_defines.h \
@@ -92,7 +91,7 @@ CMakeFiles/main.dir/code/ecs_manager.cpp.o: \
  /usr/include/c++/14.2.1/bits/hashtable.h \
  /usr/include/c++/14.2.1/bits/hashtable_policy.h \
  /usr/include/c++/14.2.1/bits/enable_special_members.h \
- /home/buster/Desktop/Bartbushka/code/constants.h \
+ /home/buster/Desktop/Bartbushka/code/systems/../constants.h \
  /usr/include/c++/14.2.1/iostream /usr/include/c++/14.2.1/ostream \
  /usr/include/c++/14.2.1/ios /usr/include/c++/14.2.1/iosfwd \
  /usr/include/c++/14.2.1/bits/stringfwd.h \
@@ -177,4 +176,6 @@ CMakeFiles/main.dir/code/ecs_manager.cpp.o: \
  /usr/include/c++/14.2.1/x86_64-pc-linux-gnu/bits/c++io.h \
  /usr/include/c++/14.2.1/bits/fstream.tcc /usr/include/c++/14.2.1/sstream \
  /usr/include/c++/14.2.1/bits/sstream.tcc /usr/include/raylib.h \
- /home/buster/Desktop/Bartbushka/code/exceptions.h
+ /home/buster/Desktop/Bartbushka/code/systems/../ecs_manager.h \
+ /home/buster/Desktop/Bartbushka/code/systems/../components.h \
+ /home/buster/Desktop/Bartbushka/code/systems/../systems.h

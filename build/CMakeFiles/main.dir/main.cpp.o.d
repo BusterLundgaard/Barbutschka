@@ -104,6 +104,34 @@ CMakeFiles/main.dir/main.cpp.o: /home/buster/Desktop/Bartbushka/main.cpp \
  /usr/include/c++/14.2.1/pstl/execution_defs.h \
  /home/buster/Desktop/Bartbushka/code/ecs_manager.h \
  /home/buster/Desktop/Bartbushka/code/components.h \
+ /home/buster/Desktop/Bartbushka/code/utils.h \
+ /usr/include/c++/14.2.1/stdlib.h /usr/include/c++/14.2.1/cstdlib \
+ /usr/include/stdlib.h /usr/include/bits/waitflags.h \
+ /usr/include/bits/waitstatus.h /usr/include/sys/types.h \
+ /usr/include/endian.h /usr/include/bits/byteswap.h \
+ /usr/include/bits/uintn-identity.h /usr/include/sys/select.h \
+ /usr/include/bits/select.h /usr/include/bits/types/sigset_t.h \
+ /usr/include/alloca.h /usr/include/bits/stdlib-float.h \
+ /usr/include/c++/14.2.1/bits/std_abs.h /usr/include/c++/14.2.1/vector \
+ /usr/include/c++/14.2.1/bits/stl_vector.h \
+ /usr/include/c++/14.2.1/initializer_list \
+ /usr/include/c++/14.2.1/bits/stl_bvector.h \
+ /usr/include/c++/14.2.1/bits/range_access.h \
+ /usr/include/c++/14.2.1/bits/vector.tcc \
+ /usr/include/c++/14.2.1/bits/memory_resource.h \
+ /usr/include/c++/14.2.1/cstddef \
+ /usr/include/c++/14.2.1/bits/uses_allocator_args.h \
+ /usr/include/c++/14.2.1/set /usr/include/c++/14.2.1/bits/stl_tree.h \
+ /usr/include/c++/14.2.1/bits/node_handle.h \
+ /usr/include/c++/14.2.1/bits/stl_set.h \
+ /usr/include/c++/14.2.1/bits/stl_multiset.h \
+ /usr/include/c++/14.2.1/bits/erase_if.h \
+ /usr/include/c++/14.2.1/unordered_map \
+ /usr/include/c++/14.2.1/bits/unordered_map.h \
+ /usr/include/c++/14.2.1/bits/hashtable.h \
+ /usr/include/c++/14.2.1/bits/hashtable_policy.h \
+ /usr/include/c++/14.2.1/bits/enable_special_members.h \
+ /home/buster/Desktop/Bartbushka/code/constants.h \
  /usr/include/c++/14.2.1/iostream /usr/include/c++/14.2.1/ostream \
  /usr/include/c++/14.2.1/ios /usr/include/c++/14.2.1/bits/char_traits.h \
  /usr/include/c++/14.2.1/bits/localefwd.h \
@@ -115,19 +143,10 @@ CMakeFiles/main.dir/main.cpp.o: /home/buster/Desktop/Bartbushka/main.cpp \
  /usr/include/c++/14.2.1/string \
  /usr/include/c++/14.2.1/bits/ostream_insert.h \
  /usr/include/c++/14.2.1/bits/cxxabi_forced.h \
- /usr/include/c++/14.2.1/bits/range_access.h \
- /usr/include/c++/14.2.1/initializer_list \
  /usr/include/c++/14.2.1/bits/basic_string.h \
  /usr/include/c++/14.2.1/string_view \
  /usr/include/c++/14.2.1/bits/string_view.tcc \
  /usr/include/c++/14.2.1/ext/string_conversions.h \
- /usr/include/c++/14.2.1/cstdlib /usr/include/stdlib.h \
- /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h \
- /usr/include/sys/types.h /usr/include/endian.h \
- /usr/include/bits/byteswap.h /usr/include/bits/uintn-identity.h \
- /usr/include/sys/select.h /usr/include/bits/select.h \
- /usr/include/bits/types/sigset_t.h /usr/include/alloca.h \
- /usr/include/bits/stdlib-float.h /usr/include/c++/14.2.1/bits/std_abs.h \
  /usr/include/c++/14.2.1/cstdio /usr/include/stdio.h \
  /usr/include/bits/types/__fpos_t.h /usr/include/bits/types/__fpos64_t.h \
  /usr/include/bits/types/struct_FILE.h \
@@ -139,9 +158,6 @@ CMakeFiles/main.dir/main.cpp.o: /home/buster/Desktop/Bartbushka/main.cpp \
  /usr/include/bits/types/error_t.h \
  /usr/include/c++/14.2.1/bits/charconv.h \
  /usr/include/c++/14.2.1/bits/basic_string.tcc \
- /usr/include/c++/14.2.1/bits/memory_resource.h \
- /usr/include/c++/14.2.1/cstddef \
- /usr/include/c++/14.2.1/bits/uses_allocator_args.h \
  /usr/include/c++/14.2.1/bits/locale_classes.tcc \
  /usr/include/c++/14.2.1/system_error \
  /usr/include/c++/14.2.1/x86_64-pc-linux-gnu/bits/error_constants.h \
@@ -157,17 +173,7 @@ CMakeFiles/main.dir/main.cpp.o: /home/buster/Desktop/Bartbushka/main.cpp \
  /usr/include/c++/14.2.1/bits/locale_facets.tcc \
  /usr/include/c++/14.2.1/bits/basic_ios.tcc \
  /usr/include/c++/14.2.1/bits/ostream.tcc /usr/include/c++/14.2.1/istream \
- /usr/include/c++/14.2.1/bits/istream.tcc /usr/include/c++/14.2.1/vector \
- /usr/include/c++/14.2.1/bits/stl_vector.h \
- /usr/include/c++/14.2.1/bits/stl_bvector.h \
- /usr/include/c++/14.2.1/bits/vector.tcc \
- /usr/include/c++/14.2.1/unordered_map \
- /usr/include/c++/14.2.1/bits/unordered_map.h \
- /usr/include/c++/14.2.1/bits/hashtable.h \
- /usr/include/c++/14.2.1/bits/hashtable_policy.h \
- /usr/include/c++/14.2.1/bits/enable_special_members.h \
- /usr/include/c++/14.2.1/bits/node_handle.h \
- /usr/include/c++/14.2.1/bits/erase_if.h \
+ /usr/include/c++/14.2.1/bits/istream.tcc \
  /usr/include/c++/14.2.1/functional \
  /usr/include/c++/14.2.1/bits/std_function.h \
  /usr/include/c++/14.2.1/array /usr/include/c++/14.2.1/compare \
@@ -177,9 +183,11 @@ CMakeFiles/main.dir/main.cpp.o: /home/buster/Desktop/Bartbushka/main.cpp \
  /usr/include/c++/14.2.1/bits/stl_heap.h \
  /usr/include/c++/14.2.1/bits/uniform_int_dist.h \
  /usr/include/c++/14.2.1/pstl/glue_algorithm_defs.h \
- /usr/include/c++/14.2.1/typeindex /usr/include/c++/14.2.1/set \
- /usr/include/c++/14.2.1/bits/stl_tree.h \
- /usr/include/c++/14.2.1/bits/stl_set.h \
- /usr/include/c++/14.2.1/bits/stl_multiset.h \
+ /usr/include/c++/14.2.1/typeindex /usr/include/c++/14.2.1/fstream \
+ /usr/include/c++/14.2.1/bits/codecvt.h \
+ /usr/include/c++/14.2.1/x86_64-pc-linux-gnu/bits/basic_file.h \
+ /usr/include/c++/14.2.1/x86_64-pc-linux-gnu/bits/c++io.h \
+ /usr/include/c++/14.2.1/bits/fstream.tcc /usr/include/c++/14.2.1/sstream \
+ /usr/include/c++/14.2.1/bits/sstream.tcc \
  /home/buster/Desktop/Bartbushka/code/systems.h \
  /home/buster/Desktop/Bartbushka/code/constants.h

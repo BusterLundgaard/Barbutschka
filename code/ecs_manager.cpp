@@ -14,8 +14,7 @@ ECS_manager::ECS_manager(std::unordered_map<std::type_index, BaseComponentMap*> 
 void ECS_manager::add_component(int16_t entity_id, Component* comp){
     if( !comp->allows_multiplicity && 
         component_maps[typeid(*comp)]->contains_entity_id(entity_id)){
-            
-        __raise IllegalMultipleComponents(comp->name, entity_id);
+        throw IllegalMultipleComponents(comp->name, entity_id);
     }
 
     component_maps[typeid(*comp)]->add(comp, entity_id);
@@ -30,6 +29,10 @@ Component* ECS_manager::get_component(int16_t comp_id, std::type_index typ){
 }
 std::vector<Component*> ECS_manager::get_components(int16_t entity_id, std::type_index typ){
     return component_maps[typ]->get_all(entity_id);
+}
+
+int16_t ECS_manager::get_entity(int16_t component_id, std::type_index typ){
+    return component_maps[typ]->id_map[component_id];
 }
 
 Component* ECS_manager::get_global_component(std::type_index typ){

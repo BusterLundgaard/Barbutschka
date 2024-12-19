@@ -1,1 +1,1 @@
-/usr/bin/c++ -g -Wl,--dependency-file=CMakeFiles/main.dir/link.d CMakeFiles/main.dir/main.cpp.o CMakeFiles/main.dir/code/ecs_manager.cpp.o CMakeFiles/main.dir/code/systems/sys1.cpp.o -o main  /usr/lib/libraylib.so -L/usr/lib -lraylib
+/usr/bin/c++ -g -Wl,--dependency-file=CMakeFiles/main.dir/link.d CMakeFiles/main.dir/main.cpp.o CMakeFiles/main.dir/code/ecs_manager.cpp.o CMakeFiles/main.dir/code/systems/core.cpp.o -o main  /usr/lib/libraylib.so -L/usr/lib -lraylib

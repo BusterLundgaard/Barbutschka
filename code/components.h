@@ -2,6 +2,9 @@
 #ifndef COMPONENTS_H
 #define COMPONENTS_H
 
+#include "utils.h"
+#include "constants.h"
+
 #include <iostream>
 #include <vector>
 #include <unordered_map>
@@ -9,12 +12,14 @@
 #include <algorithm>
 #include <typeindex>
 #include <set>
-#include "utils.h"
+#include <fstream>
+#include <sstream>
 #include <raylib.h>
 
 #define make_list(comp) static ComponentMap<comp> comp ## _COMPONENT_LIST 
 #define add_to_map(comp) component_lists[typeid(comp)]= &comp ## _COMPONENT_LIST;
 #define entity_individual_signature [](int id, ECS_manager* em, std::vector<std::vector<Component*>> comps)
+#define all_component_signature [](ECS_manager* em, std::vector<std::vector<Component*>> comps)
 #define param(typ, var) typ* var = static_cast<typ*>
 
 //Definitions and implementations:
@@ -194,7 +199,7 @@ bool ComponentMap<T>::contains_entity_id(int16_t entity_id) {
 
 template <typename T>
 bool ComponentMap<T>::contains_comp_id(int16_t comp_id) {
-    return id_map.find(comp_id) != id_map.end()
+    return id_map.find(comp_id) != id_map.end();
 }
 
 template <typename T>
@@ -285,16 +290,46 @@ class _HitCollider : public Component {
     }
 };
 
+class _Level : public Component {
+
+    void set_grid(std::string level_path){
+        std::ifstream level_file(level_path.c_str());
+        std::string line;
+        std::string number;
+        int i = 0;
+        while(std::getline(level_file, line)){
+            std::istringstream line_input;
+            line_input.str(line);
+            int j = 0;
+            while(std::getline(line_input, number, ',')){
+                grid[j][i] = atoi(number.c_str())+1;       
+                j++;
+            }
+            i++;
+        }
+    }
+
+    public:
+    Texture2D tilemap;
+    bool grid[BLOCKS_X][BLOCKS_Y];
+    _Level(std::string level_path, std::string tilemap_path) : 
+        Component("Level", false), 
+        tilemap(LoadTexture(tilemap_path.c_str()))  
+        {set_grid(level_path);} 
+};
+
 make_list(_Sprite);
 make_list(_Transform);
 make_list(_Velocity);
 make_list(_HitCollider);
+make_list(_Level);
 
 static void set_component_lists(std::unordered_map<std::type_index, BaseComponentMap*>& component_lists) {
     add_to_map(_Sprite);
     add_to_map(_Transform);
     add_to_map(_Velocity);
     add_to_map(_HitCollider);
+    add_to_map(_Level);
 };
 
 #endif
