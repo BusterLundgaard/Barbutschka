@@ -9,7 +9,15 @@ void ECS_manager::remove_components(std::type_index typ, int16_t entity_id){
     component_maps[typ]->remove_all(entity_id);
 }
 
-ECS_manager::ECS_manager(std::unordered_map<std::type_index, BaseComponentMap*> typ_map, std::vector<System*> systems) : component_maps(typ_map), systems(systems) {}
+ECS_manager::ECS_manager(
+    std::unordered_map<std::type_index, BaseComponentMap*> typ_map, 
+    std::unordered_map<std::type_index, std::string>& typ_index_to_string,
+    std::vector<System*> systems
+    ) : 
+    component_maps(typ_map), 
+    systems(systems),
+    typ_index_to_string(typ_index_to_string)
+    {}
 
 void ECS_manager::add_component(int16_t entity_id, Component* comp){
     if( !comp->allows_multiplicity && 
@@ -29,6 +37,17 @@ Component* ECS_manager::get_component(int16_t comp_id, std::type_index typ){
 }
 std::vector<Component*> ECS_manager::get_components(int16_t entity_id, std::type_index typ){
     return component_maps[typ]->get_all(entity_id);
+}
+
+bool ECS_manager::is_singleton(int16_t comp_id, std::type_index typ) {
+    if(component_maps[typ]->id_map.size() == 0){return false;}
+    return component_maps[typ]->get_first()->component_id == comp_id; 
+}
+Component* ECS_manager::get_singleton(std::type_index typ) {
+    if(component_maps[typ]->id_map.size() == 0){
+        throw NullPtrException("Trying to get singleton of typ " + get_str(typ) + ", which hasn't yet been added!");
+    }
+    return component_maps[typ]->get_first();
 }
 
 int16_t ECS_manager::get_entity(int16_t component_id, std::type_index typ){
@@ -137,4 +156,8 @@ std::string ECS_manager::get_debug_table() {
     }
     std::cout << ss.str();
     return ss.str();
+}
+
+std::string ECS_manager::get_str(std::type_index typ){
+    return typ_index_to_string[typ];
 }

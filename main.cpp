@@ -12,51 +12,38 @@ std::vector<System*> systems = {
     &sys_update_collider_global_pos, 
     &sys_find_collider_hits,
     &sys_draw_sprite, 
-    &sys_DEBUG_draw_hit_collider};
+    &sys_DEBUG_draw_hit_collider,
+    &sys_draw_world
+    };
 
 int main() {
     
     std::unordered_map<std::type_index, BaseComponentMap*> component_lists = {};
-    set_component_lists(component_lists);
+    std::unordered_map<std::type_index, std::string> type_index_to_string = {};
+    
+    set_component_lists(component_lists, type_index_to_string);
     ECS_manager em(component_lists, systems);
 
     // Tell the window to use vsync and work on high DPI displays
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 
 	// Create the window and OpenGL context
-	InitWindow(GAME_WIDTH*1, GAME_HEIGTH*1, "Hello Raylib");
+	InitWindow(GAME_WIDTH*4, GAME_HEIGTH*4, "Hello Raylib");
 	SetTargetFPS(60);
 
     RenderTexture2D target = LoadRenderTexture(GAME_WIDTH, GAME_HEIGTH);
 
-    // {
-    // _Sprite wabbit("../assets/wabbit_alpha.png");
-    // em.add_component(0, cast(wabbit));
-    // _Transform t(10, 30);
-    // em.add_component(0, cast(t));
-    // _Velocity v(2,1);
-    // em.add_component(0, cast(v));
-    // _HitCollider col1(0, -5, 30, 40);
-    // em.add_component(0, cast(col1));
-    // _HitCollider col2(10, -30, 30, 40);
-    // em.add_component(0, cast(col2));
-    // }
-
-    // {
-    // _Sprite wabbit("../assets/wabbit_alpha.png");
-    // em.add_component(1, cast(wabbit));
-    // _Transform t(100, 50);
-    // em.add_component(1, cast(t));
-    // _HitCollider col(-10, -10, 40, 50);
-    // em.add_component(1, cast(col));
-    // }
+    {
+        _Level lvl("../Tiled/test.csv", "../Tiled/basic.png");
+        em.add_component(0, cast(lvl));
+    }
 
     {
         _Transform t(30, 45);
         _HitCollider col(0, 0, 40, 57);
 
-        em.add_component(0, cast(t));
-        em.add_component(0, cast(col));
+        em.add_component(1, cast(t));
+        em.add_component(1, cast(col));
 
     }
     {
@@ -69,11 +56,11 @@ int main() {
         em.add_component(2, cast(v));
     }
     {
-        // _Transform t(133, 55);
-        // em.add_component(3, cast(t));
+        _Transform t(133, 55);
+        em.add_component(3, cast(t));
 
-        // _HitCollider col(0, 0, 70, 30);
-        // em.add_component(3, cast(col));
+        _HitCollider col(0, 0, 70, 30);
+        em.add_component(3, cast(col));
     }
     {
         _Transform t(186, 69);

@@ -17,7 +17,7 @@
 #include <raylib.h>
 
 #define make_list(comp) static ComponentMap<comp> comp ## _COMPONENT_LIST 
-#define add_to_map(comp) component_lists[typeid(comp)]= &comp ## _COMPONENT_LIST;
+#define add_to_map(comp) component_lists[typeid(comp)]= &comp ## _COMPONENT_LIST; typ_index_to_string[typeid(comp)] = #comp
 #define entity_individual_signature [](int id, ECS_manager* em, std::vector<std::vector<Component*>> comps)
 #define all_component_signature [](ECS_manager* em, std::vector<std::vector<Component*>> comps)
 #define param(typ, var) typ* var = static_cast<typ*>
@@ -33,8 +33,10 @@ class Component {
     int16_t component_id;
     std::string name;
     bool allows_multiplicity;
-    Component(std::string name, bool allows_multiplicity) : name(name), component_id(generate_id()), allows_multiplicity(allows_multiplicity) {};
-    Component(std::string name) : name(name), component_id(generate_id()), allows_multiplicity(false) {};
+    bool singleton;
+    Component(std::string name, bool allows_multiplicity, bool singleton) : name(name), component_id(generate_id()), allows_multiplicity(allows_multiplicity), singleton(singleton) {};
+    Component(std::string name, bool allows_multiplicity) : name(name), component_id(generate_id()), allows_multiplicity(allows_multiplicity), singleton(false) {};
+    Component(std::string name) : name(name), component_id(generate_id()), allows_multiplicity(false), singleton(false) {};
     virtual ~Component() = default;
 
     private:
@@ -52,6 +54,7 @@ class BaseComponentMap {
     virtual ~BaseComponentMap() = default;
     virtual void add(Component* c, int16_t id)=0;
     virtual Component* get(int16_t comp_id)=0;
+    virtual Component* get_first()=0;
     virtual std::vector<Component*> get_all(int16_t entity_id)=0;
     virtual void remove(int16_t component_id)=0;
     virtual void remove_all(int16_t entity_id)=0;
@@ -101,6 +104,7 @@ class ComponentMap : public BaseComponentMap {
 
     // You could optimize the get functions by having a search index that is saved every call
     virtual Component* get(int16_t id) override;
+    virtual Component* get_first() override;
     virtual std::vector<Component*> get_all(int16_t entity_id) override;
     virtual void remove(int16_t component_id) override;
 
@@ -143,6 +147,11 @@ Component* ComponentMap<T>::get(int16_t id) {
         }
     }
     return nullptr;
+}
+
+template <typename T>
+Component* ComponentMap<T>::get_first() {
+    return static_cast<Component*>(&components[0]);
 }
 
 template <typename T>
@@ -303,7 +312,7 @@ class _Level : public Component {
             line_input.str(line);
             int j = 0;
             while(std::getline(line_input, number, ',')){
-                grid[j][i] = atoi(number.c_str())+1;       
+                grid[i][j] = atoi(number.c_str())+1;       
                 j++;
             }
             i++;
@@ -312,9 +321,9 @@ class _Level : public Component {
 
     public:
     Texture2D tilemap;
-    bool grid[BLOCKS_X][BLOCKS_Y];
+    u_int16_t grid[BLOCKS_Y][BLOCKS_X];
     _Level(std::string level_path, std::string tilemap_path) : 
-        Component("Level", false), 
+        Component("Level", false, true), 
         tilemap(LoadTexture(tilemap_path.c_str()))  
         {set_grid(level_path);} 
 };
@@ -325,7 +334,7 @@ make_list(_Velocity);
 make_list(_HitCollider);
 make_list(_Level);
 
-static void set_component_lists(std::unordered_map<std::type_index, BaseComponentMap*>& component_lists) {
+static void set_component_lists(std::unordered_map<std::type_index, BaseComponentMap*>& component_lists, std::unordered_map<std::type_index, std::string>& typ_index_to_string) {
     add_to_map(_Sprite);
     add_to_map(_Transform);
     add_to_map(_Velocity);

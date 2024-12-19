@@ -12,11 +12,12 @@ where the numbers are how many are in the list, so these are lists of one elemen
 -[X] Create the collision hit algorithm
 -[X] Test collision hit algorithm with other collider examples
 
--[] Refactor so that we use floats for every position instead of ints
+-[x] Refactor so that we use floats for every position instead of ints
 
--[D] Create system to draw the level
+-[X] Create system to draw the level
 
--[] Test collision hit algorithm with static terrain
+-[D] Update ECS manager to be able to handle singletons
+-[] Create and test collision hit algorithm with static terrain
 -[] Test that checking for collision events in a basic player charachter without gravity works well enough
 
 -[] Create SolidCollision component
