@@ -5,6 +5,9 @@
 #include <vector>
 #include <set>
 #include <unordered_map>
+#include <raylib.h>
+#include <cmath>
+#include <iostream>
 
 template<typename T>
 bool exists(const std::vector<T>& v, const T& value) {
@@ -30,5 +33,26 @@ std::unordered_map<K, V>union_maps(const std::unordered_map<K, V>& first, const 
     (result.insert(rest.begin(), rest.end()), ...);
     return result;
 };
+
+//Vector math:
+Vector2 operator+(const Vector2& lhs, const Vector2& rhs);
+
+// Overload - operator
+Vector2 operator-(const Vector2& lhs, const Vector2& rhs);
+
+// Optional: Overload << operator for easy printing
+std::ostream& operator<<(std::ostream& os, const Vector2& vec);
+
+Vector2& operator*=(Vector2& vec, float scalar);
+
+Vector2& operator/=(Vector2& vec, float scalar);
+
+float magnitude(const Vector2& vec);
+
+void rotate_vec(Vector2& vec, float angle);
+
+void draw_vector(int x, int y, Vector2 vec, Color color);
+
+void draw_arrow(int x, int y, int to_x, int to_y, Color color);
 
 #endif

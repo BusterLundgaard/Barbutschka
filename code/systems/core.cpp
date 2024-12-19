@@ -46,7 +46,7 @@ All_Component_System sys_find_collider_hits(
         auto cs = std::vector<_HitCollider*>(comps[0].size());
         for(int i = 0; i < comps[0].size(); i++){cs[i] = static_cast<_HitCollider*>(comps[0][i]);}
         std::sort(cs.begin(), cs.end(), [](_HitCollider* &a, _HitCollider* &b) {  
-            return a->gx - b->gx;
+            return a->gx < b->gx;
         });
 
         //Determine what each one collides with
@@ -60,14 +60,15 @@ All_Component_System sys_find_collider_hits(
                 j--;                
             }
             j = i+1;
-            while(j <= cs.size() && cs[j]->gx < cs[i]->gx + cs[i]->w){
+            while(j < cs.size() && cs[j]->gx < cs[i]->gx + cs[i]->w){
                 potential.push_back(j);
                 j++;                
             }
             for(int z : potential){
                 if(cs[z]->gy < cs[i]->gy + cs[i]->h ||  
                    cs[z]->gy + cs[z]->h > cs[i]->gy) {
-                    cs[z]->hit.insert(em->get_entity(cs[i]->component_id, typeid(_HitCollider)));
+                    cs[z]->hit.insert(cs[i]->component_id);
+                    cs[i]->hit.insert(cs[z]->component_id);
                    }
             }
         }       
@@ -80,11 +81,20 @@ Entity_System_Individual sys_DEBUG_draw_hit_collider(
     entity_individual_signature{
         std::vector<Component*> cols = comps[0];
         for(auto col_comp : cols){
+            
+            //Draw collider
             _HitCollider* col = static_cast<_HitCollider*>(col_comp);
             DrawLine(col->gx,        col->gy,        col->gx + col->w,  col->gy,        GREEN);
             DrawLine(col->gx,        col->gy,        col->gx,           col->gy+col->h, GREEN);
             DrawLine(col->gx,        col->gy+col->h, col->gx + col->w,  col->gy+col->h, GREEN);
             DrawLine(col->gx+col->w, col->gy,        col->gx + col->w,  col->gy+col->h, GREEN);
+
+            //Draw hits:
+            for(int16_t hit_id : col->hit){
+                auto hit_col = get_comp(_HitCollider, hit_id);
+                draw_arrow(col->gx, col->gy, hit_col->gx, hit_col->gy, RED);
+            }
+
         }  
     }
 );

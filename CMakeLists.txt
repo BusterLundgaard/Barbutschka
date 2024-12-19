@@ -13,6 +13,7 @@ add_executable(main
     main.cpp
     code/ecs_manager.cpp
     code/systems/core.cpp
+    code/utils.cpp
 )
 
 # Link libraries

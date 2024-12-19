@@ -21,6 +21,7 @@
 #define entity_individual_signature [](int id, ECS_manager* em, std::vector<std::vector<Component*>> comps)
 #define all_component_signature [](ECS_manager* em, std::vector<std::vector<Component*>> comps)
 #define param(typ, var) typ* var = static_cast<typ*>
+#define get_comp(typ, comp_id) static_cast<typ*>(em->get_component(comp_id, typeid(typ)))
 
 //Definitions and implementations:
 //-----------------------------------
@@ -137,7 +138,7 @@ template <typename T>
 Component* ComponentMap<T>::get(int16_t id) {
     for(int i = 0; i < components.size(); i++){
         auto as_comp = static_cast<Component*>(&components[i]);  
-        if(id_map[as_comp->component_id] == id){
+        if(as_comp->component_id == id){
             return as_comp;
         }
     }

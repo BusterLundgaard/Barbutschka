@@ -177,6 +177,30 @@ code/systems/core.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/systems/core.cpp.s
 .PHONY : code/systems/core.cpp.s
 
+code/utils.o: code/utils.cpp.o
+.PHONY : code/utils.o
+
+# target to build an object file
+code/utils.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/utils.cpp.o
+.PHONY : code/utils.cpp.o
+
+code/utils.i: code/utils.cpp.i
+.PHONY : code/utils.i
+
+# target to preprocess a source file
+code/utils.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/utils.cpp.i
+.PHONY : code/utils.cpp.i
+
+code/utils.s: code/utils.cpp.s
+.PHONY : code/utils.s
+
+# target to generate assembly for a file
+code/utils.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/utils.cpp.s
+.PHONY : code/utils.cpp.s
+
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -216,6 +240,9 @@ help:
 	@echo "... code/systems/core.o"
 	@echo "... code/systems/core.i"
 	@echo "... code/systems/core.s"
+	@echo "... code/utils.o"
+	@echo "... code/utils.i"
+	@echo "... code/utils.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

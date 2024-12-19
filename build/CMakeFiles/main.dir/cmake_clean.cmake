@@ -4,6 +4,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/main.dir/code/ecs_manager.cpp.o.d"
   "CMakeFiles/main.dir/code/systems/core.cpp.o"
   "CMakeFiles/main.dir/code/systems/core.cpp.o.d"
+  "CMakeFiles/main.dir/code/utils.cpp.o"
+  "CMakeFiles/main.dir/code/utils.cpp.o.d"
   "CMakeFiles/main.dir/main.cpp.o"
   "CMakeFiles/main.dir/main.cpp.o.d"
   "main"

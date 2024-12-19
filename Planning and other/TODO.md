@@ -9,8 +9,8 @@ where the numbers are how many are in the list, so these are lists of one elemen
 
 -[x] Add collision component
 -[X] Create system for drawing collisions
--[D] Create the collision hit algorithm
--[] Test collision hit algorithm with other collider examples
+-[X] Create the collision hit algorithm
+-[X] Test collision hit algorithm with other collider examples
 
 -[D] Create system to draw the level
 

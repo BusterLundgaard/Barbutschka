@@ -92,15 +92,33 @@ CMakeFiles/main.dir/code/ecs_manager.cpp.o: \
  /usr/include/c++/14.2.1/bits/hashtable.h \
  /usr/include/c++/14.2.1/bits/hashtable_policy.h \
  /usr/include/c++/14.2.1/bits/enable_special_members.h \
- /home/buster/Desktop/Bartbushka/code/constants.h \
+ /usr/include/raylib.h \
+ /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/stdarg.h \
+ /usr/include/c++/14.2.1/cmath /usr/include/math.h \
+ /usr/include/bits/math-vector.h /usr/include/bits/libm-simd-decl-stubs.h \
+ /usr/include/bits/flt-eval-method.h /usr/include/bits/fp-logb.h \
+ /usr/include/bits/fp-fast.h \
+ /usr/include/bits/mathcalls-helper-functions.h \
+ /usr/include/bits/mathcalls.h /usr/include/bits/mathcalls-narrow.h \
+ /usr/include/bits/iscanonical.h /usr/include/c++/14.2.1/bits/specfun.h \
+ /usr/include/c++/14.2.1/limits /usr/include/c++/14.2.1/tr1/gamma.tcc \
+ /usr/include/c++/14.2.1/tr1/special_function_util.h \
+ /usr/include/c++/14.2.1/tr1/bessel_function.tcc \
+ /usr/include/c++/14.2.1/tr1/beta_function.tcc \
+ /usr/include/c++/14.2.1/tr1/ell_integral.tcc \
+ /usr/include/c++/14.2.1/tr1/exp_integral.tcc \
+ /usr/include/c++/14.2.1/tr1/hypergeometric.tcc \
+ /usr/include/c++/14.2.1/tr1/legendre_function.tcc \
+ /usr/include/c++/14.2.1/tr1/modified_bessel_func.tcc \
+ /usr/include/c++/14.2.1/tr1/poly_hermite.tcc \
+ /usr/include/c++/14.2.1/tr1/poly_laguerre.tcc \
+ /usr/include/c++/14.2.1/tr1/riemann_zeta.tcc \
  /usr/include/c++/14.2.1/iostream /usr/include/c++/14.2.1/ostream \
  /usr/include/c++/14.2.1/ios /usr/include/c++/14.2.1/iosfwd \
  /usr/include/c++/14.2.1/bits/stringfwd.h \
  /usr/include/c++/14.2.1/bits/postypes.h /usr/include/c++/14.2.1/cwchar \
- /usr/include/wchar.h \
- /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/stdarg.h \
- /usr/include/bits/wchar.h /usr/include/bits/types/wint_t.h \
- /usr/include/bits/types/mbstate_t.h \
+ /usr/include/wchar.h /usr/include/bits/wchar.h \
+ /usr/include/bits/types/wint_t.h /usr/include/bits/types/mbstate_t.h \
  /usr/include/bits/types/__mbstate_t.h /usr/include/bits/types/__FILE.h \
  /usr/include/bits/types/FILE.h /usr/include/c++/14.2.1/exception \
  /usr/include/c++/14.2.1/bits/exception_ptr.h \
@@ -160,6 +178,7 @@ CMakeFiles/main.dir/code/ecs_manager.cpp.o: \
  /usr/include/c++/14.2.1/bits/basic_ios.tcc \
  /usr/include/c++/14.2.1/bits/ostream.tcc /usr/include/c++/14.2.1/istream \
  /usr/include/c++/14.2.1/bits/istream.tcc \
+ /home/buster/Desktop/Bartbushka/code/constants.h \
  /usr/include/c++/14.2.1/functional \
  /usr/include/c++/14.2.1/bits/std_function.h \
  /usr/include/c++/14.2.1/array /usr/include/c++/14.2.1/compare \
@@ -176,5 +195,5 @@ CMakeFiles/main.dir/code/ecs_manager.cpp.o: \
  /usr/include/c++/14.2.1/x86_64-pc-linux-gnu/bits/basic_file.h \
  /usr/include/c++/14.2.1/x86_64-pc-linux-gnu/bits/c++io.h \
  /usr/include/c++/14.2.1/bits/fstream.tcc /usr/include/c++/14.2.1/sstream \
- /usr/include/c++/14.2.1/bits/sstream.tcc /usr/include/raylib.h \
+ /usr/include/c++/14.2.1/bits/sstream.tcc \
  /home/buster/Desktop/Bartbushka/code/exceptions.h
