@@ -24,7 +24,7 @@ int main() {
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 
 	// Create the window and OpenGL context
-	InitWindow(GAME_WIDTH*3, GAME_HEIGTH*3, "Hello Raylib");
+	InitWindow(GAME_WIDTH*1, GAME_HEIGTH*1, "Hello Raylib");
 	SetTargetFPS(60);
 
     RenderTexture2D target = LoadRenderTexture(GAME_WIDTH, GAME_HEIGTH);
@@ -65,7 +65,7 @@ int main() {
          em.add_component(2, cast(t2));
         em.add_component(2, cast(col2));
 
-        _Velocity v(1, 0);
+        _Velocity v(0.3f, 0);
         em.add_component(2, cast(v));
     }
     {

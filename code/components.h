@@ -241,26 +241,26 @@ class _Sprite : public Component {
 
 class _Transform : public Component {
     public:
-    int x, y;
-    _Transform(int x, int y) : Component("Transform"), x(x), y(y) {}
+    float x, y;
+    _Transform(float x, float y) : Component("Transform"), x(x), y(y) {}
 };
 
 class _Velocity : public Component {
     public:
-    int x, y;
-    _Velocity(int x, int y) : Component("Velocity"), x(x), y(y) {}
+    float x, y;
+    _Velocity(float x, float y) : Component("Velocity"), x(x), y(y) {}
 };
 
 class _HitCollider : public Component {
     //entity id's of other hit colliders it hit
     public:
-    int x, y, w, h;
-    int gx, gy;
+    float x, y, w, h;
+    float gx, gy;
 
     std::set<int16_t> hit; 
     std::set<int16_t> p_hit; 
     
-    _HitCollider(int offset_x, int offset_y, int w, int h) : 
+    _HitCollider(float offset_x, float offset_y, float w, float h) : 
         Component("HitCollider", true), 
         x(offset_x),
         y(offset_y),
