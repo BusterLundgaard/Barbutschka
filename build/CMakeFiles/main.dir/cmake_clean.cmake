@@ -1,5 +1,4 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/main.dir/link.d"
   "CMakeFiles/main.dir/code/ecs_manager.cpp.o"
   "CMakeFiles/main.dir/code/ecs_manager.cpp.o.d"
   "CMakeFiles/main.dir/code/systems/core.cpp.o"

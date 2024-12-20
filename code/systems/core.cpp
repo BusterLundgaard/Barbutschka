@@ -91,7 +91,7 @@ All_Component_System sys_find_collider_hits(
                     }
                 }
             }
-            done_checking_collisions:
+            done_checking_collisions: continue;
         }       
     }
 );

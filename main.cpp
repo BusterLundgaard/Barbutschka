@@ -22,7 +22,7 @@ int main() {
     std::unordered_map<std::type_index, std::string> type_index_to_string = {};
     
     set_component_lists(component_lists, type_index_to_string);
-    ECS_manager em(component_lists, systems);
+    ECS_manager em(component_lists, type_index_to_string, systems);
 
     // Tell the window to use vsync and work on high DPI displays
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
