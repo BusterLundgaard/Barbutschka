@@ -1,8 +1,8 @@
 CMakeFiles/main.dir/code/systems/core.cpp.o: \
- /home/buster/Barbutschka/code/systems/core.cpp \
+ /home/buster/Desktop/Barbutschka/code/systems/core.cpp \
  /usr/include/stdc-predef.h \
- /home/buster/Barbutschka/code/systems/../components.h \
- /home/buster/Barbutschka/code/systems/../utils.h \
+ /home/buster/Desktop/Barbutschka/code/systems/../components.h \
+ /home/buster/Desktop/Barbutschka/code/systems/../utils.h \
  /usr/include/c++/11/stdlib.h /usr/include/c++/11/cstdlib \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
@@ -189,7 +189,7 @@ CMakeFiles/main.dir/code/systems/core.cpp.o: \
  /usr/include/c++/11/bits/basic_ios.tcc \
  /usr/include/c++/11/bits/ostream.tcc /usr/include/c++/11/istream \
  /usr/include/c++/11/bits/istream.tcc \
- /home/buster/Barbutschka/code/systems/../constants.h \
+ /home/buster/Desktop/Barbutschka/code/systems/../constants.h \
  /usr/include/c++/11/functional /usr/include/c++/11/bits/refwrap.h \
  /usr/include/c++/11/bits/std_function.h \
  /usr/include/c++/11/bits/stl_algo.h \
@@ -205,6 +205,6 @@ CMakeFiles/main.dir/code/systems/core.cpp.o: \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
  /usr/include/c++/11/bits/fstream.tcc /usr/include/c++/11/sstream \
  /usr/include/c++/11/bits/sstream.tcc \
- /home/buster/Barbutschka/code/systems/../ecs_manager.h \
- /home/buster/Barbutschka/code/systems/../components.h \
- /home/buster/Barbutschka/code/systems/../systems.h
+ /home/buster/Desktop/Barbutschka/code/systems/../ecs_manager.h \
+ /home/buster/Desktop/Barbutschka/code/systems/../components.h \
+ /home/buster/Desktop/Barbutschka/code/systems/../systems.h

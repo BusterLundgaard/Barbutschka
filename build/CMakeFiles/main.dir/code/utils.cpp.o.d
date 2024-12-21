@@ -1,6 +1,6 @@
 CMakeFiles/main.dir/code/utils.cpp.o: \
- /home/buster/Barbutschka/code/utils.cpp /usr/include/stdc-predef.h \
- /usr/local/include/raylib.h \
+ /home/buster/Desktop/Barbutschka/code/utils.cpp \
+ /usr/include/stdc-predef.h /usr/local/include/raylib.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdarg.h \
  /usr/include/c++/11/cmath \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
@@ -170,8 +170,9 @@ CMakeFiles/main.dir/code/utils.cpp.o: \
  /usr/include/c++/11/bits/basic_ios.tcc \
  /usr/include/c++/11/bits/ostream.tcc /usr/include/c++/11/istream \
  /usr/include/c++/11/bits/istream.tcc \
- /home/buster/Barbutschka/code/utils.h /usr/include/c++/11/stdlib.h \
- /usr/include/c++/11/vector /usr/include/c++/11/bits/stl_uninitialized.h \
+ /home/buster/Desktop/Barbutschka/code/utils.h \
+ /usr/include/c++/11/stdlib.h /usr/include/c++/11/vector \
+ /usr/include/c++/11/bits/stl_uninitialized.h \
  /usr/include/c++/11/bits/stl_vector.h \
  /usr/include/c++/11/bits/stl_bvector.h \
  /usr/include/c++/11/bits/vector.tcc /usr/include/c++/11/set \

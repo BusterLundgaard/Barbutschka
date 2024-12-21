@@ -1,3 +1,3 @@
-/home/buster/Barbutschka/build/CMakeFiles/main.dir
-/home/buster/Barbutschka/build/CMakeFiles/edit_cache.dir
-/home/buster/Barbutschka/build/CMakeFiles/rebuild_cache.dir
+/home/buster/Desktop/Barbutschka/build/CMakeFiles/main.dir
+/home/buster/Desktop/Barbutschka/build/CMakeFiles/edit_cache.dir
+/home/buster/Desktop/Barbutschka/build/CMakeFiles/rebuild_cache.dir

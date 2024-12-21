@@ -8,10 +8,10 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/buster/Barbutschka/code/ecs_manager.cpp" "CMakeFiles/main.dir/code/ecs_manager.cpp.o" "gcc" "CMakeFiles/main.dir/code/ecs_manager.cpp.o.d"
-  "/home/buster/Barbutschka/code/systems/core.cpp" "CMakeFiles/main.dir/code/systems/core.cpp.o" "gcc" "CMakeFiles/main.dir/code/systems/core.cpp.o.d"
-  "/home/buster/Barbutschka/code/utils.cpp" "CMakeFiles/main.dir/code/utils.cpp.o" "gcc" "CMakeFiles/main.dir/code/utils.cpp.o.d"
-  "/home/buster/Barbutschka/main.cpp" "CMakeFiles/main.dir/main.cpp.o" "gcc" "CMakeFiles/main.dir/main.cpp.o.d"
+  "/home/buster/Desktop/Barbutschka/code/ecs_manager.cpp" "CMakeFiles/main.dir/code/ecs_manager.cpp.o" "gcc" "CMakeFiles/main.dir/code/ecs_manager.cpp.o.d"
+  "/home/buster/Desktop/Barbutschka/code/systems/core.cpp" "CMakeFiles/main.dir/code/systems/core.cpp.o" "gcc" "CMakeFiles/main.dir/code/systems/core.cpp.o.d"
+  "/home/buster/Desktop/Barbutschka/code/utils.cpp" "CMakeFiles/main.dir/code/utils.cpp.o" "gcc" "CMakeFiles/main.dir/code/utils.cpp.o.d"
+  "/home/buster/Desktop/Barbutschka/main.cpp" "CMakeFiles/main.dir/main.cpp.o" "gcc" "CMakeFiles/main.dir/main.cpp.o.d"
   )
 
 # Targets to which this target links.

@@ -1,9 +1,10 @@
 CMakeFiles/main.dir/code/ecs_manager.cpp.o: \
- /home/buster/Barbutschka/code/ecs_manager.cpp /usr/include/stdc-predef.h \
- /home/buster/Barbutschka/code/ecs_manager.h \
- /home/buster/Barbutschka/code/components.h \
- /home/buster/Barbutschka/code/utils.h /usr/include/c++/11/stdlib.h \
- /usr/include/c++/11/cstdlib \
+ /home/buster/Desktop/Barbutschka/code/ecs_manager.cpp \
+ /usr/include/stdc-predef.h \
+ /home/buster/Desktop/Barbutschka/code/ecs_manager.h \
+ /home/buster/Desktop/Barbutschka/code/components.h \
+ /home/buster/Desktop/Barbutschka/code/utils.h \
+ /usr/include/c++/11/stdlib.h /usr/include/c++/11/cstdlib \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
  /usr/include/features.h /usr/include/features-time64.h \
@@ -189,8 +190,8 @@ CMakeFiles/main.dir/code/ecs_manager.cpp.o: \
  /usr/include/c++/11/bits/basic_ios.tcc \
  /usr/include/c++/11/bits/ostream.tcc /usr/include/c++/11/istream \
  /usr/include/c++/11/bits/istream.tcc \
- /home/buster/Barbutschka/code/constants.h /usr/include/c++/11/functional \
- /usr/include/c++/11/bits/refwrap.h \
+ /home/buster/Desktop/Barbutschka/code/constants.h \
+ /usr/include/c++/11/functional /usr/include/c++/11/bits/refwrap.h \
  /usr/include/c++/11/bits/std_function.h \
  /usr/include/c++/11/bits/stl_algo.h \
  /usr/include/c++/11/bits/algorithmfwd.h \
@@ -205,4 +206,4 @@ CMakeFiles/main.dir/code/ecs_manager.cpp.o: \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
  /usr/include/c++/11/bits/fstream.tcc /usr/include/c++/11/sstream \
  /usr/include/c++/11/bits/sstream.tcc \
- /home/buster/Barbutschka/code/exceptions.h
+ /home/buster/Desktop/Barbutschka/code/exceptions.h

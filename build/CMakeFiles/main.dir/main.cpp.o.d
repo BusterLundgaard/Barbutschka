@@ -1,4 +1,4 @@
-CMakeFiles/main.dir/main.cpp.o: /home/buster/Barbutschka/main.cpp \
+CMakeFiles/main.dir/main.cpp.o: /home/buster/Desktop/Barbutschka/main.cpp \
  /usr/include/stdc-predef.h /usr/local/include/raylib.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdarg.h \
  /usr/include/c++/11/memory /usr/include/c++/11/bits/stl_algobase.h \
@@ -115,11 +115,11 @@ CMakeFiles/main.dir/main.cpp.o: /home/buster/Barbutschka/main.cpp \
  /usr/include/c++/11/backward/auto_ptr.h \
  /usr/include/c++/11/pstl/glue_memory_defs.h \
  /usr/include/c++/11/pstl/execution_defs.h \
- /home/buster/Barbutschka/code/ecs_manager.h \
- /home/buster/Barbutschka/code/components.h \
- /home/buster/Barbutschka/code/utils.h /usr/include/c++/11/stdlib.h \
- /usr/include/c++/11/cstdlib /usr/include/stdlib.h \
- /usr/include/x86_64-linux-gnu/bits/waitflags.h \
+ /home/buster/Desktop/Barbutschka/code/ecs_manager.h \
+ /home/buster/Desktop/Barbutschka/code/components.h \
+ /home/buster/Desktop/Barbutschka/code/utils.h \
+ /usr/include/c++/11/stdlib.h /usr/include/c++/11/cstdlib \
+ /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
  /usr/include/x86_64-linux-gnu/sys/types.h /usr/include/endian.h \
  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
@@ -203,8 +203,8 @@ CMakeFiles/main.dir/main.cpp.o: /home/buster/Barbutschka/main.cpp \
  /usr/include/c++/11/bits/basic_ios.tcc \
  /usr/include/c++/11/bits/ostream.tcc /usr/include/c++/11/istream \
  /usr/include/c++/11/bits/istream.tcc \
- /home/buster/Barbutschka/code/constants.h /usr/include/c++/11/functional \
- /usr/include/c++/11/bits/std_function.h \
+ /home/buster/Desktop/Barbutschka/code/constants.h \
+ /usr/include/c++/11/functional /usr/include/c++/11/bits/std_function.h \
  /usr/include/c++/11/bits/stl_algo.h \
  /usr/include/c++/11/bits/algorithmfwd.h \
  /usr/include/c++/11/bits/stl_heap.h \
@@ -217,5 +217,5 @@ CMakeFiles/main.dir/main.cpp.o: /home/buster/Barbutschka/main.cpp \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
  /usr/include/c++/11/bits/fstream.tcc /usr/include/c++/11/sstream \
  /usr/include/c++/11/bits/sstream.tcc \
- /home/buster/Barbutschka/code/systems.h \
- /home/buster/Barbutschka/code/constants.h
+ /home/buster/Desktop/Barbutschka/code/systems.h \
+ /home/buster/Desktop/Barbutschka/code/constants.h

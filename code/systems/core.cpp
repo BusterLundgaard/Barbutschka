@@ -75,23 +75,25 @@ All_Component_System sys_find_collider_hits(
             }
 
             //Static terrain
-            if(!cs[i]->hits_terrain){continue;}
+            bool hits = cs[i]->hits_terrain;
+            if(!hits){continue;}
             if(!em->singleton_exists(typeid(_Level))){continue;}
             _Level* lvl = static_cast<_Level*>(em->get_singleton(typeid(_Level)));
 
             int bx0 = int(cs[i]->gx)/BLOCK_SIZE;
-            int bx1 = int(cs[i]->gx+cs[i]->w)/BLOCK_SIZE;
+            int bx1 = int(cs[i]->gx+cs[i]->w)/BLOCK_SIZE+1;
             int by0 = int(cs[i]->gy)/BLOCK_SIZE;
             int by1 = int(cs[i]->gy+cs[i]->h)/BLOCK_SIZE;
-            for(int i = bx0; i < bx1; i++){
-                for(int j = by0; j < by1; j++){
-                    if(lvl->grid[j][i]){
+            for(int j = bx0; j < bx1; j++){
+                for(int w = by0; w < by1; w++){
+                    if(j >= 0 && w >= 0 && lvl->grid[w][j]){
                         cs[i]->hit.insert(lvl->component_id);
                         goto done_checking_collisions;
                     }
                 }
             }
-            done_checking_collisions: continue;
+            done_checking_collisions: 
+            continue;
         }       
     }
 );

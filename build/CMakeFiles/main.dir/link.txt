@@ -1,1 +1,1 @@
-/usr/bin/c++ CMakeFiles/main.dir/main.cpp.o CMakeFiles/main.dir/code/ecs_manager.cpp.o CMakeFiles/main.dir/code/systems/core.cpp.o CMakeFiles/main.dir/code/utils.cpp.o -o main  -Wl,-rpath,/usr/local/lib /usr/local/lib/libraylib.so -L/usr/local/lib -lraylib 
+/usr/bin/c++ -g CMakeFiles/main.dir/main.cpp.o CMakeFiles/main.dir/code/ecs_manager.cpp.o CMakeFiles/main.dir/code/systems/core.cpp.o CMakeFiles/main.dir/code/utils.cpp.o -o main  -Wl,-rpath,/usr/local/lib /usr/local/lib/libraylib.so -L/usr/local/lib -lraylib 

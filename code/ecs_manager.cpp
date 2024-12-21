@@ -40,7 +40,7 @@ std::vector<Component*> ECS_manager::get_components(int16_t entity_id, std::type
 }
 
 bool ECS_manager::singleton_exists(std::type_index typ){
-    return component_maps[typ]->id_map.size() == 0;
+    return component_maps[typ]->id_map.size() != 0;
 }
 Component* ECS_manager::get_singleton(std::type_index typ) {
     if(component_maps[typ]->id_map.size() == 0){

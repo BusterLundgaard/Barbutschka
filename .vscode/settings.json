@@ -81,7 +81,9 @@
         "__tree": "cpp",
         "list": "cpp",
         "unordered_set": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "numeric": "cpp",
+        "fstream": "cpp"
     },
     "editor.tokenColorCustomizations": {
         "comments": "",

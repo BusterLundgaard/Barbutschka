@@ -40,15 +40,15 @@ int main() {
 
     {
         _Transform t(30, 45);
-        _HitCollider col(0, 0, 40, 57);
+        _HitCollider col(0, 0, 40, 5);
 
         em.add_component(1, cast(t));
         em.add_component(1, cast(col));
 
     }
     {
-        _Transform t2(-49, 88);
-        _HitCollider col2(0, 0, 43, 40);
+        _Transform t2(-49, 85);
+        _HitCollider col2(0, 0, 43, 40, true);
          em.add_component(2, cast(t2));
         em.add_component(2, cast(col2));
 

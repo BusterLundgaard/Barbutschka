@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/buster/Barbutschka
+CMAKE_SOURCE_DIR = /home/buster/Desktop/Barbutschka
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/buster/Barbutschka/build
+CMAKE_BINARY_DIR = /home/buster/Desktop/Barbutschka/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/main.dir/depend.make
@@ -72,58 +72,58 @@ include CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/main.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/main.cpp.o: ../main.cpp
 CMakeFiles/main.dir/main.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/buster/Barbutschka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/main.dir/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/main.cpp.o -MF CMakeFiles/main.dir/main.cpp.o.d -o CMakeFiles/main.dir/main.cpp.o -c /home/buster/Barbutschka/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/buster/Desktop/Barbutschka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/main.dir/main.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/main.cpp.o -MF CMakeFiles/main.dir/main.cpp.o.d -o CMakeFiles/main.dir/main.cpp.o -c /home/buster/Desktop/Barbutschka/main.cpp
 
 CMakeFiles/main.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/main.dir/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/buster/Barbutschka/main.cpp > CMakeFiles/main.dir/main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/buster/Desktop/Barbutschka/main.cpp > CMakeFiles/main.dir/main.cpp.i
 
 CMakeFiles/main.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/main.dir/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/buster/Barbutschka/main.cpp -o CMakeFiles/main.dir/main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/buster/Desktop/Barbutschka/main.cpp -o CMakeFiles/main.dir/main.cpp.s
 
 CMakeFiles/main.dir/code/ecs_manager.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/code/ecs_manager.cpp.o: ../code/ecs_manager.cpp
 CMakeFiles/main.dir/code/ecs_manager.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/buster/Barbutschka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/main.dir/code/ecs_manager.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/ecs_manager.cpp.o -MF CMakeFiles/main.dir/code/ecs_manager.cpp.o.d -o CMakeFiles/main.dir/code/ecs_manager.cpp.o -c /home/buster/Barbutschka/code/ecs_manager.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/buster/Desktop/Barbutschka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/main.dir/code/ecs_manager.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/ecs_manager.cpp.o -MF CMakeFiles/main.dir/code/ecs_manager.cpp.o.d -o CMakeFiles/main.dir/code/ecs_manager.cpp.o -c /home/buster/Desktop/Barbutschka/code/ecs_manager.cpp
 
 CMakeFiles/main.dir/code/ecs_manager.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/main.dir/code/ecs_manager.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/buster/Barbutschka/code/ecs_manager.cpp > CMakeFiles/main.dir/code/ecs_manager.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/buster/Desktop/Barbutschka/code/ecs_manager.cpp > CMakeFiles/main.dir/code/ecs_manager.cpp.i
 
 CMakeFiles/main.dir/code/ecs_manager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/main.dir/code/ecs_manager.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/buster/Barbutschka/code/ecs_manager.cpp -o CMakeFiles/main.dir/code/ecs_manager.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/buster/Desktop/Barbutschka/code/ecs_manager.cpp -o CMakeFiles/main.dir/code/ecs_manager.cpp.s
 
 CMakeFiles/main.dir/code/systems/core.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/code/systems/core.cpp.o: ../code/systems/core.cpp
 CMakeFiles/main.dir/code/systems/core.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/buster/Barbutschka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/main.dir/code/systems/core.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/systems/core.cpp.o -MF CMakeFiles/main.dir/code/systems/core.cpp.o.d -o CMakeFiles/main.dir/code/systems/core.cpp.o -c /home/buster/Barbutschka/code/systems/core.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/buster/Desktop/Barbutschka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/main.dir/code/systems/core.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/systems/core.cpp.o -MF CMakeFiles/main.dir/code/systems/core.cpp.o.d -o CMakeFiles/main.dir/code/systems/core.cpp.o -c /home/buster/Desktop/Barbutschka/code/systems/core.cpp
 
 CMakeFiles/main.dir/code/systems/core.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/main.dir/code/systems/core.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/buster/Barbutschka/code/systems/core.cpp > CMakeFiles/main.dir/code/systems/core.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/buster/Desktop/Barbutschka/code/systems/core.cpp > CMakeFiles/main.dir/code/systems/core.cpp.i
 
 CMakeFiles/main.dir/code/systems/core.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/main.dir/code/systems/core.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/buster/Barbutschka/code/systems/core.cpp -o CMakeFiles/main.dir/code/systems/core.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/buster/Desktop/Barbutschka/code/systems/core.cpp -o CMakeFiles/main.dir/code/systems/core.cpp.s
 
 CMakeFiles/main.dir/code/utils.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/code/utils.cpp.o: ../code/utils.cpp
 CMakeFiles/main.dir/code/utils.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/buster/Barbutschka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/main.dir/code/utils.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/utils.cpp.o -MF CMakeFiles/main.dir/code/utils.cpp.o.d -o CMakeFiles/main.dir/code/utils.cpp.o -c /home/buster/Barbutschka/code/utils.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/buster/Desktop/Barbutschka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/main.dir/code/utils.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/utils.cpp.o -MF CMakeFiles/main.dir/code/utils.cpp.o.d -o CMakeFiles/main.dir/code/utils.cpp.o -c /home/buster/Desktop/Barbutschka/code/utils.cpp
 
 CMakeFiles/main.dir/code/utils.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/main.dir/code/utils.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/buster/Barbutschka/code/utils.cpp > CMakeFiles/main.dir/code/utils.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/buster/Desktop/Barbutschka/code/utils.cpp > CMakeFiles/main.dir/code/utils.cpp.i
 
 CMakeFiles/main.dir/code/utils.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/main.dir/code/utils.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/buster/Barbutschka/code/utils.cpp -o CMakeFiles/main.dir/code/utils.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/buster/Desktop/Barbutschka/code/utils.cpp -o CMakeFiles/main.dir/code/utils.cpp.s
 
 # Object files for target main
 main_OBJECTS = \
@@ -142,7 +142,7 @@ main: CMakeFiles/main.dir/code/utils.cpp.o
 main: CMakeFiles/main.dir/build.make
 main: /usr/local/lib/libraylib.so
 main: CMakeFiles/main.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/buster/Barbutschka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/buster/Desktop/Barbutschka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable main"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/main.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -154,6 +154,6 @@ CMakeFiles/main.dir/clean:
 .PHONY : CMakeFiles/main.dir/clean
 
 CMakeFiles/main.dir/depend:
-	cd /home/buster/Barbutschka/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/buster/Barbutschka /home/buster/Barbutschka /home/buster/Barbutschka/build /home/buster/Barbutschka/build /home/buster/Barbutschka/build/CMakeFiles/main.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/buster/Desktop/Barbutschka/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/buster/Desktop/Barbutschka /home/buster/Desktop/Barbutschka /home/buster/Desktop/Barbutschka/build /home/buster/Desktop/Barbutschka/build /home/buster/Desktop/Barbutschka/build/CMakeFiles/main.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/main.dir/depend
 
