@@ -4,6 +4,7 @@
 
 #include "utils.h"
 #include "constants.h"
+#include "exceptions.h"
 
 #include <iostream>
 #include <vector>
@@ -14,29 +15,32 @@
 #include <set>
 #include <fstream>
 #include <sstream>
+#include <limits>
 #include <raylib.h>
 
-#define make_list(comp) static ComponentMap<comp> comp ## _COMPONENT_LIST 
-#define add_to_map(comp) component_lists[typeid(comp)]= &comp ## _COMPONENT_LIST; typ_index_to_string[typeid(comp)] = #comp
-#define entity_individual_signature [](int id, ECS_manager* em, std::vector<std::vector<Component*>> comps)
-#define all_component_signature [](ECS_manager* em, std::vector<std::vector<Component*>> comps)
-#define param(typ, var) typ* var = static_cast<typ*>
-#define get_comp(typ, comp_id) static_cast<typ*>(em->get_component(comp_id, typeid(typ)))
+typedef int16_t Id;
+typedef std::type_index Typ;
+template <typename T>
+using V = std::vector<T>;
 
-//Definitions and implementations:
-//-----------------------------------
-#pragma region defs_and_implementations
+#define make_list(comp) static ComponentMap<comp> comp ## _COMPONENT_LIST; static std::type_index _ ## comp = typeid(comp);  
+#define add_to_map(comp) component_lists[typeid(comp)]= &comp ## _COMPONENT_LIST; typ_index_to_string[typeid(comp)] = #comp
+#define entity_individual_signature [](ECS_manager& em, std::vector<std::vector<Id>> comps)
+#define entity_all_signature [](ECS_manager& em, std::vector<std::vector<std::vector<Id>>> comps)
+#define components_individual_signature [](ECS_manager& em, Id comp)
+#define components_all_signature [](ECS_manager& em, std::vector<Id> comps)
+
 static int fresh_id = 0;
 
 class Component {
     public:
-    int16_t component_id;
-    std::string name;
+    Id component_id;
+    Typ typ;
     bool allows_multiplicity;
     bool singleton;
-    Component(std::string name, bool allows_multiplicity, bool singleton) : name(name), component_id(generate_id()), allows_multiplicity(allows_multiplicity), singleton(singleton) {};
-    Component(std::string name, bool allows_multiplicity) : name(name), component_id(generate_id()), allows_multiplicity(allows_multiplicity), singleton(false) {};
-    Component(std::string name) : name(name), component_id(generate_id()), allows_multiplicity(false), singleton(false) {};
+    Component(Typ typ, bool allows_multiplicity, bool singleton) : typ(typ), component_id(generate_id()), allows_multiplicity(allows_multiplicity), singleton(singleton) {};
+    Component(Typ typ, bool allows_multiplicity) : typ(typ), component_id(generate_id()), allows_multiplicity(allows_multiplicity), singleton(false) {};
+    Component(Typ typ) : typ(typ), component_id(generate_id()), allows_multiplicity(false), singleton(false) {};
     virtual ~Component() = default;
 
     private:
@@ -47,217 +51,132 @@ class Component {
 
 class BaseComponentMap {
     public:
+    std::unordered_map<Id, int> comp_id_to_index;
+    
     BaseComponentMap() = default;
-    //Maps from component id's (unique) to entity id's (not unique)
-    std::unordered_map<int16_t, int16_t> id_map;
 
     virtual ~BaseComponentMap() = default;
-    virtual void add(Component* c, int16_t id)=0;
-    virtual Component* get(int16_t comp_id)=0;
-    virtual Component* get_first()=0;
-    virtual std::vector<Component*> get_all(int16_t entity_id)=0;
-    virtual void remove(int16_t component_id)=0;
-    virtual void remove_all(int16_t entity_id)=0;
 
-    virtual bool contains_entity_id(int16_t entity_id)=0;
-    virtual bool contains_comp_id(int16_t comp_id)=0;
-    virtual std::set<int16_t> get_all_ids()=0;
-    virtual std::vector<Component*> get_all_components()=0;
-    virtual std::set<Component*> get_all_components_with_id(int16_t entity_id)=0;
+    virtual void add(Component* c)=0;
+    virtual Component& get(Id comp_id)=0;
+    virtual Component& get_with_entity_id(Id entity_id, std::unordered_map<Id, Id>& comp_id_to_entity_id)=0;
+    virtual V<Component&> get_all_with_entity_id(Id entity_id, std::unordered_map<Id, Id>& comp_id_to_entity_id)=0;
+    virtual void remove(Id comp_id)=0;
 };
 
-class ECS_manager;
-
-//System:
-struct System {
-    std::string name;
-    std::vector<std::type_index> typs;
-    System(std::string name, std::vector<std::type_index> typs) : name(name), typs(typs) {}
-    virtual ~System() {}
-};
-
-struct Entity_System_Individual : public System {
-    std::function<void(int, ECS_manager*, std::vector<std::vector<Component*>>)> update;
-    Entity_System_Individual(std::string name, std::vector<std::type_index> typs, std::function<void(int, ECS_manager*, std::vector<std::vector<Component*>>)> update) : System(name, typs), update(update) {}
-};
-struct Entity_System_All : public System {
-    std::function<void(std::vector<int16_t>, ECS_manager*, std::vector<std::vector<std::vector<Component*>>>)> update;
-    Entity_System_All(std::string name, std::vector<std::type_index> typs, std::function<void(std::vector<int16_t>, ECS_manager*, std::vector<std::vector<std::vector<Component*>>>)> update) : System(name, typs), update(update) {}
-};
-struct All_Component_System : public System {
-    std::function<void(ECS_manager*, std::vector<std::vector<Component*>>)> update;
-    All_Component_System(std::string name, std::vector<std::type_index> typs, std::function<void(ECS_manager*, std::vector<std::vector<Component*>>)> update) : System(name, typs), update(update) {}
-};
-
-//ComponentMap<T> header and implementation
 template <typename T>
 class ComponentMap : public BaseComponentMap {
-    std::vector<T> components;
-    int iteration_index = 0;
-    std::set<int16_t> added_ids = {};
-
-    void remove_index(int index);
+    V<T> components;
 
     public:
     ComponentMap();
-    virtual void add(Component* c, int16_t id) override;
 
-    // You could optimize the get functions by having a search index that is saved every call
-    virtual Component* get(int16_t id) override;
-    virtual Component* get_first() override;
-    virtual std::vector<Component*> get_all(int16_t entity_id) override;
-    virtual void remove(int16_t component_id) override;
-
-    virtual void remove_all(int16_t entity_id) override;
-
-    virtual bool contains_entity_id(int16_t entity_id);
-    virtual bool contains_comp_id(int16_t comp_id);
-
-    virtual std::set<int16_t> get_all_ids();
-    virtual std::vector<Component*> get_all_components();
-    virtual std::set<Component*> get_all_components_with_id(int16_t entity_id);
-    
+    virtual void add(Component* c) override;
+    virtual Component& get(Id comp_id) override;
+    virtual Component& get_with_entity_id(Id entity_id, std::unordered_map<Id, Id>& comp_id_to_entity_id) override;
+    virtual V<Component&> get_all_with_entity_id(Id entity_id, std::unordered_map<Id, Id>& comp_id_to_entity_id) override;
+    virtual void remove(Id comp_id) override;
 };
 
-template <typename T>
-void ComponentMap<T>::remove_index(int index){
-    T temp = components[components.size()-1];
-    components[components.size()-1] = components[index];
-    components[index]=temp;
-    components.pop_back();
-}
-
-template <typename T>
+template<typename T>
 ComponentMap<T>::ComponentMap() : BaseComponentMap() {}
 
-template <typename T>
-void ComponentMap<T>::add(Component* c, int16_t id) {
-    auto stuff = static_cast<T*>(c);
-    components.push_back(*stuff);
-    id_map[c->component_id] = id;
-    added_ids.insert(id);
+template<typename T>
+void ComponentMap<T>::add(Component* c) {
+    auto comp = static_cast<T*>(c);
+    components.push_back(*comp);
+    comp_id_to_index[c->component_id]=components.size()-1;
 }
-
-template <typename T>
-Component* ComponentMap<T>::get(int16_t id) {
-    for(int i = 0; i < components.size(); i++){
-        auto as_comp = static_cast<Component*>(&components[i]);  
-        if(as_comp->component_id == id){
-            return as_comp;
+template<typename T>
+Component& ComponentMap<T>::get(Id comp_id) {
+    return static_cast<Component&>(components[comp_id_to_index[comp_id]]);  
+}
+template<typename T>
+Component& ComponentMap<T>::get_with_entity_id(Id entity_id, std::unordered_map<Id, Id>& comp_id_to_entity_id) {
+    for(auto const [comp_id, index] : comp_id_to_index){
+        if(comp_id_to_entity_id.at(comp_id) == entity_id){
+            return static_cast<Component&>(components[comp_id_to_index[comp_id]]);
         }
     }
-    return nullptr;
-}
-
-template <typename T>
-Component* ComponentMap<T>::get_first() {
-    return static_cast<Component*>(&components[0]);
-}
-
-template <typename T>
-std::vector<Component*> ComponentMap<T>::get_all(int16_t entity_id) {
-    std::vector<Component*> comps = {};
-    for(int i = 0; i < components.size(); i++){
-        auto as_comp = static_cast<Component*>(&components[i]);  
-        if(id_map[as_comp->component_id] == entity_id){
-            comps.push_back(as_comp);
+}  
+template<typename T>
+V<Component&> ComponentMap<T>::get_all_with_entity_id(Id entity_id, std::unordered_map<Id, Id>& comp_id_to_entity_id) {
+    V<Component&> comps;
+    for(auto const [comp_id, index] : comp_id_to_index){
+        if(comp_id_to_entity_id.at(comp_id) == entity_id){
+            comps.push_back(static_cast<Component&>(components[comp_id_to_index[comp_id]]));
         }
     }
     return comps;
 }
 
-template <typename T>
-void ComponentMap<T>::remove(int16_t component_id){
-    for(int i = 0; i < components.size(); i++){
-        auto as_comp = static_cast<Component*>(&components[i]);
-        if(as_comp->component_id == component_id){
-            id_map.erase(component_id);
 
-            int entity_id = id_map[as_comp->component_id];
-            int amount_with_id = get_all(entity_id).size();
-            if(amount_with_id == 1){
-                added_ids.erase(entity_id);
-            }
+template<typename T>
+void ComponentMap<T>::remove(Id comp_id) {
+    int index = comp_id_to_index[comp_id];    
+    T temp = components[components.size() - 1];
+    components[components.size()-1]=components[index];
+    components[index]=temp;
+    components.pop_back();
 
-            return;
-        }
-    }
+    comp_id_to_index.erase(comp_id);
+    Id last_id = static_cast<Component*>(&temp)->component_id;
+    comp_id_to_index[last_id]=index;
 }
 
-template <typename T>
-void ComponentMap<T>::remove_all(int16_t entity_id) {
-    std::vector<int> to_remove = {};
-    for(int i = 0; i < components.size(); i++){
-        auto as_comp = static_cast<Component*>(&components[i]);  
-        if(id_map[as_comp->component_id] == entity_id){
-            id_map.erase(as_comp->component_id);
-            to_remove.push_back(i);
-        }
-    }
-    for(int index : to_remove){
-        remove_index(index);
-    }
-}
+class ECS_manager;
 
-template <typename T>
-bool ComponentMap<T>::contains_entity_id(int16_t entity_id) {
-    for(const auto& [key, value] : id_map){
-        if(value == entity_id){return true;}
-    }
-    return false;
-}
+struct System {
+    std::string name;
+    V<Typ> param_typs;
+    System(std::string name, V<Typ> param_typs) : name(name), param_typs(param_typs) {}
+    virtual ~System() {}
+};
 
-template <typename T>
-bool ComponentMap<T>::contains_comp_id(int16_t comp_id) {
-    return id_map.find(comp_id) != id_map.end();
-}
+struct Entity_system_individual : public System {
+    std::function<void(ECS_manager&, V<V<Id>>&)> update;
+    Entity_system_individual(std::string name, V<Typ> param_typs, std::function<void(ECS_manager&, V<V<Id>>& comp_ids)> update) : System(name, param_typs), update(update) {}
+};
 
-template <typename T>
-std::set<int16_t> ComponentMap<T>::get_all_ids() {
-    return added_ids;
-}
+struct Entity_system_all : public System {
+    std::function<void(ECS_manager&, V<V<V<Id>>>&)> update;
+    Entity_system_all(std::string name, V<Typ> param_typs, std::function<void(ECS_manager&, V<V<V<Id>>>&)> update) : System(name, param_typs), update(update) {}
+};
 
-template <typename T>
-std::vector<Component*> ComponentMap<T>::get_all_components() {
-    std::vector<Component*> comps(components.size());
-    for(int i = 0; i < components.size(); i++){
-        comps[i] = static_cast<Component*>(&components[i]);
-    }
-    return comps;
-}
+struct Component_system_individual : public System {
+    std::function<void(ECS_manager&, Id)> update;
+    Component_system_individual(std::string name, Typ typ, std::function<void(ECS_manager&, Id)> update) : System(name, {typ}), update(update) {}
+};
 
-template <typename T>
-std::set<Component*> ComponentMap<T>::get_all_components_with_id(int16_t entity_id) {
-    std::set<Component*> comps = {};
-    for(int i = 0; i < components.size(); i++){
-        auto as_comp = static_cast<Component*>(&components[i]);  
-        if(id_map[as_comp->component_id] == entity_id){
-            comps.insert(as_comp);
-        }
-    }
-    return comps;
-}
+struct Component_system_all : public System {
+    std::function<void(ECS_manager&, V<Id>&)> update;
+    Component_system_all(std::string name, Typ param_typs, std::function<void(ECS_manager&, V<Id>&)> update) : System(name, {param_typs}), update(update) {}
+};
 
-#pragma endregion defs_and_implementations
-//-----------------------------------
 
-//Components
+//COMPONENTS:
 class _Sprite : public Component {
     public:
     Texture2D tex;
-    _Sprite(std::string path) : Component("Sprite"), tex(LoadTexture(path.c_str())) {}
+    _Sprite(std::string path) : 
+        Component(typeid(_Sprite)), 
+        tex(LoadTexture(path.c_str())) {}
 };
 
 class _Transform : public Component {
     public:
     float x, y;
-    _Transform(float x, float y) : Component("Transform"), x(x), y(y) {}
+    float px, py;
+    _Transform(float x, float y) : 
+        Component(typeid(_Transform)), 
+        x(x), y(y), 
+        px(-std::numeric_limits<float>::infinity()), py(-std::numeric_limits<float>::infinity()) {}
 };
 
 class _Velocity : public Component {
     public:
     float x, y;
-    _Velocity(float x, float y) : Component("Velocity"), x(x), y(y) {}
+    _Velocity(float x, float y) : Component(typeid(_Velocity)), x(x), y(y) {}
 };
 
 class _HitCollider : public Component {
@@ -266,21 +185,30 @@ class _HitCollider : public Component {
     float x, y, w, h;
     float gx, gy;
 
+    //Does this collider hit static terrain?
     bool hits_terrain;
+    
+    //Will the transform attached to this collider by adjusted by the collision system?
+    bool adjustable;
+
+    //Should this transform be considered in the adjustment collision system?
+    bool solid;
 
     std::set<int16_t> hit; 
     std::set<int16_t> p_hit; 
+    bool hit_terrain, p_hit_terrain;
     
-    _HitCollider(float offset_x, float offset_y, float w, float h, bool hits_terrain) : 
-        Component("HitCollider", true), 
+    _HitCollider(float offset_x, float offset_y, float w, float h, bool hits_terrain, bool adjustable, bool solid) : 
+        Component(typeid(_HitCollider), true), 
         x(offset_x),
         y(offset_y),
         w(w),
         h(h),
-        hits_terrain(hits_terrain),
-        hit({}), p_hit({}) {}
+        hits_terrain(hits_terrain), adjustable(adjustable), solid(solid),
+        hit({}), p_hit({}), hit_terrain(false), p_hit_terrain(false) {}
 
-    _HitCollider(float offset_x, float offset_y, float w, float h) : _HitCollider(offset_x, offset_y, w, h, false) {}
+    _HitCollider(float offset_x, float offset_y, float w, float h, bool hits_terrain) :  _HitCollider(offset_x, offset_y, w, h, hits_terrain, false, false) {}
+    _HitCollider(float offset_x, float offset_y, float w, float h) : _HitCollider(offset_x, offset_y, w, h, false, false, false) {}
     
     std::set<int16_t> entered() {
         std::set<int16_t> entered = {};
@@ -303,8 +231,16 @@ class _HitCollider : public Component {
         }
         return left;
     }
+
+    bool is_inside(float ox, float oy, float ow, float oh) {
+        return ox+ow > x && 
+               ox < x + w && 
+               oy + oh > y &&
+               oy < y + h; 
+    }
 };
 
+//A collider that will hit SolidColliders and static terrain be adjusted by the adjustment system
 class _Level : public Component {
 
     void set_grid(std::string level_path){
@@ -327,53 +263,49 @@ class _Level : public Component {
     public:
     Texture2D tilemap;
     u_int16_t grid[BLOCKS_Y][BLOCKS_X];
+    
     _Level(std::string level_path, std::string tilemap_path) : 
-        Component("Level", false, true), 
+        Component(typeid(_Level), false, true), 
         tilemap(LoadTexture(tilemap_path.c_str()))  
         {set_grid(level_path);} 
+
+    bool is_inside(float x, float y, float w, float h){
+        int bx0 = int(x)/BLOCK_SIZE;
+        int bx1 = int(x+w)/BLOCK_SIZE+1;
+        int by0 = int(y)/BLOCK_SIZE;
+        int by1 = int(y+h)/BLOCK_SIZE+1;
+        for(int i = bx0; i < bx1; i++){
+            for(int j = by0; j < by1; j++){
+                if(i >= 0 && j >= 0 && grid[j][i]){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 };
+
+class _Moveable : public Component {
+    public:
+    _Moveable() : Component(typeid(_Moveable)) {}
+};
+
+static std::unordered_map<Typ, std::string> typ_index_to_string = {};
 
 make_list(_Sprite);
 make_list(_Transform);
 make_list(_Velocity);
 make_list(_HitCollider);
 make_list(_Level);
+make_list(_Moveable);
 
-static void set_component_lists(std::unordered_map<std::type_index, BaseComponentMap*>& component_lists, std::unordered_map<std::type_index, std::string>& typ_index_to_string) {
+static void set_component_lists(std::unordered_map<std::type_index, BaseComponentMap*>& component_lists) {
     add_to_map(_Sprite);
     add_to_map(_Transform);
     add_to_map(_Velocity);
     add_to_map(_HitCollider);
     add_to_map(_Level);
+    add_to_map(_Moveable);
 };
 
 #endif
-
-
-
-
-
-// #define map(comp) static ComponentMap<comp> COMPONENTS_ ## comp = {}
-// #define typ_map(comp) {typeid(comp), &COMPONENTS_ ## comp}
-
-// class A : public Component {
-//     public:
-//     int x;
-//     A(int a) : Component(), x(a) {}
-// };
-
-// class B : public Component {
-//     public:
-//     int y;
-//     std::vector<int> items;
-//     B(int b) : Component(), y(b), items({}) {}
-// };
-
-// map(A);
-// map(B);
-
-// static std::unordered_map<std::type_index, BaseComponentMap*> typ_map = {
-//     typ_map(A),
-//     typ_map(B)
-// };
-

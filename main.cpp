@@ -8,21 +8,15 @@
 #define cast(var) static_cast<Component*>(&var)
 
 std::vector<System*> systems = {
-    &sys_velocity, 
-    &sys_update_collider_global_pos, 
-    &sys_find_collider_hits,
-    &sys_draw_sprite, 
-    &sys_DEBUG_draw_hit_collider,
-    &sys_draw_world
+    &sys_draw_sprite
     };
 
 int main() {
     
     std::unordered_map<std::type_index, BaseComponentMap*> component_lists = {};
-    std::unordered_map<std::type_index, std::string> type_index_to_string = {};
     
-    set_component_lists(component_lists, type_index_to_string);
-    ECS_manager em(component_lists, type_index_to_string, systems);
+    set_component_lists(component_lists);
+    ECS_manager em(component_lists, systems);
 
     // Tell the window to use vsync and work on high DPI displays
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
@@ -33,56 +27,8 @@ int main() {
 
     RenderTexture2D target = LoadRenderTexture(GAME_WIDTH, GAME_HEIGTH);
 
-    {
-        _Level lvl("../Tiled/test.csv", "../Tiled/basic.png");
-        em.add_component(0, cast(lvl));
-    }
-
-    {
-        _Transform t(30, 45);
-        _HitCollider col(0, 0, 40, 5);
-
-        em.add_component(1, cast(t));
-        em.add_component(1, cast(col));
-
-    }
-    {
-        _Transform t2(-49, 85);
-        _HitCollider col2(0, 0, 43, 40, true);
-         em.add_component(2, cast(t2));
-        em.add_component(2, cast(col2));
-
-        _Velocity v(0.3f, 0);
-        em.add_component(2, cast(v));
-    }
-    {
-        _Transform t(133, 55);
-        em.add_component(3, cast(t));
-
-        _HitCollider col(0, 0, 70, 30);
-        em.add_component(3, cast(col));
-    }
-    {
-        _Transform t(186, 69);
-        em.add_component(4, cast(t));
-
-        _HitCollider col(0, 0, 29, 34);
-        em.add_component(4, cast(col));
-    }
-    {
-        _Transform t(167, 91);
-        em.add_component(5, cast(t));
-
-        _HitCollider col(0, 0, 30, 27);
-        em.add_component(5, cast(col));
-    }
-    {
-        _Transform t(182, 96);
-        em.add_component(6, cast(t));
-
-        _HitCollider col(0, 0, 29, 27);
-        em.add_component(6, cast(col));
-    }
+    em.add_comp(_Sprite("../assets/wabbit_alpha.png"), 0);
+    em.add_comp(_Transform(30.0, 40.0), 0);
 
     while(!WindowShouldClose()){
 
@@ -118,4 +64,3 @@ int main() {
     }
     return 0;
 }
-

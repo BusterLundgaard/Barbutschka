@@ -64,3 +64,7 @@ Find some photographers you like and try to recreate their things as pixel art!
 In general, don't be afraid of using references a lot, you'll learn a lot from it. 
 
 -Make a rotating coin!
+
+
+
+

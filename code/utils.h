@@ -8,6 +8,7 @@
 #include <raylib.h>
 #include <cmath>
 #include <iostream>
+#include <functional>
 
 template<typename T>
 bool exists(const std::vector<T>& v, const T& value) {
@@ -33,6 +34,17 @@ std::unordered_map<K, V>union_maps(const std::unordered_map<K, V>& first, const 
     (result.insert(rest.begin(), rest.end()), ...);
     return result;
 };
+
+template<typename T>
+std::vector<T> filter(const std::vector<T>& v, std::function<bool(T)> f){
+    std::vector<T> filtered;
+    for(int i = 0; i < v.size(); i++){
+        if(f(v[i])){
+            filtered.push_back(v[i]);
+        }
+    }
+    return filtered;
+}
 
 //Vector math:
 Vector2 operator+(const Vector2& lhs, const Vector2& rhs);

@@ -1,5 +1,13 @@
 **D** means "is coded, but hasn't actually been tested yet"
 
+# MORE CURRENT ISSUES:
+-[] Apparantly you cannot have vectors that hold refferences for some dumb reason. Understand why, and fix it so that these functions return pointers instead (or maybe they just return id's instead and get_all works using a macro or something...)
+
+
+
+
+
+# LONG TERM:
 -[x] Backup "old code" somewhere else
 -[x] Setup git for the project
 -[X] Make it so that "update" function prints every time it calls a system like:
@@ -16,9 +24,13 @@ where the numbers are how many are in the list, so these are lists of one elemen
 
 -[X] Create system to draw the level
 
--[D] Update ECS manager to be able to handle singletons
--[D] Create and test collision hit algorithm with static terrain
--[] Test that checking for collision events in a basic player charachter without gravity works well enough
+-[X] Update ECS manager to be able to handle singletons
+-[X] Create and test collision hit algorithm with static terrain
+-[X] Test that checking for collision events in a basic player charachter without gravity works well enough
+
+-[] Refactor the component class so that instead of storing the type as a string, we store it as a type_index. Then they won't need to give all these functions the types explicitly if they just pass in a component! And in fact, you can make a general "typecasting" function that just takes a component and gives you the correct type out of it! Might be able to infer what it should return given 
+context like auto t = get_sibling<_Transform>(comp)
+-[] Refactor so that by writing just, for example __Level you refer to a global static variable with value typeid(_Level).
 
 -[] Create SolidCollision component
 -[] Create the collision adjustment algorithm

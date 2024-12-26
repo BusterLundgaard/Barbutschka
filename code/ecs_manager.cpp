@@ -1,162 +1,132 @@
 #include "ecs_manager.h"
-#include <sstream>
 #include "exceptions.h"
 
-void ECS_manager::remove_component(std::type_index typ, int16_t comp_id){
-    component_maps[typ]->remove(comp_id);
-}
-void ECS_manager::remove_components(std::type_index typ, int16_t entity_id){
-    component_maps[typ]->remove_all(entity_id);
-}
-
 ECS_manager::ECS_manager(
-    std::unordered_map<std::type_index, BaseComponentMap*> typ_map, 
-    std::unordered_map<std::type_index, std::string>& typ_index_to_string,
-    std::vector<System*> systems
-    ) : 
-    component_maps(typ_map), 
-    systems(systems),
-    typ_index_to_string(typ_index_to_string)
-    {}
+        std::unordered_map<Typ, BaseComponentMap*> component_lists,
+        V<System*> systems
+        ) : cms(component_lists), systems(systems) {}
 
-void ECS_manager::add_component(int16_t entity_id, Component* comp){
-    if( !comp->allows_multiplicity && 
-        component_maps[typeid(*comp)]->contains_entity_id(entity_id)){
-        throw IllegalMultipleComponents(comp->name, entity_id);
+void ECS_manager::add_in_add_queue() {
+    while(add_queue.size() > 0){
+        auto pair = add_queue.front();
+        Component* comp = pair.first;
+        Id entity_id = pair.second;
+        
+        cms[comp->typ]->add(comp);
+        comp_id_to_entity_id[comp->component_id]=entity_id;
+        
+        comp_id_to_typ.insert({comp->component_id, comp->typ});
+        entity_id_to_comp_ids[entity_id].push_back(comp->component_id);
+
+        //Big issue: it was created as a pointer to a T, but it is now a pointer to a Comp..
+        //How do you cast it to the right type?
+        delete pair.first;
+        
+        add_queue.pop_front();
     }
-
-    component_maps[typeid(*comp)]->add(comp, entity_id);
 }
 
-bool ECS_manager::has_component(int16_t entity_id, std::type_index typ){
-    return component_maps[typ]->get(entity_id) != nullptr;
-}
+void ECS_manager::delete_in_delete_queue() {
+    while(delete_queue.size() > 0){
+        Id comp_id = delete_queue.front();
+        
+        cms[comp_id_to_typ.at(comp_id)]->remove(comp_id);
+        comp_id_to_entity_id.erase(comp_id);
+        comp_id_to_typ.erase(comp_id);
 
-Component* ECS_manager::get_component(int16_t comp_id, std::type_index typ){
-    return component_maps[typ]->get(comp_id);
-}
-std::vector<Component*> ECS_manager::get_components(int16_t entity_id, std::type_index typ){
-    return component_maps[typ]->get_all(entity_id);
-}
+        Id entity_id = comp_id_to_entity_id[comp_id];
+        entity_id_to_comp_ids[entity_id].pop_back();
 
-bool ECS_manager::singleton_exists(std::type_index typ){
-    return component_maps[typ]->id_map.size() != 0;
-}
-Component* ECS_manager::get_singleton(std::type_index typ) {
-    if(component_maps[typ]->id_map.size() == 0){
-        throw NullPtrException("Trying to get singleton of typ " + get_str(typ) + ", which hasn't yet been added!");
+        delete_queue.pop_back();
     }
-    return component_maps[typ]->get_first();
 }
 
-bool ECS_manager::is_typ(int16_t comp_id, std::type_index typ) {
-    return component_maps[typ]->contains_comp_id(comp_id);
+void ECS_manager::remove_comp(Id comp_id){
+    if(comp_id_to_entity_id.find(comp_id) == comp_id_to_entity_id.end()){
+        throw RemoveNonExistingElement(comp_id);
+    }
+    delete_queue.push_back(comp_id);
 }
 
-int16_t ECS_manager::get_entity(int16_t component_id, std::type_index typ){
-    return component_maps[typ]->id_map[component_id];
+bool ECS_manager::is_typ(Id comp_id, Typ typ){
+    return comp_id_to_typ.at(comp_id) == typ;
 }
-
-static bool print_calls = false;
+bool ECS_manager::has_typ(Id entity_id, Typ typ){
+    for(Id comp_id : entity_id_to_comp_ids[entity_id]){
+        if(comp_id_to_typ.at(comp_id) == typ){
+            return true;
+        }
+    }
+    return false;
+}
+bool ECS_manager::singleton_exists(Typ typ) {
+    return cms[typ]->comp_id_to_index.size() != 0;
+}
 
 void ECS_manager::update() {
-    for(auto sys : systems){
-        if (Entity_System_Individual* esys = dynamic_cast<Entity_System_Individual*>(sys)){
-            // Iterate through only those entities that have all components (take intersection of ids)
-            auto ids = component_maps[esys->typs[0]]->get_all_ids();
-            for(int i = 1; i < esys->typs.size(); i++){
-                auto ids_i = component_maps[esys->typs[i]]->get_all_ids();
-                std::set<int16_t> intersection = {};
-                std::set_intersection(ids.begin(), ids.end(), ids_i.begin(), ids_i.end(), std::inserter(intersection, intersection.begin()));
-                ids = intersection;
+    //Collect all component ids that you will need for all systems (good for cache)
+    //For all systems, for all entities, for all typs, for all component ids on that entity with those typs
+    V<V<V<V<Id>>>> comps(systems.size()); 
+    for(auto const [entity_id, comp_ids] : entity_id_to_comp_ids) {
+        for(int i = 0; i < systems.size(); i++){
+            if(typeid(systems[i])==typeid(Component_system_individual*) || 
+               typeid(systems[i])==typeid(Component_system_all*)){continue;}
+
+            V<Id> comps_with_correct_typs;
+            std::set<Typ> typs;
+            for(Id comp_id : comp_ids){
+                if(exists(systems[i]->param_typs, comp_id_to_typ.at(comp_id))){
+                    typs.insert(comp_id_to_typ.at(comp_id));
+                    comps_with_correct_typs.push_back(comp_id);
+                }
+            }
+            if(typs.size() != systems[i]->param_typs.size()){continue;}
+
+            std::unordered_map<Typ, int> typ_to_index;
+            for(int j = 0; j < systems[i]->param_typs.size(); j++){
+                typ_to_index[systems[i]->param_typs[j]]=j;
             }
 
-            for(int16_t id : ids){
-                std::vector<std::vector<Component*>> comps(esys->typs.size());
-                for(int j=0; j<esys->typs.size(); j++){
-                    comps[j]=component_maps[esys->typs[j]]->get_all(id);
-                }
-                if(print_calls){
-                    std::cout << "Calling indvidual-system " << sys->name << " for id " << id << " with: ";
-                    for(int j=0; j<esys->typs.size(); j++){
-                        std::cout << comps[j][0]->name << "[" << comps[j].size() << "], ";
-                    }
-                    std::cout << std::endl;
-                }
-                esys->update(id, this, comps);
+            V<V<Id>> comps_for_entity(systems[i]->param_typs.size());
+            
+            for(Id comp_id : comps_with_correct_typs){
+                comps_for_entity[typ_to_index[comp_id_to_typ.at(comp_id)]].push_back(comp_id);    
             }
-
-        } 
-        else if(Entity_System_All* esys = dynamic_cast<Entity_System_All*>(sys)){
-            // Iterate through only those entities that have all components (take intersection of ids)
-            auto ids = component_maps[esys->typs[0]]->get_all_ids();
-            for(int i = 1; i < esys->typs.size(); i++){
-                auto ids_i = component_maps[esys->typs[i]]->get_all_ids();
-                std::set<int16_t> intersection = {};
-                std::set_intersection(ids.begin(), ids.end(), ids_i.begin(), ids_i.end(), std::inserter(intersection, intersection.begin()));
-                ids = intersection;
-            }
-
-            std::vector<std::vector<std::vector<Component*>>> all_comps(0);
-            std::vector<int16_t> ids_vec(ids.begin(), ids.end());
-            for(int i = 0; i < ids_vec.size(); i++){
-                std::vector<std::vector<Component*>> comps(esys->typs.size());
-                for(int j=0; j<esys->typs.size(); j++){
-                    comps[j]=component_maps[esys->typs[j]]->get_all(ids_vec[i]);
-                }
-                all_comps.push_back(comps);
-            }
-            if(print_calls){
-                std::cout << "Calling all-system " << esys->name << " with " << all_comps.size() << " different id's." << std::endl;
-            }
-            esys->update(ids_vec, this, all_comps);
+            
+            comps[i].push_back(comps_for_entity);
         }
-        
-        else if (All_Component_System* wsys = dynamic_cast<All_Component_System*>(sys)){
-            std::vector<std::vector<Component*>> comps(wsys->typs.size());
-            for(int i = 0; i < wsys->typs.size(); i++){
-                comps[i]=component_maps[wsys->typs[i]]->get_all_components();
-            }
-            if(print_calls){
-                std::cout << "Calling world-system " << sys->name << " with: ";
-                for(int j=0; j<esys->typs.size(); j++){
-                    std::cout << comps[j][0]->name << "[" << comps[j].size() << "], ";
-                }
-                std::cout << std::endl;
-            }
-            wsys->update(this, comps);
-        } 
     }
 
-}
-
-std::string ECS_manager::get_debug_table() {
-    
-    std::ostringstream ss;
-    ss << "ID  |  Components\n";
-    
-    std::set<int16_t> all_ids = {};
-    for (const auto &[key, value] : component_maps){
-        auto ids = value->get_all_ids();
-        all_ids.insert(ids.begin(), ids.end());
-    }
-    std::vector<int16_t> ids_vec(all_ids.begin(), all_ids.end());
-    for(int i = 0; i < ids_vec.size(); i++){
-        std::set<Component*> all_comps = {};
-        for (const auto &[key, value] : component_maps){
-            auto comps = value->get_all_components_with_id(ids_vec[i]);
-            all_comps.insert(comps.begin(), comps.end());
+    //Actually call the systems using these ids 
+    for(int i = 0; i < systems.size(); i++){
+        if(Entity_system_individual* sys = dynamic_cast<Entity_system_individual*>(systems[i])){
+            for(int j = 0; j < comps[i].size(); j++){
+                sys->update(*this, comps[i][j]);
+            }
         }
-        ss << ids_vec[i] << ":     ";
-        for(auto comp : all_comps){
-            ss << "(" << comp->name << ", " << comp->component_id << "), ";
+        else if(Entity_system_all* sys = dynamic_cast<Entity_system_all*>(systems[i])){
+            if(comps[i].size() != 0){
+                sys->update(*this, comps[i]);
+            }
         }
-        ss << std::endl;
+        else if(Component_system_individual* sys = dynamic_cast<Component_system_individual*>(systems[i])){
+            auto id_map = cms[sys->param_typs[0]]->comp_id_to_index;
+            for(auto iter = id_map.begin(); iter != id_map.end(); ++iter)
+            {
+                sys->update(*this, iter->first);
+            }
+        }
+        else if(Component_system_all* sys = dynamic_cast<Component_system_all*>(systems[i])){
+            V<Id> all_comps;
+            auto id_map = cms[sys->param_typs[0]]->comp_id_to_index;
+            for(auto iter = id_map.begin(); iter != id_map.end(); ++iter)
+            {
+                all_comps.push_back(iter->first);
+            }
+            sys->update(*this, all_comps);
+        }
     }
-    std::cout << ss.str();
-    return ss.str();
-}
 
-std::string ECS_manager::get_str(std::type_index typ){
-    return typ_index_to_string[typ];
+    add_in_add_queue();
+    delete_in_delete_queue();
 }
