@@ -1,11 +1,11 @@
 **D** means "is coded, but hasn't actually been tested yet"
 
 # MORE CURRENT ISSUES:
--[] Apparantly you cannot have vectors that hold refferences for some dumb reason. Understand why, and fix it so that these functions return pointers instead (or maybe they just return id's instead and get_all works using a macro or something...)
-
-
-
-
+-[] Write the systems definitions in the new components file
+-[] Write the add/remove queue in the new ecs_m
+-[] Write the update function in the new ecs_m
+-[] Actually write the new components_list
+-[] Get the shit refactored in different files and get it to run 
 
 # LONG TERM:
 -[x] Backup "old code" somewhere else
