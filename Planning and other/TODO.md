@@ -1,10 +1,11 @@
 **D** means "is coded, but hasn't actually been tested yet"
 
 # MORE CURRENT ISSUES:
--[] Write the systems definitions in the new components file
+-[x] Write the systems definitions in the new components file
 -[] Write the add/remove queue in the new ecs_m
 -[] Write the update function in the new ecs_m
 -[] Actually write the new components_list
+-[] Add exceptions to all the insanely unsafe functions you've made!
 -[] Get the shit refactored in different files and get it to run 
 
 # LONG TERM:
