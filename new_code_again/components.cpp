@@ -24,25 +24,6 @@ using V = std::vector<T>;
 template <typename T1, typename T2>
 using Map = std::unordered_map<T1, T2>;
 
-// #define boilerplate(name_of_comp) const std::string name() const override {return #name_of_comp;}  const Typ typ() const override {return typeid(_ ## name_of_comp);}
-// #define comp(name_of_comp) class _ ## name_of_comp : public Component { public: boilerplate(name_of_comp)  
-// #define allow_multiples const bool multiples_allowed() override {return true;}  
-// #define is_singleton const bool singleton() override {return true;}
-
-// //Revel in the horror of overloaded macros!!! I copy pasted this and don't understand how it works
-// #define CAT( A, B ) A ## B
-// #define SELECT( NAME, NUM ) CAT( NAME ## _, NUM )
-
-// #define GET_COUNT( _1, _2, _3, _4, _5, _6 /* ad nauseam */, COUNT, ... ) COUNT
-// #define VA_SIZE( ... ) GET_COUNT( __VA_ARGS__, 6, 5, 4, 3, 2, 1 )
-
-// #define VA_SELECT( NAME, ... ) SELECT( NAME, VA_SIZE(__VA_ARGS__) )(__VA_ARGS__)
-
-// #define COMP( ... ) VA_SELECT( COMP, __VA_ARGS__)
-// #define COMP_1(comp_name) comp(comp_name)
-// #define COMP_3(comp_name, property_1_typ, property_1_name) comp(comp_name) property_1_typ property_1_name; _ ## comp_name (property_1_typ property_1_name) : property_1_name(property_1_name) {}
-// #define COMP_5(comp_name, property_1_typ, property_1_name, property_2_typ, property_2_name) comp(comp_name) property_1_typ property_1_name; property_2_typ property_2_name; _ ## comp_name (property_1_typ property_1_name, property_2_typ property_2_name) : property_1_name(property_1_name), property_2_name(property_2_name) {} 
-
 struct Component_metadata {
     int bytesize;
     std::string name;
@@ -386,7 +367,6 @@ class Ecs_m {
         }
     }
 
-    //remmember you need to do the add/remove queue here!
     void remove(Id comp_id){
         delete_queue.push_front(comp_id);
     }

@@ -2,11 +2,11 @@
 
 # MORE CURRENT ISSUES:
 -[x] Write the systems definitions in the new components file
--[] Write the add/remove queue in the new ecs_m
--[] Write the update function in the new ecs_m
--[] Actually write the new components_list
+-[x] Write the add/remove queue in the new ecs_m
+-[x] Write the update function in the new ecs_m
+-[x] Actually write the new components_list
+-[x] Get the shit refactored in different files and get it to run 
 -[] Add exceptions to all the insanely unsafe functions you've made!
--[] Get the shit refactored in different files and get it to run 
 
 # LONG TERM:
 -[x] Backup "old code" somewhere else
