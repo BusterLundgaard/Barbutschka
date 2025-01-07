@@ -6,7 +6,19 @@
 -[x] Write the update function in the new ecs_m
 -[x] Actually write the new components_list
 -[x] Get the shit refactored in different files and get it to run 
+-[] Test that all of this actually works:
+    -[x] Test that you can add and remove Colliders (ie elements with custom allocators/deallocators)
+    -[x] Setup a simple draw_transform system (just draws a dot/sphere at position)
+    -[x] Setup a simple draw_sprite system (now we have to make sure the intersection system works correctly)
+    -[x] Test that strings still work even though they're also heap allocated.
+    -[x] Test removal of elements, doesn't seem to be working quite well.
+    (both in general and in terms of intersections)
+    -[] Slowly start just adding the various systems from before one at a time
 -[] Add exceptions to all the insanely unsafe functions you've made!
+-[] DON'T spread this into multiple documents yet ... wait and see if this system is actually good first! 
+    -So work on where you picked up with making the collision adjustment system (which you remmember nothing from lol)
+-[] Then if you can get that system to work, finally spread this into multiple documents and make nice macros to reduce boilerplate!    
+
 
 # LONG TERM:
 -[x] Backup "old code" somewhere else

@@ -18,7 +18,6 @@ std::ostream& operator<<(std::ostream& os, const Vector2& vec) {
     return os;
 }
 
-
 Vector2& operator*=(Vector2& vec, float scalar) {
     vec.x *= scalar;
     vec.y *= scalar;
