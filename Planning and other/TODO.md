@@ -13,12 +13,17 @@
     -[x] Test that strings still work even though they're also heap allocated.
     -[x] Test removal of elements, doesn't seem to be working quite well.
     (both in general and in terms of intersections)
-    -[] Slowly start just adding the various systems from before one at a time
--[] Add exceptions to all the insanely unsafe functions you've made!
--[] DON'T spread this into multiple documents yet ... wait and see if this system is actually good first! 
-    -So work on where you picked up with making the collision adjustment system (which you remmember nothing from lol)
--[] Then if you can get that system to work, finally spread this into multiple documents and make nice macros to reduce boilerplate!    
+    -[x] Slowly start just adding the various systems from before one at a time
 
+-[] Make it possible to have a function be called on the last frame of a system before it's deleted
+-[] Make it so that the platform will also move the player if they're standing on it somehow
+-[] Make a very rudimentary animation system for the main player
+-[] Make a very rudimentary walking enemy that you can hit and defeat. 
+
+-[] Refactor everything into multiple documents and make it nicer. 
+
+-[] Make collision adjustment with the static environment work
+-[] Make collision adjustment with "stairs" in the staic environment work / diagonal slopes
 
 # LONG TERM:
 -[x] Backup "old code" somewhere else

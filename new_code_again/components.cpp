@@ -21,6 +21,8 @@
 #include <sstream>
 #include <algorithm>
 #include <math.h>
+#include <optional>
+#include "exceptions.h"
 
 #define init_comp(compname) int compname::init = compname::initialize(); static Typ _ ## compname = typeid(compname);
 #define init_meta static int init; static int initialize() 
@@ -62,6 +64,11 @@ using Map = std::unordered_map<T1, T2>;
 template <typename T>
 bool exists(std::set<T> s, T el){
     return s.find(el) == s.end();
+}
+
+template <typename T>
+bool exists(V<T> v, T el){
+    return std::find(v.begin(), v.end(), el) != v.end();
 }
 
 template<typename T>
@@ -231,16 +238,7 @@ class Component_list {
                 return i;
             }
         }
-        return -1;
-    }
-    V<int> indexes_of_comps(std::set<Id> component_ids){
-        V<int> indexes;
-        for(int i = 0; i<size; i++){
-            if(component_ids.find(static_cast<Component*>(get(i))->comp_id) != component_ids.end()){
-                indexes.push_back(i);
-            }
-        }
-        return indexes;
+        throw NullPtrException("Could not find component of type " + comps_metadata.at(typ).name + " with component id " + std::to_string(component_id));
     }
     int index_of_entity(Id entity_id) {
         //Look forward from search_indexes (most often this is how we'll iterate)
@@ -257,7 +255,7 @@ class Component_list {
                 return i;
             }
         }
-        return -1;
+        throw NullPtrException("Could not find component of type " + comps_metadata.at(typ).name + " with entity id " + std::to_string(entity_id));
     }
     V<int> indexes_of_entity(Id entity_id){
         V<int> indexes;
@@ -270,7 +268,20 @@ class Component_list {
     }
 
     bool entity_exists(Id entity_id){
-        return index_of_entity(entity_id) != -1 || exists_in_queue(entity_id);
+        if(exists_in_queue(entity_id)){return true;}
+        for(int i = search_index; i<size; i++){
+            if(check_id_entity(i, entity_id)){
+                search_index=i;
+                return true;
+            }
+        }
+        for(int i = search_index; i >= 0; i--){
+            if(check_id_entity(i, entity_id)){
+                search_index=i;
+                return true;
+            }
+        }
+        return false;
     }
 
     Id entity_of_comp(Id comp_id){
@@ -419,7 +430,12 @@ bool operator<(const System_instance& l, const System_instance& r) {
 
 class Ecs_m {
     private:
+    Map<Id, Id> comp_id_to_entity_id;
+    Map<Id, V<Id>> entity_id_to_comp_id;
+
     Map<Id, Typ> comp_id_to_typ;
+    Map<Id, V<Typ>> entity_id_to_typs;
+
     V<System*> systems;
     std::map<System_instance, System_data*> systems_data = {};
 
@@ -441,8 +457,15 @@ class Ecs_m {
             
             Typ typ = comp_id_to_typ.at(comp_id);
             Id entity_id = comps.at(typ).entity_of_comp(comp_id);
-            comps.at(typ).remove(comps.at(typ).index_of_comp(comp_id));
+
+            comps.at(typ).remove(comps.at(typ).index_of_comp(comp_id));            
             comp_id_to_typ.erase(comp_id);
+            comp_id_to_entity_id.erase(comp_id);
+            auto comp_ids = entity_id_to_comp_id.at(entity_id);
+            comp_ids.erase(std::find(comp_ids.begin(), comp_ids.end(), comp_id));
+            auto typs = entity_id_to_typs.at(entity_id);
+            typs.erase(std::find(typs.begin(), typs.end(), typ));
+
             remove_intersections(entity_id);  
 
             delete_queue.pop_back();
@@ -521,12 +544,29 @@ class Ecs_m {
         delete_queue.push_front(comp_id);
     }
 
+    void add(Component* el, Id entity_id, Typ typ){
+        if(comps.find(typ) == comps.end()){
+            comps.insert({typ, Component_list(typ)});
+        }
+        el->set_entity_id(entity_id);
+        comps.at(typ).add(static_cast<void*>(el));  
+        
+        comp_id_to_typ.insert({el->comp_id, typ});
+        comp_id_to_entity_id.insert({el->comp_id, entity_id});
+        if(entity_id_to_comp_id.find(entity_id) == entity_id_to_comp_id.end()){
+            entity_id_to_comp_id.insert({entity_id, {el->comp_id}});
+            entity_id_to_typs.insert({entity_id, {typ}});
+        } else {
+            entity_id_to_comp_id.at(entity_id).push_back(el->comp_id);
+            entity_id_to_typs.at(entity_id).push_back(typ);
+        }
+
+        add_intersections(entity_id, typ);
+    }
+
     template <typename T>
     void add(T comp, Id entity_id){
-        comp.set_entity_id(entity_id);
-        comps.at(typeid(T)).add(static_cast<void*>(&comp));  
-        comp_id_to_typ.insert(std::pair<int16_t, Typ>{comp.comp_id, typeid(T)});
-        add_intersections(entity_id, typeid(T));
+        add(static_cast<Component*>(&comp), entity_id, typeid(T));
     }
 
     template <typename T>
@@ -541,6 +581,10 @@ class Ecs_m {
             comp_typ_pointers[i] = static_cast<T*>(els[i]);
         }
         return comp_typ_pointers;
+    }
+
+    Component* get_from_entity(Id entity_id, Typ typ){
+        return static_cast<Component*>(comps.at(typ).get_from_entity(entity_id)); 
     }
 
     template <typename T>
@@ -568,6 +612,18 @@ class Ecs_m {
     template <typename T>
     T* get_singleton(){
         return static_cast<T*>(comps.at(typeid(T)).get(0));
+    }
+
+    Id get_entity_id(Id comp_id){
+        auto res = comp_id_to_entity_id.find(comp_id);
+        if(res != comp_id_to_entity_id.end()){
+            return res->second;
+        }
+        throw NullPtrException("Component with id " + std::to_string(comp_id) + " has no corresponding entity");
+    }
+
+    bool has_type(Id entity_id, Typ typ){
+        return exists(entity_id_to_typs.at(entity_id), typ);
     }
 
     void update() {
@@ -679,17 +735,13 @@ class _Collider : public Component {
         x(x), y(y), w(w), h(h), 
         hits_terrain(hits_terrain), adjustable(adjustable), solid(solid),
         gx(0), gy(0), hit({}), p_hit({}), hit_terrain(false), p_hit_terrain(0)
-        {
-            std::cout << "Creating new collider!\n";
-        }
+        {}
     _Collider(_Collider* col) : 
         Component(col->comp_id, col->entity_id), 
         x(col->x), y(col->y), w(col->w), h(col->h), 
         hits_terrain(col->hits_terrain), adjustable(col->adjustable), solid(col->solid), 
         gx(-5), gy(-5), hit({}), p_hit({}), hit_terrain(false), p_hit_terrain(0)
-        {
-            std::cout << "Copying collider manually\n";
-        }
+        {}
 
     std::set<Id> entered() {
         std::set<Id> entered = {};
@@ -726,6 +778,24 @@ class _Collider : public Component {
             if(col->solid){return true;}
         }
         return false;
+    }
+    bool phits_solid(Ecs_m& em){
+        for(Id id : p_hit){
+            _Collider* col = em.get_from_comp<_Collider>(id);
+            if(col->solid){return true;}
+        }
+        return false;
+    }
+
+    // Looks through all entities in hits and searches for a component in one of them of type typ. Returns first it finds. If no matches, returns nullptr.
+    std::optional<Component*> get_typ_in_hits(Typ typ, Ecs_m& em){
+        for(Id id : hit){
+            Id entity_id = em.get_entity_id(id);
+            if(em.has_type(entity_id, typ)){
+                return em.get_from_entity(entity_id, typ);
+            }
+        }
+        return std::nullopt;
     }
 
     private:
@@ -842,6 +912,59 @@ class _Oscillator : public Component {
 };
 init_comp(_Oscillator)
 
+struct animation {
+    Texture2D spritesheet;
+    float frame_speed;
+    bool loops;
+};
+
+class _Animation_player : public Component {
+    public:
+    Map<std::string, animation> anims;
+    std::string current_anim;
+    float time_per_frame;
+    int sprite_width, sprite_height;
+
+    int offset_x, offset_y;
+
+    float time;
+    int frame;
+
+    int flipped;
+
+    _Animation_player(Map<std::string, animation> anims, float time_per_frame, int sprite_width, int sprite_height, int offset_x, int offset_y, std::string starting_animation) : 
+        anims(anims), time_per_frame(time_per_frame), sprite_width(sprite_width), sprite_height(sprite_height), offset_x(offset_x), offset_y(offset_y),
+        current_anim(starting_animation), time(0), frame(0), flipped(1) {}
+    _Animation_player(_Animation_player* anim) : Component(anim->comp_id, anim->entity_id), anims(anim->anims), current_anim(anim->current_anim), time_per_frame(anim->time_per_frame), time(anim->time), frame(anim->frame), sprite_width(anim->sprite_width), sprite_height(anim->sprite_height), offset_x(anim->offset_x), offset_y(anim->offset_y), flipped(anim->flipped) {}
+
+    void change_animation(std::string new_animation){
+        if(!(current_anim == new_animation)){
+            time=0;
+            frame=0;
+        }
+        current_anim = new_animation;
+    }
+
+    void flip(){
+        flipped = -flipped;
+    }
+
+    private:
+    init_meta {
+        default_meta(_Animation_player);
+        meta_set_heap_management(typeid(_Animation_player), 
+            [](void* src, void* dst) { 
+                new (dst) _Animation_player(static_cast<_Animation_player*>(src)); 
+                }, 
+            [](void* src) { 
+                _Animation_player* el = static_cast<_Animation_player*>(src); 
+                el->~_Animation_player(); 
+                });
+        return 0;
+    }
+};
+init_comp(_Animation_player)
+
 
 Entity_individual_system sys_draw_sprite{
     "draw_sprite",
@@ -908,6 +1031,37 @@ Component_individual_system sys_draw_world{
         }
     }
 };
+
+Entity_individual_system sys_draw_animation{
+    "draw_animation", 
+    {__Animation_player, __Transform},
+    [](Ecs_m& em, Id id){
+        auto t = em.get_from_entity<_Transform>(id);
+        auto anim = em.get_from_entity<_Animation_player>(id);
+
+        anim->time += GetFrameTime();
+        if(anim->time > anim->anims.at(anim->current_anim).frame_speed){
+            anim->time=0;
+            int amount_of_frames = anim->anims.at(anim->current_anim).spritesheet.width/anim->sprite_width;
+            if(anim->anims.at(anim->current_anim).loops){
+                anim->frame = (anim->frame + 1) % amount_of_frames;
+            } else {
+                anim->frame = std::min(amount_of_frames-1, anim->frame + 1);
+            }
+           
+        }
+
+        DrawTextureRec(
+            anim->anims.at(anim->current_anim).spritesheet, 
+            Rectangle{
+                float(anim->sprite_width*anim->frame), 0, 
+                float(anim->sprite_width), float(anim->sprite_height)},
+            Vector2{t->x + anim->offset_x, GAME_HEIGTH - t->y - anim->offset_y - anim->sprite_height}, 
+            WHITE
+        );
+    }
+};
+
 
 void update_collider_global_pos(Ecs_m& em, _Transform* t){
     auto cols = em.get_all_from_entity<_Collider>(t->entity_id);
@@ -1004,7 +1158,6 @@ Component_for_all_system sys_collision{
                 float delta_x = st->x - st->px;
                 float delta_y = st->y - st->py;
                 if(!solid->is_inside(px + delta_x, col->gy, col->w, col->h)){
-                    std::cout << "hit on x axis! \n";
                     if(t->x - t->px - delta_x > 0) { //to the left before
                         t->x -= (col->gx + col->w) - solid->gx; 
                     } else { //to the right before
@@ -1012,7 +1165,6 @@ Component_for_all_system sys_collision{
                     }
                 }
                 if(!solid->is_inside(col->gx, py + delta_y, col->w, col->h)){
-                    std::cout << "hit on y axis! \n";
                     if(t->y - t->py - delta_y > 0) { //below before
                         t->y -= (col->gy + col->h) - solid->gy; 
                     } else { // above before
@@ -1050,69 +1202,53 @@ Component_individual_system sys_DEBUG_draw_hit_collider(
 );
 
 
-Entity_individual_system sys_debug_move{
-    "debug_move",
-    {__Moveable, __Velocity}, 
-    [](Ecs_m& em, Id id){
-        auto v = em.get_from_entity<_Velocity>(id);
-
-        if (IsKeyDown(KEY_RIGHT)) {
-            v->x = 1.0f; 
-            v->y = 0;
-        }
-        if (IsKeyReleased(KEY_RIGHT)){v->x=0; v->y=0;}
-        
-        if (IsKeyDown(KEY_LEFT))  {
-            v->x = -1.0f;
-            v->y = 0;
-        }
-        if (IsKeyReleased(KEY_LEFT)){v->x=0; v->y=0;}
-        
-        if (IsKeyDown(KEY_UP))    {
-            v->y = -1.0f;
-            v->x = 0;
-        }
-        if (IsKeyReleased(KEY_UP)){v->x=0; v->y=0;}
-        
-        if (IsKeyDown(KEY_DOWN))  {
-            v->y = 1.0f;
-            v->x = 0;
-        }
-        if (IsKeyReleased(KEY_DOWN)){v->x=0; v->y=0;}
-    }
-};
-
 Entity_individual_system sys_player_movement{
     "player_movement",
-    {__Player, __Transform, __Velocity}, 
+    {__Player, __Transform, __Velocity, __Animation_player}, 
     [](Ecs_m& em, Id id){
         auto t = em.get_from_entity<_Transform>(id);
         auto v = em.get_from_entity<_Velocity>(id);
         auto p = em.get_from_entity<_Player>(id);
+        auto anim = em.get_from_entity<_Animation_player>(id);
         
         _Collider* col = em.get_from_comp<_Collider>(p->ground_trigger_col_id);
         bool grounded = col->hits_solid(em);
+        bool p_grounded = col->phits_solid(em);
 
-        v->x = 0.0f;
+
         if(IsKeyDown(KEY_LEFT)){
+            if(grounded){anim->change_animation("walk");}
             v->x = -1.0f;
         }
-        if(IsKeyDown(KEY_RIGHT)){ 
+        else if(IsKeyDown(KEY_RIGHT)){ 
+            if(grounded){anim->change_animation("walk");}
             v->x = 1.0f;
         }
-        if(IsKeyDown(KEY_DOWN)){
-            v->y -= 1.0f;
+        else{
+            v->x = 0.0f;
+            if(grounded){anim->change_animation("idle");}
         }
 
-        if(IsKeyDown(KEY_SPACE) && grounded){
+        auto moving_platform = col->get_typ_in_hits(__Oscillator, em);
+        if(moving_platform){
+            auto osc = static_cast<_Oscillator*>(*moving_platform);
+            std::cout << "on moving platform with period: " << osc->period << std::endl;
+        }
+
+        if(grounded && IsKeyDown(KEY_SPACE)){
             v->y = 2.0f;
+            anim->change_animation("jump_start");
         }
-        else if(grounded){
-            v->y = 0;
+        else if(p_grounded && !grounded){
+            v->y = std::max(0.0f, v->y);
         }
-        if(!grounded){
-            v->y -= 0.08f;
+        else if(!grounded){
+            v->y -= 0.04f;
         }
+
+
+
+
     }
 };
 
@@ -1123,7 +1259,13 @@ Entity_individual_system sys_oscillator_movement{
     //First frame
     [](Ecs_m& em, Id id){ 
         auto v = em.get_from_entity<_Velocity>(id);
-        v->y = 1;
+        auto ol = em.get_from_entity<_Oscillator>(id);
+        if(ol->dir){
+            v->y = 1;
+        } else {
+            v->x = 1;
+        }
+        
     },
     //Update
     [](Ecs_m& em, Id id){
@@ -1132,7 +1274,11 @@ Entity_individual_system sys_oscillator_movement{
 
         ol->tick();
         if(ol->time > ol->period){
-            v->y = -v->y;
+            if(ol->dir){
+                v->y = -v->y;
+            } else {
+                v->x = -v->x;
+            }
             ol->reset();
         }
     }
@@ -1141,7 +1287,6 @@ Entity_individual_system sys_oscillator_movement{
 
 int main(){
     Ecs_m em({
-        &sys_debug_move,
         &sys_player_movement,
         
         &sys_oscillator_movement,
@@ -1151,6 +1296,7 @@ int main(){
         &sys_collision,
         
         &sys_draw_sprite, 
+        &sys_draw_animation,
         &sys_draw_world,
         &sys_DEBUG_draw_hit_collider, 
         &sys_set_prev_pos
@@ -1214,24 +1360,25 @@ int main(){
     // player
     em.add(_Transform(61.060257, 50), entity_id);
     em.add(_Velocity(0,0), entity_id);
-    em.add(_Collider(0, 0, 12, 19, true, true, false), entity_id);
-    _Collider ground_trigger(1, -1, 10, 3, false, false, false);
+    em.add(_Collider(0, 0, 15, 27, true, true, false), entity_id);
+    _Collider ground_trigger(1, 0, 10, 3, false, false, false);
     em.add(ground_trigger, entity_id);
     em.add(_Player(ground_trigger.comp_id), entity_id);
+        em.add(
+        _Animation_player(
+            {{"idle", {LoadTexture("../assets/tmp/Idle.png"), 1.0/5.0, true}}, 
+             {"walk", {LoadTexture("../assets/tmp/Walk.png"), 1.0/15.0, true}},
+             {"jump_start", {LoadTexture("../assets/tmp/JumpStart.png"), 1.0/4.0, false}},
+             {"jump_fall", {LoadTexture("../assets/tmp/JumpFall.png"), 1.0/5.0, true}}
+            }, 1.0/5.0, 20, 32, -4, 0, "idle"), 
+        entity_id);
     entity_id++;
 
-    em.add(_Sprite("../Tiled/basic.png"), entity_id);
-    em.add(_Transform(0,0), entity_id);
-    entity_id++;
-
-    em.add(_Transform(100, 0), entity_id);
-    em.add(_Collider(0, 0, 20, 10, false, false, true), entity_id);
+    // moving platform
+    em.add(_Transform(100, 50), entity_id);
+    em.add(_Collider(0, 0, 25, 15, false, false, true), entity_id);
     em.add(_Velocity(0,0), entity_id);
-    em.add(_Oscillator(true, 20, 2.0f), entity_id);
-    
-    //em.add(_Level("../Tiled/test.csv", "../Tiled/basic.png"), entity_id);
-
-
+    em.add(_Oscillator(false, 20, 1.5f), entity_id);
 
     while(!WindowShouldClose()){
         float scale = std::min(
@@ -1240,13 +1387,13 @@ int main(){
         );
 
         BeginTextureMode(target);
-        ClearBackground(BLACK);
+        ClearBackground(WHITE);
         em.update();
 
         EndTextureMode();
         
         BeginDrawing();
-        ClearBackground(BLACK);
+        ClearBackground(WHITE);
         DrawTexturePro(
             target.texture, 
             Rectangle{
