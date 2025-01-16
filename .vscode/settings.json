@@ -83,7 +83,10 @@
         "unordered_set": "cpp",
         "sstream": "cpp",
         "numeric": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "cinttypes": "cpp",
+        "forward_list": "cpp",
+        "semaphore": "cpp"
     },
     "editor.tokenColorCustomizations": {
         "comments": "",

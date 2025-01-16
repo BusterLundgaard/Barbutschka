@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <math.h>
 #include <optional>
+#include <iomanip>
 #include "exceptions.h"
 
 #define init_comp(compname) int compname::init = compname::initialize(); static Typ _ ## compname = typeid(compname);
@@ -69,6 +70,11 @@ bool exists(std::set<T> s, T el){
 template <typename T>
 bool exists(V<T> v, T el){
     return std::find(v.begin(), v.end(), el) != v.end();
+}
+
+template <typename T>
+int count(V<T> v, T el){
+    return std::count(v.begin(), v.end(), el);
 }
 
 template<typename T>
@@ -150,6 +156,7 @@ struct Component_metadata {
     int max_elements = 10;
 };
 static Map<Typ, Component_metadata> comps_metadata = {};
+static Map<Id, std::string> named_entities = {};
 
 void metadata(Typ typ, std::string name, int bytesize) {
     comps_metadata.insert({typ, {bytesize, name}}); 
@@ -428,6 +435,8 @@ bool operator<(const System_instance& l, const System_instance& r) {
     return l.entity_id < r.entity_id; 
 }
 
+int frame = 0;
+
 class Ecs_m {
     private:
     Map<Id, Id> comp_id_to_entity_id;
@@ -443,11 +452,17 @@ class Ecs_m {
     
     std::set<System_instance> first_frame_systems ={};
 
+    std::deque<Id> add_queue;
     std::deque<Id> delete_queue;
 
     void add_all_in_queues() {
-        for(auto it = comps.begin(); it != comps.end(); ++it){
-            it->second.add_all_in_add_queue();
+        while(add_queue.size() > 0){
+            Id comp_id = add_queue.front();
+
+            comps.at(comp_id_to_typ.at(comp_id)).add_all_in_add_queue();
+            add_intersections(comp_id_to_entity_id.at(comp_id), comp_id_to_typ.at(comp_id));
+
+            add_queue.pop_front();
         }
     }
 
@@ -461,24 +476,29 @@ class Ecs_m {
             comps.at(typ).remove(comps.at(typ).index_of_comp(comp_id));            
             comp_id_to_typ.erase(comp_id);
             comp_id_to_entity_id.erase(comp_id);
-            auto comp_ids = entity_id_to_comp_id.at(entity_id);
-            comp_ids.erase(std::find(comp_ids.begin(), comp_ids.end(), comp_id));
-            auto typs = entity_id_to_typs.at(entity_id);
-            typs.erase(std::find(typs.begin(), typs.end(), typ));
+            auto comp_ids = &entity_id_to_comp_id.at(entity_id);
+            comp_ids->erase(std::find(comp_ids->begin(), comp_ids->end(), comp_id));
+            auto typs = &entity_id_to_typs.at(entity_id);
+            typs->erase(std::find(typs->begin(), typs->end(), typ));
 
             remove_intersections(entity_id);  
 
-            delete_queue.pop_back();
+            //Should this maybe be set to pop_front() as well? No idea why different from add queue ....
+            delete_queue.pop_front();
         }
     }
 
-    void add_intersections(Id entity_id, Typ new_typ_added) {
+    void add_intersections(Id entity_id, Typ type_added) {
+        if(count(entity_id_to_typs.at(entity_id), type_added) > 1){return;} //Check if this type of element has already been added before
+
         for(auto it = intersections.begin(); it != intersections.end(); ++it){
+            if(!exists(it->first->typs, type_added)){goto dont_add;} // Is the type we are adding even relevant for the system in question? 
+
             for(Typ typ : it->first->typs){
                 if(comps.find(typ) == comps.end()){
                     goto dont_add;
                 }
-                if(typ != new_typ_added && !comps.at(typ).entity_exists(entity_id)){
+                if(!exists(entity_id_to_typs.at(entity_id), typ)){
                     goto dont_add;
                 }
             }
@@ -491,8 +511,6 @@ class Ecs_m {
                     systems_data.insert({{it->first, entity_id}, data});
                 }
             }
-            
-            continue;
 
             dont_add:
             continue;
@@ -501,7 +519,7 @@ class Ecs_m {
     void remove_intersections(Id entity_id){
         for(auto it = intersections.begin(); it != intersections.end(); ++it){
             for(Typ typ : it->first->typs){
-                if(!comps.at(typ).entity_exists(entity_id)){
+                if(!exists(entity_id_to_typs.at(entity_id), typ)){
                     goto remove;
                 }
             }
@@ -541,7 +559,23 @@ class Ecs_m {
     }
 
     void remove(Id comp_id){
-        delete_queue.push_front(comp_id);
+        if(comp_id_to_entity_id.find(comp_id) != comp_id_to_entity_id.end()){
+            delete_queue.push_front(comp_id);
+        }
+    }
+
+    // Remove first component of Type typ from entity:
+    void remove_typ(Id entity_id, Typ typ){
+        for(Id id : entity_id_to_comp_id.at(entity_id)){
+            if(comp_id_to_typ.at(id) == typ){
+                remove(id);
+                return;
+            }
+        }
+        std::cout << "\033[31mWARNING: TRIED TO REMOVE TYPE " 
+                  << comps_metadata.at(typ).name 
+                  << " FROM ENTITY " << std::to_string(entity_id) 
+                  << " BUT THERE WAS NONE!\033[0m" << std::endl;
     }
 
     void add(Component* el, Id entity_id, Typ typ){
@@ -549,7 +583,8 @@ class Ecs_m {
             comps.insert({typ, Component_list(typ)});
         }
         el->set_entity_id(entity_id);
-        comps.at(typ).add(static_cast<void*>(el));  
+        comps.at(typ).add(static_cast<void*>(el)); 
+        add_queue.push_front(el->comp_id);
         
         comp_id_to_typ.insert({el->comp_id, typ});
         comp_id_to_entity_id.insert({el->comp_id, entity_id});
@@ -560,8 +595,6 @@ class Ecs_m {
             entity_id_to_comp_id.at(entity_id).push_back(el->comp_id);
             entity_id_to_typs.at(entity_id).push_back(typ);
         }
-
-        add_intersections(entity_id, typ);
     }
 
     template <typename T>
@@ -627,16 +660,12 @@ class Ecs_m {
     }
 
     void update() {
-        add_all_in_queues();
-
         for(System_instance sys_inst : first_frame_systems){
             if(Entity_individual_system* sys = dynamic_cast<Entity_individual_system*>(sys_inst.sys)){
                 sys->first_frame(*this, sys_inst.entity_id);
-                sys->update(*this, sys_inst.entity_id);
             }
             if(Entity_individual_system_with_data* sys = dynamic_cast<Entity_individual_system_with_data*>(sys_inst.sys)){
                 sys->first_frame(*this, sys_inst.entity_id);
-                sys->update(*this, sys_inst.entity_id, systems_data.at(sys_inst));
             }
         }
         first_frame_systems={};
@@ -673,8 +702,67 @@ class Ecs_m {
                 sys->update(*this, els);
             }
         }
+        add_all_in_queues();
         remove_all_in_queues();
     }
+
+
+    void print_table() {
+        // Gather all unique component types
+        std::set<Typ> all_types;
+        for (const auto& [entity_id, types] : entity_id_to_typs) {
+            all_types.insert(types.begin(), types.end());
+        }
+
+        // Print the header row
+        std::cout << std::setw(10) << "Entity ID";
+        for (const Typ& typ : all_types) {
+            std::cout << std::setw(20) << comps_metadata.at(typ).name;
+        }
+        std::cout << "\n";
+
+        // Print a separator
+        std::cout << std::string(10, '-') << "+";
+        for (size_t i = 0; i < all_types.size(); ++i) {
+            std::cout << std::string(20, '-') << "+";
+        }
+        std::cout << "\n";
+
+        // Print each entity's row
+        for (const auto& [entity_id, comp_ids] : entity_id_to_comp_id) {
+            std::cout << std::setw(10);
+            auto entity_name = named_entities.find(entity_id);
+            if(entity_name != named_entities.end()){
+                std::cout << entity_name->second << " | " << entity_id;
+            } else {
+                std::cout << entity_id;
+            }
+
+            for (const Typ& typ : all_types) {
+                // Find all component IDs of this type for the current entity
+                std::vector<Id> matching_ids;
+                for (const Id& comp_id : comp_ids) {
+                    if (comp_id_to_typ.at(comp_id) == typ) {
+                        matching_ids.push_back(comp_id);
+                    }
+                }
+
+                // Format the cell with the list of component IDs
+                std::string cell_content = "[";
+                for (size_t i = 0; i < matching_ids.size(); ++i) {
+                    cell_content += std::to_string(matching_ids[i]);
+                    if (i < matching_ids.size() - 1) {
+                        cell_content += ", ";
+                    }
+                }
+                cell_content += "]";
+
+                std::cout << std::setw(20) << cell_content;
+            }
+            std::cout << "\n";
+        }
+    }
+
 };
 
 class _Sprite : public Component {
@@ -787,9 +875,8 @@ class _Collider : public Component {
         return false;
     }
 
-    // Looks through all entities in hits and searches for a component in one of them of type typ. Returns first it finds. If no matches, returns nullptr.
-    std::optional<Component*> get_typ_in_hits(Typ typ, Ecs_m& em){
-        for(Id id : hit){
+    std::optional<Component*> get_typ_in_hits(Typ typ, std::set<Id>& hits, Ecs_m& em){
+        for(Id id : hits){
             Id entity_id = em.get_entity_id(id);
             if(em.has_type(entity_id, typ)){
                 return em.get_from_entity(entity_id, typ);
@@ -798,7 +885,18 @@ class _Collider : public Component {
         return std::nullopt;
     }
 
+    // Looks through all entities in hits and searches for a component in one of them of type typ. Returns first it finds. If no matches, returns nullptr.
+    std::optional<Component*> get_typ_in_hits(Typ typ, Ecs_m& em){
+        return get_typ_in_hits(typ, hit, em);
+    }
+
+    // Looks through all entities in p_hits and searches for a component in one of them of type typ. Returns first it finds. If no matches, returns nullptr.
+    std::optional<Component*> get_typ_in_p_hits(Typ typ, Ecs_m& em){
+        return get_typ_in_hits(typ, p_hit, em);
+    }
+
     private:
+
     init_meta {
         default_meta(_Collider);
         manual_heap_meta(_Collider);
@@ -895,13 +993,20 @@ class _Oscillator : public Component {
 
     float time;
 
-    _Oscillator(bool dir, int distance, float period) : dir(dir), distance(distance), period(period), time(0) {};
-    
+    bool forwards; //bool that tells you if it is in the forward or backwards cycle
+
+    _Oscillator(bool dir, int distance, float period) : dir(dir), distance(distance), period(period), time(0), forwards(true) {};
+    _Oscillator(_Oscillator* osc) : dir(osc->dir), distance(osc->distance), period(osc->period), time(osc->time), forwards(osc->forwards) {};
+
     void tick() {
         time += GetFrameTime();
     }
     void reset() {
         time = 0;
+    }
+    //THIS IS TEMP, WE HAVEN'T ACTUALLY COMPUTED SPEED YET!!
+    float get_speed() {
+        return (-1 + forwards*2)*(1);
     }
 
     private:
@@ -1084,11 +1189,13 @@ Component_for_all_system sys_collision{
 
         //Determine hits
         for(int i = 0; i < cs.size(); i++){
-            cs[i]->p_hit = cs[i]->hit;
+            cs[i]->p_hit = std::set<Id>(cs[i]->hit);
             cs[i]->hit = {};
-            cs[i]->p_hit_terrain=cs[i]->hit_terrain;
+            cs[i]->p_hit_terrain = cs[i]->hit_terrain;
             cs[i]->hit_terrain=false;
+        }
 
+        for(int i = 0; i < cs.size(); i++){
             //Other colliders
             std::vector<int> potential = {};
             int j = i-1;
@@ -1109,8 +1216,7 @@ Component_for_all_system sys_collision{
             }
 
             //Static terrain
-            bool hits = cs[i]->hits_terrain;
-            if(!hits){continue;}
+            if(!cs[i]->hits_terrain){continue;}
 
             if(lvl->is_inside(cs[i]->gx, cs[i]->gy, cs[i]->w, cs[i]->h)){
                 cs[i]->hit_terrain=true;
@@ -1232,8 +1338,26 @@ Entity_individual_system sys_player_movement{
         auto moving_platform = col->get_typ_in_hits(__Oscillator, em);
         if(moving_platform){
             auto osc = static_cast<_Oscillator*>(*moving_platform);
-            std::cout << "on moving platform with period: " << osc->period << std::endl;
+            if(!osc->dir){ //Moves in x direction
+                v->x += osc->get_speed();
+            }
         }
+
+        // if(grounded && !p_grounded){
+        //     auto moving_platform = col->get_typ_in_hits(__Oscillator, em);
+        //     if(moving_platform){
+        //         std::cout << "Adding oscilattor!\n";
+        //         auto osc_clone = _Oscillator(static_cast<_Oscillator*>(*moving_platform));
+        //         em.add(osc_clone, id);
+        //     }
+        // }
+        // else if(p_grounded && !grounded){
+        //     auto p_moving_platform = col->get_typ_in_p_hits(__Oscillator, em);
+        //     if(p_moving_platform){
+        //         std::cout << "Removing oscilattor!\n";
+        //         em.remove_typ(id, __Oscillator);
+        //     }
+        // }
 
         if(grounded && IsKeyDown(KEY_SPACE)){
             v->y = 2.0f;
@@ -1245,9 +1369,6 @@ Entity_individual_system sys_player_movement{
         else if(!grounded){
             v->y -= 0.04f;
         }
-
-
-
 
     }
 };
@@ -1261,9 +1382,9 @@ Entity_individual_system sys_oscillator_movement{
         auto v = em.get_from_entity<_Velocity>(id);
         auto ol = em.get_from_entity<_Oscillator>(id);
         if(ol->dir){
-            v->y = 1;
+            v->y += 1;
         } else {
-            v->x = 1;
+            v->x += 1;
         }
         
     },
@@ -1275,10 +1396,11 @@ Entity_individual_system sys_oscillator_movement{
         ol->tick();
         if(ol->time > ol->period){
             if(ol->dir){
-                v->y = -v->y;
+                if(ol->forwards){v->y -= 2;} else {v->y += 2;}
             } else {
-                v->x = -v->x;
+                if(ol->forwards){v->x -= 2;} else {v->x += 2;}
             }
+            ol->forwards = !ol->forwards;
             ol->reset();
         }
     }
@@ -1352,13 +1474,16 @@ int main(){
     em.add(_Collider(0, 0, 68, 19, false, false, true), entity_id);
     entity_id++;
 
+    // em.add(_Level("../Tiled/test.csv", "../Tiled/basic.png"), entity_id);
+    // entity_id++;
+
     // Collider 2
     em.add(_Transform(150, 0), entity_id);
     em.add(_Collider(0, 0, 123, 19, false, false, true), entity_id);
     entity_id++;
 
     // player
-    em.add(_Transform(61.060257, 50), entity_id);
+    em.add(_Transform(61.060257, 30), entity_id);
     em.add(_Velocity(0,0), entity_id);
     em.add(_Collider(0, 0, 15, 27, true, true, false), entity_id);
     _Collider ground_trigger(1, 0, 10, 3, false, false, false);
@@ -1372,13 +1497,17 @@ int main(){
              {"jump_fall", {LoadTexture("../assets/tmp/JumpFall.png"), 1.0/5.0, true}}
             }, 1.0/5.0, 20, 32, -4, 0, "idle"), 
         entity_id);
+    named_entities.insert({entity_id, "Player"});
     entity_id++;
 
     // moving platform
-    em.add(_Transform(100, 50), entity_id);
-    em.add(_Collider(0, 0, 25, 15, false, false, true), entity_id);
+    em.add(_Transform(90, 40), entity_id);
+    em.add(_Collider(0, 0, 60, 15, false, false, true), entity_id);
     em.add(_Velocity(0,0), entity_id);
-    em.add(_Oscillator(false, 20, 1.5f), entity_id);
+    em.add(_Oscillator(false, 100, 0.5f), entity_id);
+
+    em.update();
+    em.print_table();
 
     while(!WindowShouldClose()){
         float scale = std::min(
@@ -1389,6 +1518,7 @@ int main(){
         BeginTextureMode(target);
         ClearBackground(WHITE);
         em.update();
+        frame++;
 
         EndTextureMode();
         
