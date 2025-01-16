@@ -11,9 +11,12 @@ include_directories(code)
 # Define the executable
 add_executable(main
     main.cpp
-    code/ecs_manager.cpp
-    code/systems/core.cpp
-    code/utils.cpp
+    code/component_list.cpp
+    code/ecs_m.cpp 
+    code/systems/position_and_collision.cpp 
+    code/systems/player.cpp 
+    code/systems/moving_things.cpp 
+    code/systems/drawing.cpp 
 )
 
 # Link libraries

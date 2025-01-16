@@ -184,14 +184,14 @@ void meta_set_heap_management(
 
 static int fresh_id = 0;
 class Component {
-public:
-Id comp_id, entity_id;
+    public:
+    Id comp_id, entity_id;
 
-Component() : comp_id(fresh_id++), entity_id(-1) {}
-Component(Id comp_id, Id entity_id) : comp_id(comp_id), entity_id(entity_id) {}
-virtual ~Component() = default;
+    Component() : comp_id(fresh_id++), entity_id(-1) {}
+    Component(Id comp_id, Id entity_id) : comp_id(comp_id), entity_id(entity_id) {}
+    virtual ~Component() = default;
 
-void set_entity_id(Id entity_id) {this->entity_id = entity_id;}
+    void set_entity_id(Id entity_id) {this->entity_id = entity_id;}
 };
 
 class Component_list {
@@ -1081,91 +1081,91 @@ Entity_individual_system sys_draw_sprite{
     }
 };
 
-Entity_individual_system sys_velocity{
-    "velocity",
-    {__Velocity, __Transform},
-    [](Ecs_m& em, Id id){
-        auto t = em.get_from_entity<_Transform>(id);
-        auto v = em.get_from_entity<_Velocity>(id);  
-        t->x += v->x;
-        t->y += v->y;
-    }
-};
+// Entity_individual_system sys_velocity{
+//     "velocity",
+//     {__Velocity, __Transform},
+//     [](Ecs_m& em, Id id){
+//         auto t = em.get_from_entity<_Transform>(id);
+//         auto v = em.get_from_entity<_Velocity>(id);  
+//         t->x += v->x;
+//         t->y += v->y;
+//     }
+// };
 
-Entity_individual_system sys_update_collider_global_pos{
-    "update_collider_global_pos", 
-    {__Collider, __Transform}, 
-    [](Ecs_m& em, Id id){
-        auto t = em.get_from_entity<_Transform>(id);
-        auto cols = em.get_all_from_entity<_Collider>(id);
-        for(_Collider* col : cols){
-            col->gx = t->x + col->x;
-            col->gy = t->y + col->y;
-        }
-    }
-};
+// Entity_individual_system sys_update_collider_global_pos{
+//     "update_collider_global_pos", 
+//     {__Collider, __Transform}, 
+//     [](Ecs_m& em, Id id){
+//         auto t = em.get_from_entity<_Transform>(id);
+//         auto cols = em.get_all_from_entity<_Collider>(id);
+//         for(_Collider* col : cols){
+//             col->gx = t->x + col->x;
+//             col->gy = t->y + col->y;
+//         }
+//     }
+// };
 
-Component_individual_system sys_set_prev_pos{
-    "set_prev_pos",
-    __Transform, 
-    [](Ecs_m& em, void* el){
-        auto t = static_cast<_Transform*>(el);
-        t->px = t->x;
-        t->py = t->y;
-    }
-};
+// Component_individual_system sys_set_prev_pos{
+//     "set_prev_pos",
+//     __Transform, 
+//     [](Ecs_m& em, void* el){
+//         auto t = static_cast<_Transform*>(el);
+//         t->px = t->x;
+//         t->py = t->y;
+//     }
+// };
 
-Component_individual_system sys_draw_world{
-    "draw_world",
-    __Level, 
-    [](Ecs_m& em, void* el){
-        auto lvl = static_cast<_Level*>(el);
+// Component_individual_system sys_draw_world{
+//     "draw_world",
+//     __Level, 
+//     [](Ecs_m& em, void* el){
+//         auto lvl = static_cast<_Level*>(el);
 
-        int tilenum = 0;
-        for(int i = 0; i < BLOCKS_Y; i++){
-            for(int j = 0; j < BLOCKS_X; j++){
-                tilenum = lvl->grid[i][j];
-                if(tilenum == 0){continue;}
-                DrawTextureRec(
-                    lvl->tilemap, 
-                    Rectangle{float(BLOCK_SIZE)*(tilenum-1), 0, BLOCK_SIZE, BLOCK_SIZE},
-                    Vector2{float(BLOCK_SIZE)*j, float(BLOCK_SIZE)*i},
-                    WHITE
-                );
-            }
-        }
-    }
-};
+//         int tilenum = 0;
+//         for(int i = 0; i < BLOCKS_Y; i++){
+//             for(int j = 0; j < BLOCKS_X; j++){
+//                 tilenum = lvl->grid[i][j];
+//                 if(tilenum == 0){continue;}
+//                 DrawTextureRec(
+//                     lvl->tilemap, 
+//                     Rectangle{float(BLOCK_SIZE)*(tilenum-1), 0, BLOCK_SIZE, BLOCK_SIZE},
+//                     Vector2{float(BLOCK_SIZE)*j, float(BLOCK_SIZE)*i},
+//                     WHITE
+//                 );
+//             }
+//         }
+//     }
+// };
 
-Entity_individual_system sys_draw_animation{
-    "draw_animation", 
-    {__Animation_player, __Transform},
-    [](Ecs_m& em, Id id){
-        auto t = em.get_from_entity<_Transform>(id);
-        auto anim = em.get_from_entity<_Animation_player>(id);
+// Entity_individual_system sys_draw_animation{
+//     "draw_animation", 
+//     {__Animation_player, __Transform},
+//     [](Ecs_m& em, Id id){
+//         auto t = em.get_from_entity<_Transform>(id);
+//         auto anim = em.get_from_entity<_Animation_player>(id);
 
-        anim->time += GetFrameTime();
-        if(anim->time > anim->anims.at(anim->current_anim).frame_speed){
-            anim->time=0;
-            int amount_of_frames = anim->anims.at(anim->current_anim).spritesheet.width/anim->sprite_width;
-            if(anim->anims.at(anim->current_anim).loops){
-                anim->frame = (anim->frame + 1) % amount_of_frames;
-            } else {
-                anim->frame = std::min(amount_of_frames-1, anim->frame + 1);
-            }
+//         anim->time += GetFrameTime();
+//         if(anim->time > anim->anims.at(anim->current_anim).frame_speed){
+//             anim->time=0;
+//             int amount_of_frames = anim->anims.at(anim->current_anim).spritesheet.width/anim->sprite_width;
+//             if(anim->anims.at(anim->current_anim).loops){
+//                 anim->frame = (anim->frame + 1) % amount_of_frames;
+//             } else {
+//                 anim->frame = std::min(amount_of_frames-1, anim->frame + 1);
+//             }
            
-        }
+//         }
 
-        DrawTextureRec(
-            anim->anims.at(anim->current_anim).spritesheet, 
-            Rectangle{
-                float(anim->sprite_width*anim->frame), 0, 
-                float(anim->sprite_width), float(anim->sprite_height)},
-            Vector2{t->x + anim->offset_x, GAME_HEIGTH - t->y - anim->offset_y - anim->sprite_height}, 
-            WHITE
-        );
-    }
-};
+//         DrawTextureRec(
+//             anim->anims.at(anim->current_anim).spritesheet, 
+//             Rectangle{
+//                 float(anim->sprite_width*anim->frame), 0, 
+//                 float(anim->sprite_width), float(anim->sprite_height)},
+//             Vector2{t->x + anim->offset_x, GAME_HEIGTH - t->y - anim->offset_y - anim->sprite_height}, 
+//             WHITE
+//         );
+//     }
+// };
 
 
 void update_collider_global_pos(Ecs_m& em, _Transform* t){
@@ -1285,126 +1285,126 @@ Component_for_all_system sys_collision{
 };
 
 
-Component_individual_system sys_DEBUG_draw_hit_collider(
-    "DEBUG_draw_hit_collider",
-    __Collider, 
-    [](Ecs_m& em, void* el){
-        auto col = static_cast<_Collider*>(el);
+// Component_individual_system sys_DEBUG_draw_hit_collider(
+//     "DEBUG_draw_hit_collider",
+//     __Collider, 
+//     [](Ecs_m& em, void* el){
+//         auto col = static_cast<_Collider*>(el);
 
-        DrawLine(col->gx,          GAME_HEIGTH - col->gy,            col->gx + col->w,  GAME_HEIGTH - (col->gy),          GREEN);
-        DrawLine(col->gx,          GAME_HEIGTH - col->gy,            col->gx,           GAME_HEIGTH - (col->gy + col->h), GREEN);
-        DrawLine(col->gx,          GAME_HEIGTH - (col->gy + col->h), col->gx + col->w,  GAME_HEIGTH - (col->gy + col->h), GREEN);
-        DrawLine(col->gx + col->w, GAME_HEIGTH - col->gy,            col->gx + col->w,  GAME_HEIGTH - (col->gy + col->h), GREEN);
+//         DrawLine(col->gx,          GAME_HEIGTH - col->gy,            col->gx + col->w,  GAME_HEIGTH - (col->gy),          GREEN);
+//         DrawLine(col->gx,          GAME_HEIGTH - col->gy,            col->gx,           GAME_HEIGTH - (col->gy + col->h), GREEN);
+//         DrawLine(col->gx,          GAME_HEIGTH - (col->gy + col->h), col->gx + col->w,  GAME_HEIGTH - (col->gy + col->h), GREEN);
+//         DrawLine(col->gx + col->w, GAME_HEIGTH - col->gy,            col->gx + col->w,  GAME_HEIGTH - (col->gy + col->h), GREEN);
 
-        // Draw hits:
-        for (int16_t hit_id : col->hit) {
-            auto hit_col = em.get_from_comp<_Collider>(hit_id);
-            draw_arrow(col->gx, GAME_HEIGTH - col->gy, hit_col->gx, GAME_HEIGTH - hit_col->gy, RED);
-        }
-        if (col->hit_terrain) {
-            DrawRectangle(0, 0, 10, 10, BLUE);
-        }
-    }
-);
+//         // Draw hits:
+//         for (int16_t hit_id : col->hit) {
+//             auto hit_col = em.get_from_comp<_Collider>(hit_id);
+//             draw_arrow(col->gx, GAME_HEIGTH - col->gy, hit_col->gx, GAME_HEIGTH - hit_col->gy, RED);
+//         }
+//         if (col->hit_terrain) {
+//             DrawRectangle(0, 0, 10, 10, BLUE);
+//         }
+//     }
+// );
 
 
-Entity_individual_system sys_player_movement{
-    "player_movement",
-    {__Player, __Transform, __Velocity, __Animation_player}, 
-    [](Ecs_m& em, Id id){
-        auto t = em.get_from_entity<_Transform>(id);
-        auto v = em.get_from_entity<_Velocity>(id);
-        auto p = em.get_from_entity<_Player>(id);
-        auto anim = em.get_from_entity<_Animation_player>(id);
+// Entity_individual_system sys_player_movement{
+//     "player_movement",
+//     {__Player, __Transform, __Velocity, __Animation_player}, 
+//     [](Ecs_m& em, Id id){
+//         auto t = em.get_from_entity<_Transform>(id);
+//         auto v = em.get_from_entity<_Velocity>(id);
+//         auto p = em.get_from_entity<_Player>(id);
+//         auto anim = em.get_from_entity<_Animation_player>(id);
         
-        _Collider* col = em.get_from_comp<_Collider>(p->ground_trigger_col_id);
-        bool grounded = col->hits_solid(em);
-        bool p_grounded = col->phits_solid(em);
+//         _Collider* col = em.get_from_comp<_Collider>(p->ground_trigger_col_id);
+//         bool grounded = col->hits_solid(em);
+//         bool p_grounded = col->phits_solid(em);
 
 
-        if(IsKeyDown(KEY_LEFT)){
-            if(grounded){anim->change_animation("walk");}
-            v->x = -1.0f;
-        }
-        else if(IsKeyDown(KEY_RIGHT)){ 
-            if(grounded){anim->change_animation("walk");}
-            v->x = 1.0f;
-        }
-        else{
-            v->x = 0.0f;
-            if(grounded){anim->change_animation("idle");}
-        }
+//         if(IsKeyDown(KEY_LEFT)){
+//             if(grounded){anim->change_animation("walk");}
+//             v->x = -1.0f;
+//         }
+//         else if(IsKeyDown(KEY_RIGHT)){ 
+//             if(grounded){anim->change_animation("walk");}
+//             v->x = 1.0f;
+//         }
+//         else{
+//             v->x = 0.0f;
+//             if(grounded){anim->change_animation("idle");}
+//         }
 
-        auto moving_platform = col->get_typ_in_hits(__Oscillator, em);
-        if(moving_platform){
-            auto osc = static_cast<_Oscillator*>(*moving_platform);
-            if(!osc->dir){ //Moves in x direction
-                v->x += osc->get_speed();
-            }
-        }
+//         auto moving_platform = col->get_typ_in_hits(__Oscillator, em);
+//         if(moving_platform){
+//             auto osc = static_cast<_Oscillator*>(*moving_platform);
+//             if(!osc->dir){ //Moves in x direction
+//                 v->x += osc->get_speed();
+//             }
+//         }
 
-        // if(grounded && !p_grounded){
-        //     auto moving_platform = col->get_typ_in_hits(__Oscillator, em);
-        //     if(moving_platform){
-        //         std::cout << "Adding oscilattor!\n";
-        //         auto osc_clone = _Oscillator(static_cast<_Oscillator*>(*moving_platform));
-        //         em.add(osc_clone, id);
-        //     }
-        // }
-        // else if(p_grounded && !grounded){
-        //     auto p_moving_platform = col->get_typ_in_p_hits(__Oscillator, em);
-        //     if(p_moving_platform){
-        //         std::cout << "Removing oscilattor!\n";
-        //         em.remove_typ(id, __Oscillator);
-        //     }
-        // }
+//         // if(grounded && !p_grounded){
+//         //     auto moving_platform = col->get_typ_in_hits(__Oscillator, em);
+//         //     if(moving_platform){
+//         //         std::cout << "Adding oscilattor!\n";
+//         //         auto osc_clone = _Oscillator(static_cast<_Oscillator*>(*moving_platform));
+//         //         em.add(osc_clone, id);
+//         //     }
+//         // }
+//         // else if(p_grounded && !grounded){
+//         //     auto p_moving_platform = col->get_typ_in_p_hits(__Oscillator, em);
+//         //     if(p_moving_platform){
+//         //         std::cout << "Removing oscilattor!\n";
+//         //         em.remove_typ(id, __Oscillator);
+//         //     }
+//         // }
 
-        if(grounded && IsKeyDown(KEY_SPACE)){
-            v->y = 2.0f;
-            anim->change_animation("jump_start");
-        }
-        else if(p_grounded && !grounded){
-            v->y = std::max(0.0f, v->y);
-        }
-        else if(!grounded){
-            v->y -= 0.04f;
-        }
+//         if(grounded && IsKeyDown(KEY_SPACE)){
+//             v->y = 2.0f;
+//             anim->change_animation("jump_start");
+//         }
+//         else if(p_grounded && !grounded){
+//             v->y = std::max(0.0f, v->y);
+//         }
+//         else if(!grounded){
+//             v->y -= 0.04f;
+//         }
 
-    }
-};
+//     }
+// };
 
 
-Entity_individual_system sys_oscillator_movement{
-    "oscillator_movement",
-    {__Oscillator, __Velocity},
-    //First frame
-    [](Ecs_m& em, Id id){ 
-        auto v = em.get_from_entity<_Velocity>(id);
-        auto ol = em.get_from_entity<_Oscillator>(id);
-        if(ol->dir){
-            v->y += 1;
-        } else {
-            v->x += 1;
-        }
+// Entity_individual_system sys_oscillator_movement{
+//     "oscillator_movement",
+//     {__Oscillator, __Velocity},
+//     //First frame
+//     [](Ecs_m& em, Id id){ 
+//         auto v = em.get_from_entity<_Velocity>(id);
+//         auto ol = em.get_from_entity<_Oscillator>(id);
+//         if(ol->dir){
+//             v->y += 1;
+//         } else {
+//             v->x += 1;
+//         }
         
-    },
-    //Update
-    [](Ecs_m& em, Id id){
-        auto v = em.get_from_entity<_Velocity>(id);
-        auto ol = em.get_from_entity<_Oscillator>(id);
+//     },
+//     //Update
+//     [](Ecs_m& em, Id id){
+//         auto v = em.get_from_entity<_Velocity>(id);
+//         auto ol = em.get_from_entity<_Oscillator>(id);
 
-        ol->tick();
-        if(ol->time > ol->period){
-            if(ol->dir){
-                if(ol->forwards){v->y -= 2;} else {v->y += 2;}
-            } else {
-                if(ol->forwards){v->x -= 2;} else {v->x += 2;}
-            }
-            ol->forwards = !ol->forwards;
-            ol->reset();
-        }
-    }
-};
+//         ol->tick();
+//         if(ol->time > ol->period){
+//             if(ol->dir){
+//                 if(ol->forwards){v->y -= 2;} else {v->y += 2;}
+//             } else {
+//                 if(ol->forwards){v->x -= 2;} else {v->x += 2;}
+//             }
+//             ol->forwards = !ol->forwards;
+//             ol->reset();
+//         }
+//     }
+// };
 
 
 int main(){

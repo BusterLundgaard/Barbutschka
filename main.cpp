@@ -1,50 +1,86 @@
-#include <raylib.h>
-#include <memory>
-
-#include "code/ecs_manager.h"
+#include "code/defs.h"
+#include "code/ecs_m.h"
 #include "code/systems.h"
-#include "code/constants.h"
+#include "code/components.h"
 
-#define cast(var) static_cast<Component*>(&var)
+int main(){
+    Ecs_m em({
+        &sys_player_movement,
+        
+        &sys_oscillator_movement,
 
-std::vector<System*> systems = {
-    &sys_draw_sprite
-    };
-
-int main() {
-    
-    std::unordered_map<std::type_index, BaseComponentMap*> component_lists = {};
-    
-    set_component_lists(component_lists);
-    ECS_manager em(component_lists, systems);
+        &sys_velocity, 
+        &sys_update_collider_global_pos, 
+        &sys_collision,
+        
+        &sys_draw_sprite, 
+        &sys_draw_animation,
+        &sys_draw_world,
+        &sys_DEBUG_draw_hit_collider, 
+        &sys_set_prev_pos
+        });
 
     // Tell the window to use vsync and work on high DPI displays
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 
 	// Create the window and OpenGL context
-	InitWindow(GAME_WIDTH*4, GAME_HEIGTH*4, "Hello Raylib");
+	InitWindow(GAME_WIDTH*4, GAME_HEIGTH*4, "Bartbushka");
 	SetTargetFPS(60);
 
     RenderTexture2D target = LoadRenderTexture(GAME_WIDTH, GAME_HEIGTH);
 
-    em.add_comp(_Sprite("../assets/wabbit_alpha.png"), 0);
-    em.add_comp(_Transform(30.0, 40.0), 0);
+    int entity_id = 1;
+
+    em.add(_Transform(10, 0), entity_id);
+    em.add(_Collider(0, 0, 68, 19, false, false, true), entity_id);
+    entity_id++;
+
+    // Collider 2
+    em.add(_Transform(150, 0), entity_id);
+    em.add(_Collider(0, 0, 123, 19, false, false, true), entity_id);
+    entity_id++;
+
+    // player
+    em.add(_Transform(61.060257, 30), entity_id);
+    em.add(_Velocity(0,0), entity_id);
+    em.add(_Collider(0, 0, 15, 27, true, true, false), entity_id);
+    _Collider ground_trigger(1, 0, 10, 3, false, false, false);
+    em.add(ground_trigger, entity_id);
+    em.add(_Player(ground_trigger.comp_id), entity_id);
+        em.add(
+        _Animation_player(
+            {{"idle", {LoadTexture("../assets/tmp/Idle.png"), 1.0/5.0, true}}, 
+             {"walk", {LoadTexture("../assets/tmp/Walk.png"), 1.0/15.0, true}},
+             {"jump_start", {LoadTexture("../assets/tmp/JumpStart.png"), 1.0/4.0, false}},
+             {"jump_fall", {LoadTexture("../assets/tmp/JumpFall.png"), 1.0/5.0, true}}
+            }, 1.0/5.0, 20, 32, -4, 0, "idle"), 
+        entity_id);
+    named_entities.insert({entity_id, "Player"});
+    entity_id++;
+
+    // moving platform
+    em.add(_Transform(90, 40), entity_id);
+    em.add(_Collider(0, 0, 60, 15, false, false, true), entity_id);
+    em.add(_Velocity(0,0), entity_id);
+    em.add(_Oscillator(false, 100, 0.5f), entity_id);
+
+    em.update();
+    em.print_table();
 
     while(!WindowShouldClose()){
-
         float scale = std::min(
             (float)GetScreenWidth()/GAME_WIDTH, 
             (float)GetScreenHeight()/GAME_HEIGTH
         );
 
         BeginTextureMode(target);
-        ClearBackground(BLACK);
+        ClearBackground(WHITE);
         em.update();
 
         EndTextureMode();
         
         BeginDrawing();
-        ClearBackground(BLACK);
+        ClearBackground(WHITE);
         DrawTexturePro(
             target.texture, 
             Rectangle{

@@ -1,217 +1,81 @@
-
-#ifndef COMPONENTS_H
-#define COMPONENTS_H
-
-#include "utils.h"
-#include "constants.h"
-#include "exceptions.h"
-
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-#include <functional>
-#include <algorithm>
-#include <typeindex>
-#include <set>
+#include "component.h"
+#include "defs.h"
+#include <raylib.h>
 #include <fstream>
 #include <sstream>
-#include <limits>
-#include <raylib.h>
+#include <set>
+#include "utils.h"
+#include "ecs_m.h"
+#include <optional>
 
-typedef int16_t Id;
-typedef std::type_index Typ;
-template <typename T>
-using V = std::vector<T>;
-
-#define make_list(comp) static ComponentMap<comp> comp ## _COMPONENT_LIST; static std::type_index _ ## comp = typeid(comp);  
-#define add_to_map(comp) component_lists[typeid(comp)]= &comp ## _COMPONENT_LIST; typ_index_to_string[typeid(comp)] = #comp
-#define entity_individual_signature [](ECS_manager& em, std::vector<std::vector<Id>> comps)
-#define entity_all_signature [](ECS_manager& em, std::vector<std::vector<std::vector<Id>>> comps)
-#define components_individual_signature [](ECS_manager& em, Id comp)
-#define components_all_signature [](ECS_manager& em, std::vector<Id> comps)
-
-static int fresh_id = 0;
-
-class Component {
-    public:
-    Id component_id;
-    Typ typ;
-    bool allows_multiplicity;
-    bool singleton;
-    Component(Typ typ, bool allows_multiplicity, bool singleton) : typ(typ), component_id(generate_id()), allows_multiplicity(allows_multiplicity), singleton(singleton) {};
-    Component(Typ typ, bool allows_multiplicity) : typ(typ), component_id(generate_id()), allows_multiplicity(allows_multiplicity), singleton(false) {};
-    Component(Typ typ) : typ(typ), component_id(generate_id()), allows_multiplicity(false), singleton(false) {};
-    virtual ~Component() = default;
-
-    private:
-    static int generate_id() {
-        return fresh_id++;
-    }
-};
-
-class BaseComponentMap {
-    public:
-    std::unordered_map<Id, int> comp_id_to_index;
-    
-    BaseComponentMap() = default;
-
-    virtual ~BaseComponentMap() = default;
-
-    virtual void add(Component* c)=0;
-    virtual Component& get(Id comp_id)=0;
-    virtual Component& get_with_entity_id(Id entity_id, std::unordered_map<Id, Id>& comp_id_to_entity_id)=0;
-    virtual V<Component&> get_all_with_entity_id(Id entity_id, std::unordered_map<Id, Id>& comp_id_to_entity_id)=0;
-    virtual void remove(Id comp_id)=0;
-};
-
-template <typename T>
-class ComponentMap : public BaseComponentMap {
-    V<T> components;
-
-    public:
-    ComponentMap();
-
-    virtual void add(Component* c) override;
-    virtual Component& get(Id comp_id) override;
-    virtual Component& get_with_entity_id(Id entity_id, std::unordered_map<Id, Id>& comp_id_to_entity_id) override;
-    virtual V<Component&> get_all_with_entity_id(Id entity_id, std::unordered_map<Id, Id>& comp_id_to_entity_id) override;
-    virtual void remove(Id comp_id) override;
-};
-
-template<typename T>
-ComponentMap<T>::ComponentMap() : BaseComponentMap() {}
-
-template<typename T>
-void ComponentMap<T>::add(Component* c) {
-    auto comp = static_cast<T*>(c);
-    components.push_back(*comp);
-    comp_id_to_index[c->component_id]=components.size()-1;
-}
-template<typename T>
-Component& ComponentMap<T>::get(Id comp_id) {
-    return static_cast<Component&>(components[comp_id_to_index[comp_id]]);  
-}
-template<typename T>
-Component& ComponentMap<T>::get_with_entity_id(Id entity_id, std::unordered_map<Id, Id>& comp_id_to_entity_id) {
-    for(auto const [comp_id, index] : comp_id_to_index){
-        if(comp_id_to_entity_id.at(comp_id) == entity_id){
-            return static_cast<Component&>(components[comp_id_to_index[comp_id]]);
-        }
-    }
-}  
-template<typename T>
-V<Component&> ComponentMap<T>::get_all_with_entity_id(Id entity_id, std::unordered_map<Id, Id>& comp_id_to_entity_id) {
-    V<Component&> comps;
-    for(auto const [comp_id, index] : comp_id_to_index){
-        if(comp_id_to_entity_id.at(comp_id) == entity_id){
-            comps.push_back(static_cast<Component&>(components[comp_id_to_index[comp_id]]));
-        }
-    }
-    return comps;
-}
-
-
-template<typename T>
-void ComponentMap<T>::remove(Id comp_id) {
-    int index = comp_id_to_index[comp_id];    
-    T temp = components[components.size() - 1];
-    components[components.size()-1]=components[index];
-    components[index]=temp;
-    components.pop_back();
-
-    comp_id_to_index.erase(comp_id);
-    Id last_id = static_cast<Component*>(&temp)->component_id;
-    comp_id_to_index[last_id]=index;
-}
-
-class ECS_manager;
-
-struct System {
-    std::string name;
-    V<Typ> param_typs;
-    System(std::string name, V<Typ> param_typs) : name(name), param_typs(param_typs) {}
-    virtual ~System() {}
-};
-
-struct Entity_system_individual : public System {
-    std::function<void(ECS_manager&, V<V<Id>>&)> update;
-    Entity_system_individual(std::string name, V<Typ> param_typs, std::function<void(ECS_manager&, V<V<Id>>& comp_ids)> update) : System(name, param_typs), update(update) {}
-};
-
-struct Entity_system_all : public System {
-    std::function<void(ECS_manager&, V<V<V<Id>>>&)> update;
-    Entity_system_all(std::string name, V<Typ> param_typs, std::function<void(ECS_manager&, V<V<V<Id>>>&)> update) : System(name, param_typs), update(update) {}
-};
-
-struct Component_system_individual : public System {
-    std::function<void(ECS_manager&, Id)> update;
-    Component_system_individual(std::string name, Typ typ, std::function<void(ECS_manager&, Id)> update) : System(name, {typ}), update(update) {}
-};
-
-struct Component_system_all : public System {
-    std::function<void(ECS_manager&, V<Id>&)> update;
-    Component_system_all(std::string name, Typ param_typs, std::function<void(ECS_manager&, V<Id>&)> update) : System(name, {param_typs}), update(update) {}
-};
-
-
-//COMPONENTS:
 class _Sprite : public Component {
     public:
     Texture2D tex;
-    _Sprite(std::string path) : 
-        Component(typeid(_Sprite)), 
-        tex(LoadTexture(path.c_str())) {}
+
+    _Sprite(std::string path) : tex(LoadTexture(path.c_str())) {};
+
+    private:
+    init_meta {
+        default_meta(_Sprite)
+        return 0;
+    }
 };
+init_comp(_Sprite)
+
 
 class _Transform : public Component {
     public:
     float x, y;
     float px, py;
-    _Transform(float x, float y) : 
-        Component(typeid(_Transform)), 
-        x(x), y(y), 
-        px(-std::numeric_limits<float>::infinity()), py(-std::numeric_limits<float>::infinity()) {}
+    _Transform(float x, float y) : x(x), y(y) {};
+
+    private:
+    init_meta {
+        default_meta(_Transform)
+        return 0;
+    }
 };
+init_comp(_Transform)
 
 class _Velocity : public Component {
     public:
     float x, y;
-    _Velocity(float x, float y) : Component(typeid(_Velocity)), x(x), y(y) {}
-};
+    _Velocity(float x, float y) : x(x), y(y) {};
 
-class _HitCollider : public Component {
-    //entity id's of other hit colliders it hit
+    private:
+    init_meta {
+        default_meta(_Velocity)
+        return 0;
+    }
+};
+init_comp(_Velocity)
+
+
+class _Collider : public Component {
     public:
     float x, y, w, h;
     float gx, gy;
 
-    //Does this collider hit static terrain?
-    bool hits_terrain;
-    
-    //Will the transform attached to this collider by adjusted by the collision system?
-    bool adjustable;
+    bool hits_terrain, adjustable, solid;
 
-    //Should this transform be considered in the adjustment collision system?
-    bool solid;
-
-    std::set<int16_t> hit; 
-    std::set<int16_t> p_hit; 
+    std::set<Id> hit; 
+    std::set<Id> p_hit; 
     bool hit_terrain, p_hit_terrain;
-    
-    _HitCollider(float offset_x, float offset_y, float w, float h, bool hits_terrain, bool adjustable, bool solid) : 
-        Component(typeid(_HitCollider), true), 
-        x(offset_x),
-        y(offset_y),
-        w(w),
-        h(h),
-        hits_terrain(hits_terrain), adjustable(adjustable), solid(solid),
-        hit({}), p_hit({}), hit_terrain(false), p_hit_terrain(false) {}
 
-    _HitCollider(float offset_x, float offset_y, float w, float h, bool hits_terrain) :  _HitCollider(offset_x, offset_y, w, h, hits_terrain, false, false) {}
-    _HitCollider(float offset_x, float offset_y, float w, float h) : _HitCollider(offset_x, offset_y, w, h, false, false, false) {}
-    
-    std::set<int16_t> entered() {
-        std::set<int16_t> entered = {};
+    _Collider(float x, float y, float w, float h, bool hits_terrain, bool adjustable, bool solid) : 
+        x(x), y(y), w(w), h(h), 
+        hits_terrain(hits_terrain), adjustable(adjustable), solid(solid),
+        gx(0), gy(0), hit({}), p_hit({}), hit_terrain(false), p_hit_terrain(0)
+        {}
+    _Collider(_Collider* col) : 
+        Component(col->comp_id, col->entity_id), 
+        x(col->x), y(col->y), w(col->w), h(col->h), 
+        hits_terrain(col->hits_terrain), adjustable(col->adjustable), solid(col->solid), 
+        gx(-5), gy(-5), hit({}), p_hit({}), hit_terrain(false), p_hit_terrain(0)
+        {}
+
+    std::set<Id> entered() {
+        std::set<Id> entered = {};
         for(auto h : hit){
             if(!exists(p_hit, h)){
                 entered.insert(h);
@@ -219,11 +83,11 @@ class _HitCollider : public Component {
         }
         return entered;
     }
-    std::set<int16_t>& inside() {
+    std::set<Id>& inside() {
         return hit;
     }
-    std::set<int16_t> left() {
-        std::set<int16_t> left = {};
+    std::set<Id> left() {
+        std::set<Id> left = {};
         for(auto h : p_hit){
             if(!exists(hit, h)){
                 left.insert(h);
@@ -233,16 +97,83 @@ class _HitCollider : public Component {
     }
 
     bool is_inside(float ox, float oy, float ow, float oh) {
-        return ox+ow > x && 
-               ox < x + w && 
-               oy + oh > y &&
-               oy < y + h; 
+        return ox+ow > gx && 
+               ox < gx + w && 
+               oy + oh > gy &&
+               oy < gy + h; 
+    }
+
+    bool hits_solid(Ecs_m& em){
+        for(Id id : hit){
+            _Collider* col = em.get_from_comp<_Collider>(id);
+            if(col->solid){return true;}
+        }
+        return false;
+    }
+    bool phits_solid(Ecs_m& em){
+        for(Id id : p_hit){
+            _Collider* col = em.get_from_comp<_Collider>(id);
+            if(col->solid){return true;}
+        }
+        return false;
+    }
+
+    std::optional<Component*> get_typ_in_hits(Typ typ, std::set<Id>& hits, Ecs_m& em){
+        for(Id id : hits){
+            Id entity_id = em.get_entity_id(id);
+            if(em.has_type(entity_id, typ)){
+                return em.get_from_entity(entity_id, typ);
+            }
+        }
+        return std::nullopt;
+    }
+
+    // Looks through all entities in hits and searches for a component in one of them of type typ. Returns first it finds. If no matches, returns nullptr.
+    std::optional<Component*> get_typ_in_hits(Typ typ, Ecs_m& em){
+        return get_typ_in_hits(typ, hit, em);
+    }
+
+    // Looks through all entities in p_hits and searches for a component in one of them of type typ. Returns first it finds. If no matches, returns nullptr.
+    std::optional<Component*> get_typ_in_p_hits(Typ typ, Ecs_m& em){
+        return get_typ_in_hits(typ, p_hit, em);
+    }
+
+    private:
+
+    init_meta {
+        default_meta(_Collider);
+        manual_heap_meta(_Collider);
+        return 0;
     }
 };
+init_comp(_Collider)
 
-//A collider that will hit SolidColliders and static terrain be adjusted by the adjustment system
+
 class _Level : public Component {
+    public:
+    Texture2D tilemap;
+    u_int16_t grid[BLOCKS_Y][BLOCKS_X];
 
+    _Level(std::string level_path, std::string tilemap_path) : 
+        tilemap(LoadTexture(tilemap_path.c_str())) 
+        {set_grid(level_path);} 
+
+    bool is_inside(float x, float y, float w, float h){
+        int bx0 = int(x)/BLOCK_SIZE;
+        int bx1 = int(x+w)/BLOCK_SIZE+1;
+        int by0 = int(y)/BLOCK_SIZE;
+        int by1 = int(y+h)/BLOCK_SIZE+1;
+        for(int i = bx0; i < bx1; i++){
+            for(int j = by0; j < by1; j++){
+                if(i >= 0 && j >= 0 && grid[j][i]){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private:
     void set_grid(std::string level_path){
         std::ifstream level_file(level_path.c_str());
         std::string line;
@@ -260,52 +191,124 @@ class _Level : public Component {
         }
     }
 
-    public:
-    Texture2D tilemap;
-    u_int16_t grid[BLOCKS_Y][BLOCKS_X];
-    
-    _Level(std::string level_path, std::string tilemap_path) : 
-        Component(typeid(_Level), false, true), 
-        tilemap(LoadTexture(tilemap_path.c_str()))  
-        {set_grid(level_path);} 
-
-    bool is_inside(float x, float y, float w, float h){
-        int bx0 = int(x)/BLOCK_SIZE;
-        int bx1 = int(x+w)/BLOCK_SIZE+1;
-        int by0 = int(y)/BLOCK_SIZE;
-        int by1 = int(y+h)/BLOCK_SIZE+1;
-        for(int i = bx0; i < bx1; i++){
-            for(int j = by0; j < by1; j++){
-                if(i >= 0 && j >= 0 && grid[j][i]){
-                    return true;
-                }
-            }
-        }
-        return false;
+    init_meta {
+        default_meta(_Level);
+        return 0;
     }
 };
+init_comp(_Level)
+
 
 class _Moveable : public Component {
+   public:
+   int x;
+   _Moveable(int x) : x(x) {};
+   
+   private:
+   init_meta {
+      default_meta(_Moveable);
+      return 0;
+   }
+};
+init_comp(_Moveable)
+
+
+class _Player : public Component {
     public:
-    _Moveable() : Component(typeid(_Moveable)) {}
+    Id ground_trigger_col_id;
+
+    _Player(Id ground_trigger_col_id) : ground_trigger_col_id(ground_trigger_col_id) {}
+
+    private:
+    init_meta {
+        default_meta(_Player);
+        return 0;
+    }
+};
+init_comp(_Player)
+
+
+class _Oscillator : public Component {
+    public:
+    bool dir;
+    int distance;
+    float period;
+
+    float time;
+
+    bool forwards; //bool that tells you if it is in the forward or backwards cycle
+
+    _Oscillator(bool dir, int distance, float period) : dir(dir), distance(distance), period(period), time(0), forwards(true) {};
+    _Oscillator(_Oscillator* osc) : dir(osc->dir), distance(osc->distance), period(osc->period), time(osc->time), forwards(osc->forwards) {};
+
+    void tick() {
+        time += GetFrameTime();
+    }
+    void reset() {
+        time = 0;
+    }
+    //THIS IS TEMP, WE HAVEN'T ACTUALLY COMPUTED SPEED YET!!
+    float get_speed() {
+        return (-1 + forwards*2)*(1);
+    }
+
+    private:
+    init_meta {
+        default_meta(_Oscillator);
+        return 0;
+    }
+};
+init_comp(_Oscillator)
+
+struct animation {
+    Texture2D spritesheet;
+    float frame_speed;
+    bool loops;
 };
 
-static std::unordered_map<Typ, std::string> typ_index_to_string = {};
+class _Animation_player : public Component {
+    public:
+    Map<std::string, animation> anims;
+    std::string current_anim;
+    float time_per_frame;
+    int sprite_width, sprite_height;
 
-make_list(_Sprite);
-make_list(_Transform);
-make_list(_Velocity);
-make_list(_HitCollider);
-make_list(_Level);
-make_list(_Moveable);
+    int offset_x, offset_y;
 
-static void set_component_lists(std::unordered_map<std::type_index, BaseComponentMap*>& component_lists) {
-    add_to_map(_Sprite);
-    add_to_map(_Transform);
-    add_to_map(_Velocity);
-    add_to_map(_HitCollider);
-    add_to_map(_Level);
-    add_to_map(_Moveable);
+    float time;
+    int frame;
+
+    int flipped;
+
+    _Animation_player(Map<std::string, animation> anims, float time_per_frame, int sprite_width, int sprite_height, int offset_x, int offset_y, std::string starting_animation) : 
+        anims(anims), time_per_frame(time_per_frame), sprite_width(sprite_width), sprite_height(sprite_height), offset_x(offset_x), offset_y(offset_y),
+        current_anim(starting_animation), time(0), frame(0), flipped(1) {}
+    _Animation_player(_Animation_player* anim) : Component(anim->comp_id, anim->entity_id), anims(anim->anims), current_anim(anim->current_anim), time_per_frame(anim->time_per_frame), time(anim->time), frame(anim->frame), sprite_width(anim->sprite_width), sprite_height(anim->sprite_height), offset_x(anim->offset_x), offset_y(anim->offset_y), flipped(anim->flipped) {}
+
+    void change_animation(std::string new_animation){
+        if(!(current_anim == new_animation)){
+            time=0;
+            frame=0;
+        }
+        current_anim = new_animation;
+    }
+
+    void flip(){
+        flipped = -flipped;
+    }
+
+    private:
+    init_meta {
+        default_meta(_Animation_player);
+        meta_set_heap_management(typeid(_Animation_player), 
+            [](void* src, void* dst) { 
+                new (dst) _Animation_player(static_cast<_Animation_player*>(src)); 
+                }, 
+            [](void* src) { 
+                _Animation_player* el = static_cast<_Animation_player*>(src); 
+                el->~_Animation_player(); 
+                });
+        return 0;
+    }
 };
-
-#endif
+init_comp(_Animation_player)
