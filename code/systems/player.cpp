@@ -20,11 +20,11 @@ Entity_individual_system sys_player_movement{
         bool grounded = col->hits_solid(em);
         bool p_grounded = col->phits_solid(em);
 
-        if(grounded && IsKeyDown(KEY_LEFT)){
+        if(IsKeyDown(KEY_LEFT)){
             if(grounded){anim->change_animation("walk");}
             v->x = -50.0f;
         }
-        else if(grounded && IsKeyDown(KEY_RIGHT)){ 
+        else if(IsKeyDown(KEY_RIGHT)){ 
             if(grounded){anim->change_animation("walk");}
             v->x = 50.0f;
         }

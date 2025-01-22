@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="16" height="11" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="1">
+ <editorsettings>
+  <export target="debugging_collision.csv" format="csv"/>
+ </editorsettings>
+ <tileset firstgid="1" source="../planning_and_design/tiled/simple_tileset.tsx"/>
+ <tileset firstgid="976" source="../planning_and_design/tiled/basic.tsx"/>
+ <tileset firstgid="4954" source="../planning_and_design/tiled/debug_tileset.tsx"/>
+ <layer id="2" name="map" width="16" height="11">
+  <data encoding="csv">
+0,0,4954,4954,4954,4954,4954,0,0,0,4956,4956,4956,4956,4956,4956,
+0,0,4956,4956,4956,4956,4956,0,0,0,4954,4954,4954,4954,4956,4956,
+0,0,4956,4956,4956,4956,4956,0,0,0,0,4956,4956,4954,4956,4956,
+4954,4954,4954,4954,4956,4956,4954,4954,4954,0,0,4956,4956,4954,4956,4954,
+0,0,0,0,0,0,0,0,0,0,0,4956,4956,4954,4956,4956,
+0,0,0,0,0,0,0,0,0,0,0,4956,4956,4954,4956,4956,
+0,0,0,0,0,0,0,0,0,0,0,4954,4956,4954,4954,4956,
+0,0,0,0,0,0,0,0,4954,0,0,4954,4956,4954,4956,4956,
+0,0,0,0,0,0,0,0,4954,0,0,4954,4956,4956,4956,4956,
+0,4954,0,0,0,4954,0,0,4954,4954,0,4954,4956,4956,4956,4954,
+0,0,0,0,0,0,0,0,0,0,0,4954,4954,4954,4954,4954
+</data>
+ </layer>
+</map>

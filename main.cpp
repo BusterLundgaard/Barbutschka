@@ -36,18 +36,18 @@ int main(){
     int entity_id = 1;
 
     em.add(_Transform(10, 0), entity_id);
-    em.add(_Collider(0, 0, 68, 19, false, false, true), entity_id);
+    em.add(_Collider(0, 0, 200, 19, false, false, true), entity_id);
     entity_id++;
 
     // Collider 2
-    em.add(_Transform(150, 0), entity_id);
-    em.add(_Collider(0, 0, 123, 19, false, false, true), entity_id);
-    entity_id++;
+    // em.add(_Transform(150, 30), entity_id);
+    // em.add(_Collider(0, 0, 200, 19, false, false, true), entity_id);
+    // entity_id++;
 
     // player
-    em.add(_Transform(61.060257, 30), entity_id);
+    em.add(_Transform(61.060257, 50), entity_id);
     em.add(_Velocity(0,0), entity_id);
-    em.add(_Collider(0, 0, 15, 27, true, true, false), entity_id);
+    em.add(_Collider(0, 0, 14, 27, true, true, false), entity_id);
     _Collider ground_trigger(1, 0, 10, 3, false, false, false);
     em.add(ground_trigger, entity_id);
     em.add(_Player(ground_trigger.comp_id), entity_id);
@@ -62,11 +62,14 @@ int main(){
     named_entities.insert({entity_id, "Player"});
     entity_id++;
 
+    //level
+    em.add(_Level("../assets/debugging_collision.csv", "../assets/basic_tilemap.png"), entity_id);
+
     // moving platform
-    em.add(_Transform(90, 40), entity_id);
-    em.add(_Collider(0, 0, 60, 15, false, false, true), entity_id);
-    em.add(_Velocity(0,0), entity_id);
-    em.add(_Oscillator(false, 70, 1.0f), entity_id);
+    // em.add(_Transform(90, 40), entity_id);
+    // em.add(_Collider(0, 0, 60, 15, false, false, true), entity_id);
+    // em.add(_Velocity(0,0), entity_id);
+    // em.add(_Oscillator(false, 70, 1.0f), entity_id);
 
     em.update();
     em.print_table();

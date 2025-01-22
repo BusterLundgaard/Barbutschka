@@ -158,14 +158,14 @@ class _Level : public Component {
         tilemap(LoadTexture(tilemap_path.c_str())) 
         {set_grid(level_path);} 
 
-    bool is_inside(float x, float y, float w, float h){
+    bool is_inside(int tile_value, float x, float y, float w, float h){
         int bx0 = int(x)/BLOCK_SIZE;
         int bx1 = int(x+w)/BLOCK_SIZE+1;
-        int by0 = int(y)/BLOCK_SIZE;
-        int by1 = int(y+h)/BLOCK_SIZE+1;
+        int by0 = BLOCKS_Y - (y+h)/BLOCK_SIZE;
+        int by1 = BLOCKS_Y - (y)/BLOCK_SIZE + 1;
         for(int i = bx0; i < bx1; i++){
             for(int j = by0; j < by1; j++){
-                if(i >= 0 && j >= 0 && grid[j][i]){
+                if(i >= 0 && j >= 0 && grid[j][i]==tile_value){
                     return true;
                 }
             }

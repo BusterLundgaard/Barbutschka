@@ -88,7 +88,7 @@ Component_for_all_system sys_collision{
             //Static terrain
             if(!cs[i]->hits_terrain){continue;}
 
-            if(lvl->is_inside(cs[i]->gx, cs[i]->gy, cs[i]->w, cs[i]->h)){
+            if(lvl->is_inside(1, cs[i]->gx, cs[i]->gy, cs[i]->w, cs[i]->h)){
                 cs[i]->hit_terrain=true;
             }
         }
@@ -102,6 +102,37 @@ Component_for_all_system sys_collision{
             float px = t->px + col->x;
             float py = t->py + col->y;
 
+            if(col->hit_terrain){
+                if(!lvl->is_inside(1, px, col->gy, col->w, col->h)){
+                    if(t->x - t->px > 0) { //to the left before
+                        float right_side = col->gx + col->w;
+                        right_side = BLOCK_SIZE*(floor(right_side/BLOCK_SIZE));
+                        //for some reason offset almost always ends up being 0 ... so we have to use an ugly offset
+                        float offset = col->gx + col->w - right_side;
+                        t->x -= offset+0.0001;
+                    } else { //to the right before
+                        float left_side = col->gx;
+                        left_side = BLOCK_SIZE*(int(left_side)/BLOCK_SIZE + 1);
+                        float offset = col->gx - left_side;
+                         t->x -= col->gx - left_side;
+                    }
+                }
+                if(!lvl->is_inside(1, col->gx, py, col->w, col->h)){
+                    if(t->y - t->py > 0) { //to the left before
+                        float right_side = col->gy + col->h;
+                        right_side = BLOCK_SIZE*(floor(right_side/BLOCK_SIZE));
+                        //for some reason offset almost always ends up being 0 ... so we have to use an ugly offset
+                        float offset = col->gy + col->h - right_side;
+                        t->y -= offset+0.0001;
+                    } else { //to the right before
+                        float left_side = col->gy;
+                        left_side = BLOCK_SIZE*(int(left_side)/BLOCK_SIZE + 1);
+                         float offset = left_side-col->gy;
+                         t->y += offset + 0.0001;
+                    }
+                }
+                update_collider_global_pos(em, t);
+            }
 
             //Adjust based on static environment collisions:
             // if(exists(col.hit, lvl.component_id)){
