@@ -20,7 +20,7 @@ class _Sprite : public Component {
     _Sprite(std::string path) : tex(LoadTexture(path.c_str())) {};
 
     static int initialize() {
-        metadata(typeid(_Sprite), "_Sprite", sizeof(_Sprite));
+        default_meta(_Sprite, "Sprt");
         return 0;
     }
 };
@@ -33,8 +33,8 @@ class _Transform : public Component {
     float px, py;
     _Transform(float x, float y) : x(x), y(y) {};
 
-    init_meta {
-        default_meta(_Transform)
+    static int initialize() {
+        default_meta(_Transform, "T");
         return 0;
     }
 };
@@ -45,8 +45,8 @@ class _Velocity : public Component {
     float x, y;
     _Velocity(float x, float y) : x(x), y(y) {};
 
-    init_meta {
-        default_meta(_Velocity)
+    static int initialize() {
+        default_meta(_Velocity, "V")
         return 0;
     }
 };
@@ -140,8 +140,8 @@ class _Collider : public Component {
         return get_typ_in_hits(typ, p_hit, em);
     }
 
-    init_meta {
-        default_meta(_Collider);
+    static int initialize() {
+        default_meta(_Collider, "Col");
         manual_heap_meta(_Collider);
         return 0;
     }
@@ -190,26 +190,12 @@ class _Level : public Component {
         }
     }
 
-    init_meta {
-        default_meta(_Level);
+    static int initialize() {
+        default_meta(_Level, "Lvl");
         return 0;
     }
 };
 static Typ __Level = typeid(_Level);
-
-
-class _Moveable : public Component {
-   public:
-   int x;
-   _Moveable(int x) : x(x) {};
-   
-   init_meta {
-      default_meta(_Moveable);
-      return 0;
-   }
-};
-static Typ __Moveable = typeid(_Moveable);
-
 
 class _Player : public Component {
     public:
@@ -217,8 +203,8 @@ class _Player : public Component {
 
     _Player(Id ground_trigger_col_id) : ground_trigger_col_id(ground_trigger_col_id) {}
 
-    init_meta {
-        default_meta(_Player);
+    static int initialize() {
+        default_meta(_Player, "Pl");
         return 0;
     }
 };
@@ -249,8 +235,8 @@ class _Oscillator : public Component {
         return (-1 + forwards*2)*(2*distance / period);
     }
 
-    init_meta {
-        default_meta(_Oscillator);
+    static int initialize() {
+        default_meta(_Oscillator, "Osc");
         return 0;
     }
 };
@@ -293,8 +279,8 @@ class _Animation_player : public Component {
         flipped = -flipped;
     }
 
-    init_meta {
-        default_meta(_Animation_player);
+    static int initialize() {
+        default_meta(_Animation_player, "Anim");
         meta_set_heap_management(typeid(_Animation_player), 
             [](void* src, void* dst) { 
                 new (dst) _Animation_player(static_cast<_Animation_player*>(src)); 

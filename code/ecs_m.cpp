@@ -297,7 +297,7 @@ void Ecs_m::emit_event(Event event, Event_data data, int frames){
 // DEBUG:
 void Ecs_m::print_table() {
     // Gather all unique component types
-    const int width = 30;
+    const int width = 10;
 
     std::set<Typ> all_types;
     for (const auto& [entity_id, types] : entity_id_to_typs) {
@@ -307,7 +307,7 @@ void Ecs_m::print_table() {
     // Print the header row
     std::cout << std::setw(width) << "Entity ID";
     for (const Typ& typ : all_types) {
-        std::cout << std::setw(width) << comps_metadata.at(typ).name;
+        std::cout << std::setw(width) << comps_metadata.at(typ).shorthand;
     }
     std::cout << "\n";
 

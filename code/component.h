@@ -7,6 +7,7 @@
 struct Component_metadata {
     int bytesize;
     std::string name;
+    std::string shorthand="";
     
     bool has_heap_memory=false;
     std::function<void(void*, void*)> clone = [](void* src, void* dst){};
@@ -19,8 +20,11 @@ struct Component_metadata {
 extern Map<Typ, Component_metadata> comps_metadata;
 extern Map<Id, std::string> named_entities;
 
-inline void metadata(Typ typ, std::string name, int bytesize) {
-    comps_metadata.insert({typ, {bytesize, name}}); 
+inline void metadata(Typ typ, std::string name, int bytesize, std::string shorthand) {
+    comps_metadata.insert({typ, {bytesize, name, shorthand}}); 
+}
+inline void meta_set_shorthand(Typ typ, std::string shorthand){
+    comps_metadata.at(typ).shorthand = shorthand;
 }
 inline void meta_set_singleton(Typ typ, bool is_singleton) {
     comps_metadata.at(typ).is_singleton = is_singleton;

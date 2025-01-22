@@ -85,7 +85,9 @@ int main(){
         );
 
         if(Key_Press(KEY_K)){
-            em.print_table();
+            if(!paused){
+                em.print_table();
+            }
             paused = !paused;
         }
         if(Key_Press(KEY_J)){

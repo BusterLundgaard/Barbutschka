@@ -6,21 +6,7 @@
 -[x] Write the update function in the new ecs_m
 -[x] Actually write the new components_list
 -[x] Get the shit refactored in different files and get it to run 
--[] Test that all of this actually works:
-    -[x] Test that you can add and remove Colliders (ie elements with custom allocators/deallocators)
-    -[x] Setup a simple draw_transform system (just draws a dot/sphere at position)
-    -[x] Setup a simple draw_sprite system (now we have to make sure the intersection system works correctly)
-    -[x] Test that strings still work even though they're also heap allocated.
-    -[x] Test removal of elements, doesn't seem to be working quite well.
-    (both in general and in terms of intersections)
-    -[x] Slowly start just adding the various systems from before one at a time
 
--[] Make it possible to have a function be called on the last frame of a system before it's deleted
--[] Make it so that the platform will also move the player if they're standing on it somehow
--[] Make a very rudimentary animation system for the main player
--[] Make a very rudimentary walking enemy that you can hit and defeat. 
-
--[] Refactor everything into multiple documents and make it nicer. 
 
 -[] Make collision adjustment with the static environment work
 -[] Make collision adjustment with "stairs" in the staic environment work / diagonal slopes

@@ -7,7 +7,6 @@ inline void initialize_components() {
     _Velocity::initialize();
     _Collider::initialize();
     _Level::initialize();
-    _Moveable::initialize();
     _Player::initialize();
     _Oscillator::initialize();
     _Animation_player::initialize();

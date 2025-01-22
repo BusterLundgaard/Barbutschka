@@ -21,7 +21,7 @@ const int BLOCK_SIZE = 16;
 
 #define init_comp(compname) int compname::init = compname::initialize(); static Typ _ ## compname = typeid(compname);
 #define init_meta static int init; static int initialize() 
-#define default_meta(compname) metadata(typeid(compname), #compname, sizeof(compname)); 
+#define default_meta(compname, shorthand) metadata(typeid(compname), #compname, sizeof(compname), shorthand); 
 #define manual_heap_meta(compname) \
     meta_set_heap_management( \
         typeid(compname), \
