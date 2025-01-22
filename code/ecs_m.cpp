@@ -287,6 +287,9 @@ void Ecs_m::timeout_time(float time, std::function<void(void)> call){
 }
 
 void Ecs_m::emit_event(Event event, Event_data data, int frames){
+    if(event_subscribers.find(event) == event_subscribers.end()){
+        event_subscribers.insert({event, {}});
+    }
     events.push_back({event, data, frames});
 }
 
