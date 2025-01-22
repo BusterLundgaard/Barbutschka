@@ -10,8 +10,8 @@ Entity_individual_system sys_velocity{
     [](Ecs_m& em, Id id){
         auto t = em.get_from_entity<_Transform>(id);
         auto v = em.get_from_entity<_Velocity>(id);  
-        t->x += v->x;
-        t->y += v->y;
+        t->x += v->x*em.fl;
+        t->y += v->y*em.fl;
     }
 };
 
@@ -31,7 +31,7 @@ Entity_individual_system sys_update_collider_global_pos{
 Component_individual_system sys_set_prev_pos{
     "set_prev_pos",
     __Transform, 
-    [](Ecs_m& em, void* el){
+    [](Ecs_m& em, Component* el){
         auto t = static_cast<_Transform*>(el);
         t->px = t->x;
         t->py = t->y;
@@ -49,9 +49,9 @@ void update_collider_global_pos(Ecs_m& em, _Transform* t){
 Component_for_all_system sys_collision{
     "collision",
     __Collider, 
-    [](Ecs_m& em, V<void*> els){
-        auto cs = convert_all<_Collider>(els);
-        _Level* lvl = em.get_singleton<_Level>();
+    [](Ecs_m& em, V<Component*> els){
+        auto cs = static_cast_all<_Collider>(els);
+        auto lvl = em.get_singleton<_Level>();
 
         std::sort(cs.begin(), cs.end(), [](_Collider* a, _Collider* b) {  
             return a->gx < b->gx;

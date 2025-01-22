@@ -40,5 +40,8 @@ const int BLOCK_SIZE = 16;
 [](System_data* data_pointer){\
     delete static_cast<systemname*>(data_pointer);\
 },
+#define __system_events std::unordered_map<Event, std::function<void(Ecs_m& em, Id id)>>
+#define __first_frame [](Ecs_m& em, Id id)
+#define __update [](Ecs_m& em, Id id)
 
 #endif

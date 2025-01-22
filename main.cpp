@@ -1,9 +1,13 @@
 #include "code/defs.h"
+#include "code/input.h"
 #include "code/ecs_m.h"
 #include "code/systems.h"
 #include "code/components.h"
+#include "code/initialize_components.h"
 
 int main(){
+    initialize_components();
+
     Ecs_m em({
         &sys_player_movement,
         
@@ -62,10 +66,17 @@ int main(){
     em.add(_Transform(90, 40), entity_id);
     em.add(_Collider(0, 0, 60, 15, false, false, true), entity_id);
     em.add(_Velocity(0,0), entity_id);
-    em.add(_Oscillator(false, 100, 0.5f), entity_id);
+    em.add(_Oscillator(false, 70, 1.0f), entity_id);
 
     em.update();
     em.print_table();
+
+    bool paused = false;
+    int speed_mod = 0;
+
+    register_key(KEY_K);
+    register_key(KEY_J);
+    register_key(KEY_L);
 
     while(!WindowShouldClose()){
         float scale = std::min(
@@ -73,11 +84,27 @@ int main(){
             (float)GetScreenHeight()/GAME_HEIGTH
         );
 
-        BeginTextureMode(target);
-        ClearBackground(WHITE);
-        em.update();
+        if(Key_Press(KEY_K)){
+            em.print_table();
+            paused = !paused;
+        }
+        if(Key_Press(KEY_J)){
+            speed_mod--;
+            std::cout << "Decreased speed to " << pow(2, speed_mod) << std::endl;
+            em.set_time_scale(pow(2, speed_mod));
+        }
+        if(Key_Press(KEY_L)){
+            speed_mod++;
+            std::cout << "Increased speed to " << pow(2, speed_mod) << std::endl;
+            em.set_time_scale(pow(2, speed_mod));
+        }
 
-        EndTextureMode();
+        if(!paused){
+            BeginTextureMode(target);
+            ClearBackground(WHITE);
+            em.update();
+            EndTextureMode();
+        }
         
         BeginDrawing();
         ClearBackground(WHITE);
@@ -96,6 +123,7 @@ int main(){
             0.0f,
             WHITE
             );
+        new_frame();
         EndDrawing();
     }
     return 0;

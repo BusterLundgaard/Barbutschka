@@ -16,22 +16,22 @@ struct Component_metadata {
     bool allow_multiple=false;
     int max_elements = 10;
 };
-static Map<Typ, Component_metadata> comps_metadata = {};
-static Map<Id, std::string> named_entities = {};
+extern Map<Typ, Component_metadata> comps_metadata;
+extern Map<Id, std::string> named_entities;
 
-void metadata(Typ typ, std::string name, int bytesize) {
+inline void metadata(Typ typ, std::string name, int bytesize) {
     comps_metadata.insert({typ, {bytesize, name}}); 
 }
-void meta_set_singleton(Typ typ, bool is_singleton) {
+inline void meta_set_singleton(Typ typ, bool is_singleton) {
     comps_metadata.at(typ).is_singleton = is_singleton;
 }
-void meta_set_allow_multiple(Typ typ, bool allow_multiple){
+inline void meta_set_allow_multiple(Typ typ, bool allow_multiple){
     comps_metadata.at(typ).allow_multiple = allow_multiple;
 }
-void meta_set_max_elements(Typ typ, int max_elements){
+inline void meta_set_max_elements(Typ typ, int max_elements){
     comps_metadata.at(typ).max_elements = max_elements;
 }
-void meta_set_heap_management(
+inline void meta_set_heap_management(
     Typ typ, 
     std::function<void(void*, void*)> clone_fun, 
     std::function<void(void*)> deallocator_fun){

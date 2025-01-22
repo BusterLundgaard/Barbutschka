@@ -1,3 +1,8 @@
+#pragma strict
+
+#ifndef COMPONENTS_H
+#define COMPONENTS_H
+
 #include "component.h"
 #include "defs.h"
 #include <raylib.h>
@@ -14,13 +19,12 @@ class _Sprite : public Component {
 
     _Sprite(std::string path) : tex(LoadTexture(path.c_str())) {};
 
-    private:
-    init_meta {
-        default_meta(_Sprite)
+    static int initialize() {
+        metadata(typeid(_Sprite), "_Sprite", sizeof(_Sprite));
         return 0;
     }
 };
-init_comp(_Sprite)
+static Typ __Sprite = typeid(_Sprite);
 
 
 class _Transform : public Component {
@@ -29,26 +33,24 @@ class _Transform : public Component {
     float px, py;
     _Transform(float x, float y) : x(x), y(y) {};
 
-    private:
     init_meta {
         default_meta(_Transform)
         return 0;
     }
 };
-init_comp(_Transform)
+static Typ __Transform = typeid(_Transform);
 
 class _Velocity : public Component {
     public:
     float x, y;
     _Velocity(float x, float y) : x(x), y(y) {};
 
-    private:
     init_meta {
         default_meta(_Velocity)
         return 0;
     }
 };
-init_comp(_Velocity)
+static Typ __Velocity = typeid(_Velocity);
 
 
 class _Collider : public Component {
@@ -138,15 +140,13 @@ class _Collider : public Component {
         return get_typ_in_hits(typ, p_hit, em);
     }
 
-    private:
-
     init_meta {
         default_meta(_Collider);
         manual_heap_meta(_Collider);
         return 0;
     }
 };
-init_comp(_Collider)
+static Typ __Collider = typeid(_Collider);
 
 
 class _Level : public Component {
@@ -173,7 +173,6 @@ class _Level : public Component {
         return false;
     }
 
-    private:
     void set_grid(std::string level_path){
         std::ifstream level_file(level_path.c_str());
         std::string line;
@@ -196,7 +195,7 @@ class _Level : public Component {
         return 0;
     }
 };
-init_comp(_Level)
+static Typ __Level = typeid(_Level);
 
 
 class _Moveable : public Component {
@@ -204,13 +203,12 @@ class _Moveable : public Component {
    int x;
    _Moveable(int x) : x(x) {};
    
-   private:
    init_meta {
       default_meta(_Moveable);
       return 0;
    }
 };
-init_comp(_Moveable)
+static Typ __Moveable = typeid(_Moveable);
 
 
 class _Player : public Component {
@@ -219,13 +217,12 @@ class _Player : public Component {
 
     _Player(Id ground_trigger_col_id) : ground_trigger_col_id(ground_trigger_col_id) {}
 
-    private:
     init_meta {
         default_meta(_Player);
         return 0;
     }
 };
-init_comp(_Player)
+static Typ __Player = typeid(_Player);
 
 
 class _Oscillator : public Component {
@@ -241,24 +238,23 @@ class _Oscillator : public Component {
     _Oscillator(bool dir, int distance, float period) : dir(dir), distance(distance), period(period), time(0), forwards(true) {};
     _Oscillator(_Oscillator* osc) : dir(osc->dir), distance(osc->distance), period(osc->period), time(osc->time), forwards(osc->forwards) {};
 
-    void tick() {
-        time += GetFrameTime();
+    void tick(float time_delta) {
+        time += time_delta;
     }
     void reset() {
         time = 0;
     }
     //THIS IS TEMP, WE HAVEN'T ACTUALLY COMPUTED SPEED YET!!
     float get_speed() {
-        return (-1 + forwards*2)*(1);
+        return (-1 + forwards*2)*(2*distance / period);
     }
 
-    private:
     init_meta {
         default_meta(_Oscillator);
         return 0;
     }
 };
-init_comp(_Oscillator)
+static Typ __Oscillator = typeid(_Oscillator);
 
 struct animation {
     Texture2D spritesheet;
@@ -297,7 +293,6 @@ class _Animation_player : public Component {
         flipped = -flipped;
     }
 
-    private:
     init_meta {
         default_meta(_Animation_player);
         meta_set_heap_management(typeid(_Animation_player), 
@@ -311,4 +306,6 @@ class _Animation_player : public Component {
         return 0;
     }
 };
-init_comp(_Animation_player)
+static Typ __Animation_player = typeid(_Animation_player);
+
+#endif

@@ -16,7 +16,7 @@ Entity_individual_system sys_draw_sprite{
 Component_individual_system sys_draw_world{
     "draw_world",
     __Level, 
-    [](Ecs_m& em, void* el){
+    [](Ecs_m& em, Component* el){
         auto lvl = static_cast<_Level*>(el);
 
         int tilenum = 0;
@@ -43,7 +43,7 @@ Entity_individual_system sys_draw_animation{
         auto t = em.get_from_entity<_Transform>(id);
         auto anim = em.get_from_entity<_Animation_player>(id);
 
-        anim->time += GetFrameTime();
+        anim->time += em.fl;
         if(anim->time > anim->anims.at(anim->current_anim).frame_speed){
             anim->time=0;
             int amount_of_frames = anim->anims.at(anim->current_anim).spritesheet.width/anim->sprite_width;
@@ -70,7 +70,7 @@ Entity_individual_system sys_draw_animation{
 Component_individual_system sys_DEBUG_draw_hit_collider(
     "DEBUG_draw_hit_collider",
     __Collider, 
-    [](Ecs_m& em, void* el){
+    [](Ecs_m& em, Component* el){
         auto col = static_cast<_Collider*>(el);
 
         DrawLine(col->gx,          GAME_HEIGTH - col->gy,            col->gx + col->w,  GAME_HEIGTH - (col->gy),          GREEN);

@@ -35,7 +35,7 @@ class Component_list {
     void add_all_in_add_queue();
     void remove(int index);
 
-    void* get(int index);
+    Component* get(int index);
     void* get_from_comp(Id comp_id);
     void* get_from_entity(Id entity_id);
 };

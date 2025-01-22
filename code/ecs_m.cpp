@@ -1,9 +1,18 @@
+#include <algorithm>
+#include <iomanip>
 #include "ecs_m.h"
+#include "exceptions.h"
 
-Ecs_m::Ecs_m(V<System*> systems) : systems(systems) {
+Ecs_m::Ecs_m(V<System*> systems) : systems(systems), fl(1.0/60.0) {
     for(int i = 0; i < systems.size(); i++){
         if(Entity_individual_system* sys = dynamic_cast<Entity_individual_system*>(systems[i])){
             intersections.insert({systems[i], {}});
+            for(auto it = sys->event_callbacks.begin(); it != sys->event_callbacks.end(); ++it){
+                if(event_subscribers.find(it->first) == event_subscribers.end()){
+                    event_subscribers.insert({it->first, {}});
+                }
+                event_subscribers.at(it->first).push_back(systems[i]);
+            }
         }
         if(Entity_for_all_system* sys = dynamic_cast<Entity_for_all_system*>(systems[i])){
             intersections.insert({systems[i], {}});
@@ -139,7 +148,11 @@ void Ecs_m::remove_intersections(Id entity_id){
 }
 
 void Ecs_m::update() {
+    // Run first frame callbacks;
     for(System_instance sys_inst : first_frame_systems){
+        processing_system = sys_inst.sys;
+        processing_id = sys_inst.entity_id;
+
         if(Entity_individual_system* sys = dynamic_cast<Entity_individual_system*>(sys_inst.sys)){
             sys->first_frame(*this, sys_inst.entity_id);
         }
@@ -149,15 +162,64 @@ void Ecs_m::update() {
     }
     first_frame_systems={};
 
+    // Run event callbacks:
+    for(auto it = events.begin(); it != events.end();){
+        it->frames -= 1;
+        if(it->frames <= 0){
+            for(System* sub_sys : event_subscribers.at(it->event)){
+                for(Id entity_id : intersections.at(sub_sys)){
+                    if(Entity_individual_system* sys = dynamic_cast<Entity_individual_system*>(sub_sys)){
+                        sys->event_callbacks.at(it->event)(*this, entity_id);
+                    }
+                    if(Entity_individual_system_with_data* sys = dynamic_cast<Entity_individual_system_with_data*>(sub_sys)){
+                        sys->event_callbacks.at(it->event)(*this, entity_id);
+                    }
+                }
+            }
+            it = events.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    // Run timeout callbacks;
+    for(auto it = next_frame_calls.begin(); it != next_frame_calls.end();){
+        it->frames -= 1;
+        if(it->frames <= 0){
+            if(Entity_individual_system* sys = dynamic_cast<Entity_individual_system*>(it->system)){
+                if(exists(intersections.at(it->system), it->id)){
+                    it->call();
+                }
+            }
+            else if(Entity_individual_system_with_data* sys = dynamic_cast<Entity_individual_system_with_data*>(it->system)){
+                if(exists(intersections.at(it->system), it->id)){
+                    it->call();
+                }
+            }
+            else if(Component_individual_system* sys = dynamic_cast<Component_individual_system*>(it->system)){
+                if(comp_id_to_entity_id.find(it->id) != comp_id_to_entity_id.end()){
+                    it->call();
+                }
+            }
+            it = next_frame_calls.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    // Run update callbacks;
     for(int i = 0; i < systems.size(); i++){
+        processing_system = systems[i];
         if(Entity_individual_system* sys = dynamic_cast<Entity_individual_system*>(systems[i])){
             for(Id entity_id : intersections.at(systems[i])){
+                processing_id = entity_id;
                 sys->update(*this, entity_id);
             }   
             continue;
         }
         if(Entity_individual_system_with_data* sys = dynamic_cast<Entity_individual_system_with_data*>(systems[i])){
             for(Id entity_id : intersections.at(systems[i])){
+                processing_id = entity_id;
                 sys->update(*this, entity_id, systems_data.at({systems[i], entity_id}));
             }   
             continue;
@@ -168,25 +230,31 @@ void Ecs_m::update() {
         }
         if(Component_individual_system* sys = dynamic_cast<Component_individual_system*>(systems[i])){
             for(int j = 0; j < comps.at(sys->typs.at(0)).size; j++){
-                sys->update(*this, comps.at(sys->typs.at(0)).get(j));
+                Component* comp = comps.at(sys->typs.at(0)).get(j);
+                processing_id = comp->comp_id;
+                sys->update(*this, comp);
             }                
         }
         if(Component_for_all_system* sys = dynamic_cast<Component_for_all_system*>(systems[i])){
             Typ ty = sys->typs.at(0);
             auto lst = comps.at(sys->typs.at(0));
-            V<void*> els(lst.size);
+            V<Component*> els(lst.size);
             for(int j = 0; j < lst.size; j++){
                 els[j] = lst.get(j);
             }  
             sys->update(*this, els);
         }
     }
+
     add_all_in_queues();
     remove_all_in_queues();
 }
 
 
-
+void Ecs_m::set_time_scale(float scale){
+    fl = (1.0/60.0)*scale;
+    std::cout << "fl is now: " << fl << std::endl;
+}
 
 Component* Ecs_m::get_from_entity(Id entity_id, Typ typ){
     return static_cast<Component*>(comps.at(typ).get_from_entity(entity_id)); 
@@ -205,35 +273,55 @@ bool Ecs_m::has_type(Id entity_id, Typ typ){
 }
 
 
+// SPECIAL FEATURES:
+void Ecs_m::timeout(int frames, std::function<void(void)> call) {
+    next_frame_calls.push_back({
+        .call = call, 
+        .id = processing_id, 
+        .system = processing_system, 
+        .frames = frames
+    });   
+}
+void Ecs_m::timeout_time(float time, std::function<void(void)> call){
+    timeout(static_cast<int>(round(time/fl)), call);
+}
+
+void Ecs_m::emit_event(Event event, Event_data data, int frames){
+    events.push_back({event, data, frames});
+}
 
 
+// DEBUG:
 void Ecs_m::print_table() {
     // Gather all unique component types
+    const int width = 30;
+
     std::set<Typ> all_types;
     for (const auto& [entity_id, types] : entity_id_to_typs) {
         all_types.insert(types.begin(), types.end());
     }
 
     // Print the header row
-    std::cout << std::setw(10) << "Entity ID";
+    std::cout << std::setw(width) << "Entity ID";
     for (const Typ& typ : all_types) {
-        std::cout << std::setw(20) << comps_metadata.at(typ).name;
+        std::cout << std::setw(width) << comps_metadata.at(typ).name;
     }
     std::cout << "\n";
 
     // Print a separator
-    std::cout << std::string(10, '-') << "+";
+    std::cout << std::string(width, '-') << "+";
     for (size_t i = 0; i < all_types.size(); ++i) {
-        std::cout << std::string(20, '-') << "+";
+        std::cout << std::string(width, '-') << "+";
     }
     std::cout << "\n";
 
     // Print each entity's row
     for (const auto& [entity_id, comp_ids] : entity_id_to_comp_id) {
-        std::cout << std::setw(20);
+        std::cout << std::setw(width);
         auto entity_name = named_entities.find(entity_id);
         if(entity_name != named_entities.end()){
-            std::cout << entity_name->second << " | " << entity_id;
+            std::string s = entity_name->second + " | " + std::to_string(entity_id);
+            std::cout << s;
         } else {
             std::cout << entity_id;
         }
@@ -257,8 +345,8 @@ void Ecs_m::print_table() {
             }
             cell_content += "]";
 
-            std::cout << std::setw(20) << cell_content;
+            std::cout << std::setw(width) << cell_content;
         }
-        std::cout << "\n";
+        std::cout << "\n\n";
     }
 }

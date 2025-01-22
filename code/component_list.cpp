@@ -1,6 +1,11 @@
-#include "toplevel.h"
+#include <cstdint>
+#include <cstring>
+#include <iostream>
+
+#include "defs.h"
 #include "component.h"
 #include "component_list.h"
+#include "exceptions.h"
 
 bool Component_list::check_id_comp(int index, Id comp_id){
     Component* comp = static_cast<Component*>(get(index));
@@ -142,9 +147,9 @@ void Component_list::remove(int index){
     size--;
 }
 
-void* Component_list::get(int index){
+Component* Component_list::get(int index){
     int bitsize = comps_metadata.at(typ).bytesize;
-    return data + index*comps_metadata.at(typ).bytesize;
+    return static_cast<Component*>(data + index*comps_metadata.at(typ).bytesize);
 }
 void* Component_list::get_from_comp(Id comp_id){
     return get(index_of_comp(comp_id));

@@ -5,7 +5,7 @@
         "name": "Debug with GDB",
         "type": "cppdbg",
         "request": "launch",
-        "program": "${workspaceFolder}/new_code_again/components", // Path to your compiled binary
+        "program": "${workspaceFolder}/build/main", // Path to your compiled binary
         "args": [],                              // Command-line arguments to pass to your program
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}/build",         // Working directory for the debugger
