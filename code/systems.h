@@ -14,10 +14,12 @@ extern Component_individual_system sys_draw_world;
 
 extern Entity_individual_system sys_draw_animation;
 
+extern Entity_individual_system sys_make_colliders_from_lvl;
 extern Component_for_all_system sys_collision;
 
 extern Component_individual_system sys_DEBUG_draw_hit_collider;
 
+extern Entity_individual_system debug_collision;
 extern Entity_individual_system sys_player_movement;
 extern Entity_individual_system sys_oscillator_movement;
 

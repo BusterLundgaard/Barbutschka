@@ -73,12 +73,22 @@ Component_individual_system sys_DEBUG_draw_hit_collider(
     [](Ecs_m& em, Component* el){
         auto col = static_cast<_Collider*>(el);
 
-        DrawLine(col->gx,          GAME_HEIGTH - col->gy,            col->gx + col->w,  GAME_HEIGTH - (col->gy),          GREEN);
-        DrawLine(col->gx,          GAME_HEIGTH - col->gy,            col->gx,           GAME_HEIGTH - (col->gy + col->h), GREEN);
-        DrawLine(col->gx,          GAME_HEIGTH - (col->gy + col->h), col->gx + col->w,  GAME_HEIGTH - (col->gy + col->h), GREEN);
-        DrawLine(col->gx + col->w, GAME_HEIGTH - col->gy,            col->gx + col->w,  GAME_HEIGTH - (col->gy + col->h), GREEN);
+        if(!col->is_slope){
+            DrawLine(col->gx,          GAME_HEIGTH - col->gy,            col->gx + col->w,  GAME_HEIGTH - (col->gy),          BLUE);
+            DrawLine(col->gx,          GAME_HEIGTH - col->gy,            col->gx,           GAME_HEIGTH - (col->gy + col->h), BLUE);
+            DrawLine(col->gx,          GAME_HEIGTH - (col->gy + col->h), col->gx + col->w,  GAME_HEIGTH - (col->gy + col->h), BLUE);
+            DrawLine(col->gx + col->w, GAME_HEIGTH - col->gy,            col->gx + col->w,  GAME_HEIGTH - (col->gy + col->h), BLUE);
+        } else if(col->slope_dir) {
+            DrawLine(col->gx, GAME_HEIGTH - col->gy, col->gx + col->w, GAME_HEIGTH - col->gy, BLUE); 
+            DrawLine(col->gx + col->w, GAME_HEIGTH - col->gy, col->gx + col->w, GAME_HEIGTH - (col->gy + col->h), BLUE);
+            DrawLine(col->gx, GAME_HEIGTH - col->gy, col->gx + col->w, GAME_HEIGTH - (col->gy + col->h), BLUE);
+        } else {
+            DrawLine(col->gx, GAME_HEIGTH - col->gy, col->gx + col->w, GAME_HEIGTH - col->gy, BLUE); 
+            DrawLine(col->gx, GAME_HEIGTH - col->gy, col->gx, GAME_HEIGTH - (col->gy + col->h), BLUE);
+            DrawLine(col->gx, GAME_HEIGTH - (col->gy + col->h), col->gx + col->w, GAME_HEIGTH - col->gy, BLUE);
+        }
 
-        // Draw hits:
+        //Draw hits:
         for (int16_t hit_id : col->hit) {
             auto hit_col = em.get_from_comp<_Collider>(hit_id);
             draw_arrow(col->gx, GAME_HEIGTH - col->gy, hit_col->gx, GAME_HEIGTH - hit_col->gy, RED);

@@ -86,7 +86,11 @@
         "fstream": "cpp",
         "cinttypes": "cpp",
         "forward_list": "cpp",
-        "semaphore": "cpp"
+        "semaphore": "cpp",
+        "future": "cpp",
+        "__assert": "cpp",
+        "*.def": "cpp",
+        "*.inc": "cpp"
     },
     "editor.tokenColorCustomizations": {
         "comments": "",

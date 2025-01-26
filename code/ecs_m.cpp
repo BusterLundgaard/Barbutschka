@@ -28,6 +28,9 @@ Ecs_m::Ecs_m(V<System*> systems) : systems(systems), fl(1.0/60.0) {
 }
 
 void Ecs_m::add(Component* el, Id entity_id, Typ typ){
+    //SOMEHOW COMP HERE JUST TURNS INTO SOMETHING WITH ONLY 1 ELEMENT ADDED?
+    //HAPPENS AROUND i: 6, j: 3
+    //IT MAKES NO SENSE
     if(comps.find(typ) == comps.end()){
         comps.insert({typ, Component_list(typ)});
     }

@@ -10,16 +10,18 @@ int main(){
 
     Ecs_m em({
         &sys_player_movement,
-        
+        &debug_collision,
+
         &sys_oscillator_movement,
 
         &sys_velocity, 
+        &sys_make_colliders_from_lvl,
         &sys_update_collider_global_pos, 
         &sys_collision,
         
+        &sys_draw_world,
         &sys_draw_sprite, 
         &sys_draw_animation,
-        &sys_draw_world,
         &sys_DEBUG_draw_hit_collider, 
         &sys_set_prev_pos
         });
@@ -35,22 +37,33 @@ int main(){
 
     int entity_id = 1;
 
+    // Collider 1:
     em.add(_Transform(10, 0), entity_id);
-    em.add(_Collider(0, 0, 200, 19, false, false, true), entity_id);
+    em.add(_Collider(0, 0, 200, 10, false, false, true), entity_id);
     entity_id++;
 
     // Collider 2
-    // em.add(_Transform(150, 30), entity_id);
-    // em.add(_Collider(0, 0, 200, 19, false, false, true), entity_id);
+    //em.add(_Transform(150, 30), entity_id);
+    //em.add(_Collider(0, 0, 200, 20, false, false, true), entity_id);
+    //entity_id++;
+
+    // Debug collision
+    // em.add(_Transform(30, 50), entity_id);
+    // em.add(_Collider(0, 0, 20, 20, false, true, false), entity_id);
+    // em.add(_Velocity(0,0), entity_id);
+    // em.add(_DebugCollision(), entity_id);
     // entity_id++;
 
     // player
     em.add(_Transform(61.060257, 50), entity_id);
     em.add(_Velocity(0,0), entity_id);
-    em.add(_Collider(0, 0, 14, 27, true, true, false), entity_id);
-    _Collider ground_trigger(1, 0, 10, 3, false, false, false);
+    em.add(_Collider(0, 7, 14, 20, true, true, false), entity_id);
+    em.add(_Collider(4, 0, 5, 10, true, true, false), entity_id);
+    _Collider ground_trigger(2, -1, 10, 3, false, false, false);
+    _Collider falling_trigger(2, 0, 10, 5, false, false, false);
     em.add(ground_trigger, entity_id);
-    em.add(_Player(ground_trigger.comp_id), entity_id);
+    em.add(falling_trigger, entity_id);
+    em.add(_Player(ground_trigger.comp_id, falling_trigger.comp_id), entity_id);
         em.add(
         _Animation_player(
             {{"idle", {LoadTexture("../assets/tmp/Idle.png"), 1.0/5.0, true}}, 
@@ -63,14 +76,15 @@ int main(){
     entity_id++;
 
     //level
-    em.add(_Level("../assets/debugging_collision.csv", "../assets/basic_tilemap.png"), entity_id);
+    em.add(_Level("../assets/testing_slopes.csv", "../assets/basic_tilemap.png"), entity_id);
 
-    // moving platform
+    //moving platform
     // em.add(_Transform(90, 40), entity_id);
     // em.add(_Collider(0, 0, 60, 15, false, false, true), entity_id);
     // em.add(_Velocity(0,0), entity_id);
-    // em.add(_Oscillator(false, 70, 1.0f), entity_id);
+    // em.add(_Oscillator(false, 70, 2.0f), entity_id);
 
+    em.update();
     em.update();
     em.print_table();
 

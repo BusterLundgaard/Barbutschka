@@ -79,7 +79,9 @@ class Ecs_m {
     T* get_from_comp(Id component_id){
         return (static_cast<T*>(comps.at(typeid(T)).get_from_comp(component_id)));
     }
+
     Component* get_from_entity(Id entity_id, Typ typ);
+    
     template <typename T>
     T* get_from_entity(Id entity_id){
         return static_cast<T*>(comps.at(typeid(T)).get_from_entity(entity_id)); 

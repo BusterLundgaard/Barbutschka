@@ -12,6 +12,8 @@
 #include "utils.h"
 #include "ecs_m.h"
 #include <optional>
+#include <algorithm>
+#include <limits> 
 
 class _Sprite : public Component {
     public:
@@ -59,6 +61,7 @@ class _Collider : public Component {
     float gx, gy;
 
     bool hits_terrain, adjustable, solid;
+    bool is_slope, slope_dir;
 
     std::set<Id> hit; 
     std::set<Id> p_hit; 
@@ -66,13 +69,18 @@ class _Collider : public Component {
 
     _Collider(float x, float y, float w, float h, bool hits_terrain, bool adjustable, bool solid) : 
         x(x), y(y), w(w), h(h), 
-        hits_terrain(hits_terrain), adjustable(adjustable), solid(solid),
+        hits_terrain(hits_terrain), adjustable(adjustable), solid(solid), is_slope(false), slope_dir(false),
+        gx(0), gy(0), hit({}), p_hit({}), hit_terrain(false), p_hit_terrain(0)
+        {}
+    _Collider(float x, float y, float w, float h, bool hits_terrain, bool adjustable, bool solid, bool is_slope, bool slope_dir) : 
+        x(x), y(y), w(w), h(h), 
+        hits_terrain(hits_terrain), adjustable(adjustable), solid(solid), is_slope(is_slope), slope_dir(slope_dir),
         gx(0), gy(0), hit({}), p_hit({}), hit_terrain(false), p_hit_terrain(0)
         {}
     _Collider(_Collider* col) : 
         Component(col->comp_id, col->entity_id), 
         x(col->x), y(col->y), w(col->w), h(col->h), 
-        hits_terrain(col->hits_terrain), adjustable(col->adjustable), solid(col->solid), 
+        hits_terrain(col->hits_terrain), adjustable(col->adjustable), solid(col->solid), is_slope(col->is_slope), slope_dir(col->slope_dir),
         gx(-5), gy(-5), hit({}), p_hit({}), hit_terrain(false), p_hit_terrain(0)
         {}
 
@@ -99,11 +107,63 @@ class _Collider : public Component {
     }
 
     bool is_inside(float ox, float oy, float ow, float oh) {
-        return ox+ow > gx && 
-               ox < gx + w && 
-               oy + oh > gy &&
-               oy < gy + h; 
+        if(!is_slope){
+        return 
+        ox+ow > gx && 
+        ox < gx + w && 
+        oy + oh > gy &&
+        oy < gy + h; 
+        }
+        if(slope_dir){
+        return
+        ox + ow > gx - 1 &&
+        ox + ow < gx + w + 1 && 
+        oy > gy - 0.5 &&
+        oy < gy + (ox+ow - gx) + 0.5;
+        }
+        return 
+        ox > gx - 1 &&
+        ox < gx + w + 1 && 
+        oy > gy - 0.5 &&
+        oy < gy + (gx+w-ox);
     }
+
+    bool is_point_inside(float x, float y){
+        return 
+        x > gx && 
+        x < gx + w &&
+        y > gy &&
+        y < gy + h;
+    }
+
+    V<Vector2> corners() {
+        return {{gx, gy}, {gx+w, gy}, {gx, gy+h}, {gx+w, gy+h}};
+    }
+
+    //Get the vector from (x,y) to the closest corner of this collider
+    // Vector2 closest_edge_delta(float ox, float oy){
+    //     V<float> deltas = {};
+    //     deltas.push_back(ox-gx);
+    //     deltas.push_back(ox-(gx+w));
+    //     deltas.push_back(oy-gy);
+    //     deltas.push_back(oy-(gy+h));
+    //     int max_i = -1;
+    //     int max = std::numeric_limits<float>::min();
+    //     for(int i = 0; i < 4; i++){
+    //         if(std::abs(deltas[i]) < 2 && std::abs(deltas[i]) > max){
+    //             max_i = i;
+    //             max = std::abs(deltas[i]);
+    //         }
+    //     }
+    //     if(max_i < 0){
+    //         return {0, 0};
+    //     }
+    //     else if(max_i <= 1){
+    //         return {deltas[max_i], 0};
+    //     } else {
+    //         return {0, deltas[max_i]};
+    //     }
+    // }
 
     bool hits_solid(Ecs_m& em){
         for(Id id : hit){
@@ -143,6 +203,7 @@ class _Collider : public Component {
     static int initialize() {
         default_meta(_Collider, "Col");
         manual_heap_meta(_Collider);
+        meta_set_max_elements(typeid(_Collider), 40);
         return 0;
     }
 };
@@ -200,8 +261,9 @@ static Typ __Level = typeid(_Level);
 class _Player : public Component {
     public:
     Id ground_trigger_col_id;
+    Id falling_trigger_col_id;
 
-    _Player(Id ground_trigger_col_id) : ground_trigger_col_id(ground_trigger_col_id) {}
+    _Player(Id ground_trigger_col_id, Id falling_trigger_col_id) : ground_trigger_col_id(ground_trigger_col_id), falling_trigger_col_id(falling_trigger_col_id) {}
 
     static int initialize() {
         default_meta(_Player, "Pl");
@@ -293,5 +355,19 @@ class _Animation_player : public Component {
     }
 };
 static Typ __Animation_player = typeid(_Animation_player);
+
+
+class _DebugCollision : public Component {
+   public:
+   bool shit;
+   _DebugCollision() : shit(true) {};
+   
+   static int initialize() {
+      default_meta(_DebugCollision, "debugCollision");
+      return 0;
+   }
+};
+static Typ __DebugCollision = typeid(_DebugCollision);
+
 
 #endif

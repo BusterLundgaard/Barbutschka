@@ -38,6 +38,33 @@ Component_individual_system sys_set_prev_pos{
     }
 };
 
+Entity_individual_system sys_make_colliders_from_lvl {
+    "create_colliders_from_level",
+    {__Level},
+    __first_frame {
+        auto lvl = em.get_from_entity<_Level>(id);
+        
+        em.add(_Transform(0,0), id);
+
+        for(int i = 0; i < BLOCKS_X; i++){
+            for(int j = 0; j < BLOCKS_Y; j++){
+                if(lvl->grid[j][i] == 1){
+                    em.add(_Collider(i*BLOCK_SIZE, GAME_HEIGTH - (j+1)*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, false, false, true), id);
+                }
+                else if(lvl->grid[j][i] == 4){
+                    em.add(_Collider(i*BLOCK_SIZE, GAME_HEIGTH - (j+1)*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, false, false, true, true, false), id);
+                }
+                else if(lvl->grid[j][i] == 5){
+                    em.add(_Collider(i*BLOCK_SIZE, GAME_HEIGTH - (j+1)*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, false, false, true, true, true), id);
+                }
+            }
+        }
+
+        std::cout << "trolololo\n";
+    },
+    __update {}
+};
+
 void update_collider_global_pos(Ecs_m& em, _Transform* t){
     auto cols = em.get_all_from_entity<_Collider>(t->entity_id);
     for(auto col : cols){
@@ -79,6 +106,7 @@ Component_for_all_system sys_collision{
                 j++;                
             }
             for(int z : potential){
+                if(cs[z]->is_slope){continue;}
                 if(cs[i]->is_inside(cs[z]->gx, cs[z]->gy, cs[z]->w, cs[z]->h)){
                     cs[z]->hit.insert(cs[i]->comp_id);
                     cs[i]->hit.insert(cs[z]->comp_id);
@@ -101,86 +129,96 @@ Component_for_all_system sys_collision{
             _Transform* t = em.get_sibling<_Transform>(col->comp_id);
             float px = t->px + col->x;
             float py = t->py + col->y;
+            auto corners = col->corners();
 
-            if(col->hit_terrain){
-                if(!lvl->is_inside(1, px, col->gy, col->w, col->h)){
-                    if(t->x - t->px > 0) { //to the left before
-                        float right_side = col->gx + col->w;
-                        right_side = BLOCK_SIZE*(floor(right_side/BLOCK_SIZE));
-                        //for some reason offset almost always ends up being 0 ... so we have to use an ugly offset
-                        float offset = col->gx + col->w - right_side;
-                        t->x -= offset+0.0001;
-                    } else { //to the right before
-                        float left_side = col->gx;
-                        left_side = BLOCK_SIZE*(int(left_side)/BLOCK_SIZE + 1);
-                        float offset = col->gx - left_side;
-                         t->x -= col->gx - left_side;
-                    }
-                }
-                if(!lvl->is_inside(1, col->gx, py, col->w, col->h)){
-                    if(t->y - t->py > 0) { //to the left before
-                        float right_side = col->gy + col->h;
-                        right_side = BLOCK_SIZE*(floor(right_side/BLOCK_SIZE));
-                        //for some reason offset almost always ends up being 0 ... so we have to use an ugly offset
-                        float offset = col->gy + col->h - right_side;
-                        t->y -= offset+0.0001;
-                    } else { //to the right before
-                        float left_side = col->gy;
-                        left_side = BLOCK_SIZE*(int(left_side)/BLOCK_SIZE + 1);
-                         float offset = left_side-col->gy;
-                         t->y += offset + 0.0001;
-                    }
-                }
-                update_collider_global_pos(em, t);
-            }
-
-            //Adjust based on static environment collisions:
-            // if(exists(col.hit, lvl.component_id)){
-            //     if(lvl.is_inside(col.gx, py, col.w, col.h)){
-            //         if(t.y-t.py > 0){ //Was above before
-            //             t.y=(int(t.y)/BLOCK_SIZE)*BLOCK_SIZE;
-            //         } else { // Was below before
-            //             t.y=(int(t.y)/BLOCK_SIZE + 1)*BLOCK_SIZE;
-            //         }
-            //         col.gy = t.y + col.y;
-            //     }
-            //     if(lvl.is_inside(col.gy, px, col.w, col.h)){
-            //         if(t.x - t.px > 0) { //Was going to right
-            //             t.x=(int(t.x)/BLOCK_SIZE)*BLOCK_SIZE;
-            //         }  else {
-            //             t.x=(int(t.x)/BLOCK_SIZE+1)*BLOCK_SIZE;
-            //         }
-            //         col.gx = t.x + col.x;
-            //     }
-            // }
-            
-            //Adjust based on collisions with other solid colliders:
             std::vector<_Collider*> solids;
             for(auto hit : col->hit){
                 _Collider* comp = em.get_from_comp<_Collider>(hit);
                 if(comp->solid){solids.push_back(comp);}
             }
+
             for(auto solid : solids){
-                _Transform* st = em.get_sibling<_Transform>(solid->comp_id);
-                float delta_x = st->x - st->px;
-                float delta_y = st->y - st->py;
-                if(!solid->is_inside(px + delta_x, col->gy, col->w, col->h)){
-                    if(t->x - t->px - delta_x > 0) { //to the left before
-                        t->x -= (col->gx + col->w) - solid->gx; 
-                    } else { //to the right before
-                        t->x -= col->gx - (solid->gx + solid->w);
+                if(!solid->is_slope){
+                    V<Vector2> gaps = {};
+                    if(col->gx + col->w > solid->gx && col->gx < solid->gx){
+                        gaps.push_back({solid->gx - col->gx - col->w, 0});
+                    }
+                    if(col->gx < solid->gx + solid->w && col->gx > solid->gx){
+                        gaps.push_back({solid->gx+solid->w - col->gx, 0});
+                    }
+                    if(col->gy + col->h > solid->gy && col->gy < solid->gy){
+                        gaps.push_back({0, solid->gy - col->gy - col->h});
+                    }
+                    if(col->gy < solid->gy + solid->h && col->gy > solid->gy){
+                        gaps.push_back({0, solid->gy+solid->h - col->gy});
+                    }
+                    std::sort(gaps.begin(), gaps.end(), [](const Vector2& a, const Vector2& b){      
+                        return std::abs(b.x) + std::abs(b.y) > std::abs(a.x) + std::abs(a.y);
+                    });
+                    int i = 0; 
+                    while(solid->is_inside(col->gx, col->gy, col->w, col->h) && i < gaps.size()){
+                        t->x += gaps[i].x;
+                        t->y += gaps[i].y;
+                        update_collider_global_pos(em, t);
+                        i++;
+                    }
+                } else {
+                    auto v = em.get_sibling<_Velocity>(col->comp_id);
+                    if(solid->slope_dir && 
+                       col->gx + col->w < solid->gx + BLOCK_SIZE + 0.5 && 
+                       col->gy < solid->gy + (col->gx + col->w - solid->gx) + 1){
+
+                        t->y -= 1.1f*(col->gy - (solid->gy + (col->gx + col->w - solid->gx)));
+                        v->y = -25;
+                    } 
+                    else if(
+                        !solid->slope_dir && 
+                        col->gx > solid->gx - 0.5 && 
+                        col->gy < solid->gy + (solid->gx + solid->w - col->gx) + 1){
+                        t->y -= 1.1f*(col->gy - (solid->gy + (solid->gx + solid->w - col->gx)));
+                        v->y = -25;
                     }
                 }
-                if(!solid->is_inside(col->gx, py + delta_y, col->w, col->h)){
-                    if(t->y - t->py - delta_y > 0) { //below before
-                        t->y -= (col->gy + col->h) - solid->gy; 
-                    } else { // above before
-                        t->y -= col->gy - (solid->gy + solid->h);
-                    }   
-                }
-
-                update_collider_global_pos(em, t);
+                
+                //V<Vector2> deltas = {};
+                // for(Vector2 corner : corners){
+                //     deltas.push_back(solid->closest_edge_delta(corner.x,corner.y));
+                // }
+                // int min_i = -1;
+                // int min = std::numeric_limits<float>::max();
+                // for(int i = 0; i < 4; i++){
+                //     float size = std::abs(deltas[i].x) + std::abs(deltas[i].y);
+                //     if(size != 0 && size < min){
+                //         min_i = i; 
+                //         min = size;
+                //     }
+                // }
+                // if(min_i != -1){
+                //     t->x -= deltas[min_i].x;
+                //     t->y -= deltas[min_i].y;
+                // } 
             }
+            // for(auto solid : solids){
+            //     _Transform* st = em.get_sibling<_Transform>(solid->comp_id);
+            //     float delta_x = st->x - st->px;
+            //     float delta_y = st->y - st->py;
+            //     if(!solid->is_inside(px + delta_x, col->gy, col->w, col->h)){
+            //         if(t->x - t->px - delta_x > 0) { //to the left before
+            //             t->x -= (col->gx + col->w) - solid->gx; 
+            //         } else { //to the right before
+            //             t->x -= col->gx - (solid->gx + solid->w);
+            //         }
+            //     }
+            //     if(!solid->is_inside(col->gx, py + delta_y, col->w, col->h)){
+            //         if(t->y - t->py - delta_y > 0) { //below before
+            //             t->y -= (col->gy + col->h) - solid->gy; 
+            //         } else { // above before
+            //             t->y -= col->gy - (solid->gy + solid->h);
+            //         }   
+            //     }
+
+            //     update_collider_global_pos(em, t);
+            // }
         }
     }
 };

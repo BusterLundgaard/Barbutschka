@@ -29,6 +29,13 @@ public:
     explicit IllegalMultipleAdd(int16_t id) : message("Tried to add the component with comp-id " + std::to_string(id) + " which has already been added!") {};
 };
 
+class IllegalMaxComponents : public std::exception {
+private:
+std::string message;
+public:
+    explicit IllegalMaxComponents(std::string component_name, int max) : message("Tried to add more than " + std::to_string(max) + " components of type " + component_name + ", that is above the max allowed elements for this component!") {};
+};
+
 class NullPtrException : public std::exception {
 private:
     std::string message;

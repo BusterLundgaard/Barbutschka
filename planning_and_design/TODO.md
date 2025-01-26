@@ -6,7 +6,12 @@
 -[x] Write the update function in the new ecs_m
 -[x] Actually write the new components_list
 -[x] Get the shit refactored in different files and get it to run 
+-[] Potentially rewrite the whole collision system, it's a bloody unstable mess.
+    -[] I think dependency on "previous frame" is really bad 
 
+-[] Add support in the ComponentList for having more than MaxElements elements??
+-[] Change the collision system so that it works on layers, where you specify a matrix of which layers interact
+    -[] Make a document/file for "Project settings" like these where it's all just constants 
 
 -[] Make collision adjustment with the static environment work
 -[] Make collision adjustment with "stairs" in the staic environment work / diagonal slopes

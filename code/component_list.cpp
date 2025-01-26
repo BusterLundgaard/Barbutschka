@@ -99,6 +99,11 @@ Id Component_list::entity_of_comp(Id comp_id){
 }
 
 void Component_list::add(void* el){
+
+    if(size + 1 > comps_metadata.at(typ).max_elements || to_be_added_data_queue_size + 1 > comps_metadata.at(typ).max_elements){
+        throw IllegalMaxComponents(comps_metadata.at(typ).name, comps_metadata.at(typ).max_elements);
+    }
+
     void* dest = to_be_added_data + to_be_added_data_queue_size*comps_metadata.at(typ).bytesize;
     if(comps_metadata.at(typ).has_heap_memory){
         comps_metadata.at(typ).clone(el, dest);

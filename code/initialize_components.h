@@ -10,4 +10,5 @@ inline void initialize_components() {
     _Player::initialize();
     _Oscillator::initialize();
     _Animation_player::initialize();
+    _DebugCollision::initialize();
 }
