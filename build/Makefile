@@ -201,6 +201,54 @@ code/ecs_m.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/ecs_m.cpp.s
 .PHONY : code/ecs_m.cpp.s
 
+code/globals.o: code/globals.cpp.o
+.PHONY : code/globals.o
+
+# target to build an object file
+code/globals.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/globals.cpp.o
+.PHONY : code/globals.cpp.o
+
+code/globals.i: code/globals.cpp.i
+.PHONY : code/globals.i
+
+# target to preprocess a source file
+code/globals.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/globals.cpp.i
+.PHONY : code/globals.cpp.i
+
+code/globals.s: code/globals.cpp.s
+.PHONY : code/globals.s
+
+# target to generate assembly for a file
+code/globals.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/globals.cpp.s
+.PHONY : code/globals.cpp.s
+
+code/graphic_layers.o: code/graphic_layers.cpp.o
+.PHONY : code/graphic_layers.o
+
+# target to build an object file
+code/graphic_layers.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/graphic_layers.cpp.o
+.PHONY : code/graphic_layers.cpp.o
+
+code/graphic_layers.i: code/graphic_layers.cpp.i
+.PHONY : code/graphic_layers.i
+
+# target to preprocess a source file
+code/graphic_layers.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/graphic_layers.cpp.i
+.PHONY : code/graphic_layers.cpp.i
+
+code/graphic_layers.s: code/graphic_layers.cpp.s
+.PHONY : code/graphic_layers.s
+
+# target to generate assembly for a file
+code/graphic_layers.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/graphic_layers.cpp.s
+.PHONY : code/graphic_layers.cpp.s
+
 code/input.o: code/input.cpp.o
 .PHONY : code/input.o
 
@@ -387,6 +435,12 @@ help:
 	@echo "... code/ecs_m.o"
 	@echo "... code/ecs_m.i"
 	@echo "... code/ecs_m.s"
+	@echo "... code/globals.o"
+	@echo "... code/globals.i"
+	@echo "... code/globals.s"
+	@echo "... code/graphic_layers.o"
+	@echo "... code/graphic_layers.i"
+	@echo "... code/graphic_layers.s"
 	@echo "... code/input.o"
 	@echo "... code/input.i"
 	@echo "... code/input.s"

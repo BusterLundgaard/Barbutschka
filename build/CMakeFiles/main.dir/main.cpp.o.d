@@ -169,7 +169,14 @@ CMakeFiles/main.dir/main.cpp.o: /home/buster/Desktop/Bartbushka/main.cpp \
  /home/buster/Desktop/Bartbushka/code/events.h \
  /usr/include/c++/14.2.1/variant \
  /usr/include/c++/14.2.1/bits/parse_numbers.h \
- /home/buster/Desktop/Bartbushka/code/utils.h /usr/include/raylib.h \
+ /usr/include/c++/14.2.1/optional \
+ /home/buster/Desktop/Bartbushka/code/flags.h \
+ /usr/include/c++/14.2.1/cstdint \
+ /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/stdint.h \
+ /usr/include/stdint.h /usr/include/bits/stdint-uintn.h \
+ /usr/include/bits/stdint-least.h \
+ /home/buster/Desktop/Bartbushka/code/graphic_layers.h \
+ /usr/include/raylib.h /home/buster/Desktop/Bartbushka/code/utils.h \
  /usr/include/c++/14.2.1/math.h /usr/include/c++/14.2.1/cmath \
  /usr/include/math.h /usr/include/bits/math-vector.h \
  /usr/include/bits/libm-simd-decl-stubs.h \
@@ -207,6 +214,9 @@ CMakeFiles/main.dir/main.cpp.o: /home/buster/Desktop/Bartbushka/main.cpp \
  /usr/include/c++/14.2.1/bits/fstream.tcc /usr/include/c++/14.2.1/sstream \
  /usr/include/c++/14.2.1/bits/sstream.tcc \
  /home/buster/Desktop/Bartbushka/code/ecs_m.h \
- /usr/include/c++/14.2.1/optional \
+ /home/buster/Desktop/Bartbushka/code/globals.h \
+ /home/buster/Desktop/Bartbushka/code/defs.h \
  /home/buster/Desktop/Bartbushka/code/initialize_components.h \
- /home/buster/Desktop/Bartbushka/code/components.h
+ /home/buster/Desktop/Bartbushka/code/components.h \
+ /home/buster/Desktop/Bartbushka/code/globals.h \
+ /home/buster/Desktop/Bartbushka/code/graphic_layers.h

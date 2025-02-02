@@ -90,7 +90,9 @@
         "future": "cpp",
         "__assert": "cpp",
         "*.def": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "__node_handle": "cpp",
+        "execution": "cpp"
     },
     "editor.tokenColorCustomizations": {
         "comments": "",

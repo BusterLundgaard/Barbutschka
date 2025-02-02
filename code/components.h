@@ -14,6 +14,7 @@
 #include <optional>
 #include <algorithm>
 #include <limits> 
+#include "globals.h"
 
 class _Sprite : public Component {
     public:
@@ -210,12 +211,11 @@ class _Collider : public Component {
 static Typ __Collider = typeid(_Collider);
 
 
-class _Level : public Component {
+class _LevelBuilder : public Component {
     public:
-    Texture2D tilemap;
-    u_int16_t grid[BLOCKS_Y][BLOCKS_X];
+    Texture2D tilemap; //This is what it'll actually store.
 
-    _Level(std::string level_path, std::string tilemap_path) : 
+    _LevelBuilder(std::string level_path, std::string tilemap_path): 
         tilemap(LoadTexture(tilemap_path.c_str())) 
         {set_grid(level_path);} 
 
@@ -226,7 +226,7 @@ class _Level : public Component {
         int by1 = BLOCKS_Y - (y)/BLOCK_SIZE + 1;
         for(int i = bx0; i < bx1; i++){
             for(int j = by0; j < by1; j++){
-                if(i >= 0 && j >= 0 && grid[j][i]==tile_value){
+                if(i >= 0 && j >= 0 && GRID[j][i]==tile_value){
                     return true;
                 }
             }
@@ -235,6 +235,7 @@ class _Level : public Component {
     }
 
     void set_grid(std::string level_path){
+        // This should do it according to what ROOM_X, ROOM_Y is 
         std::ifstream level_file(level_path.c_str());
         std::string line;
         std::string number;
@@ -244,7 +245,7 @@ class _Level : public Component {
             line_input.str(line);
             int j = 0;
             while(std::getline(line_input, number, ',')){
-                grid[i][j] = atoi(number.c_str())+1;       
+                GRID[i][j] = atoi(number.c_str())+1;       
                 j++;
             }
             i++;
@@ -252,18 +253,18 @@ class _Level : public Component {
     }
 
     static int initialize() {
-        default_meta(_Level, "Lvl");
+        default_meta(_LevelBuilder, "Lvl");
         return 0;
     }
 };
-static Typ __Level = typeid(_Level);
+static Typ __LevelBuilder = typeid(_LevelBuilder);
 
 class _Player : public Component {
     public:
-    Id ground_trigger_col_id;
-    Id falling_trigger_col_id;
+    bool grounded, pgrounded;
+    bool on_oscillator;
 
-    _Player(Id ground_trigger_col_id, Id falling_trigger_col_id) : ground_trigger_col_id(ground_trigger_col_id), falling_trigger_col_id(falling_trigger_col_id) {}
+    _Player() : grounded(false), pgrounded(false), on_oscillator(false) {}
 
     static int initialize() {
         default_meta(_Player, "Pl");
@@ -355,6 +356,18 @@ class _Animation_player : public Component {
     }
 };
 static Typ __Animation_player = typeid(_Animation_player);
+
+
+class _ParentLink : public Component {
+    public:
+    Id parent_entity_id;
+    _ParentLink(Id parent_entity_id) : parent_entity_id(parent_entity_id) {};
+
+    static void initialize() {
+        default_meta(_ParentLink, "parlink");
+    }
+};
+static Typ __ParentLink = typeid(_ParentLink);
 
 
 class _DebugCollision : public Component {

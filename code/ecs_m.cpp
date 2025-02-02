@@ -2,6 +2,7 @@
 #include <iomanip>
 #include "ecs_m.h"
 #include "exceptions.h"
+#include <optional>
 
 Ecs_m::Ecs_m(V<System*> systems) : systems(systems), fl(1.0/60.0) {
     for(int i = 0; i < systems.size(); i++){
@@ -25,12 +26,12 @@ Ecs_m::Ecs_m(V<System*> systems) : systems(systems), fl(1.0/60.0) {
             comps.insert({typ, Component_list(typ)});
         }
     }
+    for(int i = 0; i < AMOUNT_OF_FLAGS; i++){
+        flag_to_entities.insert({1 << i, {}});
+    }
 }
 
 void Ecs_m::add(Component* el, Id entity_id, Typ typ){
-    //SOMEHOW COMP HERE JUST TURNS INTO SOMETHING WITH ONLY 1 ELEMENT ADDED?
-    //HAPPENS AROUND i: 6, j: 3
-    //IT MAKES NO SENSE
     if(comps.find(typ) == comps.end()){
         comps.insert({typ, Component_list(typ)});
     }
@@ -52,6 +53,34 @@ void Ecs_m::add(Component* el, Id entity_id, Typ typ){
 void Ecs_m::remove(Id comp_id){
     if(comp_id_to_entity_id.find(comp_id) != comp_id_to_entity_id.end()){
         delete_queue.push_front(comp_id);
+    }
+}
+
+void Ecs_m::add_flag(flag flag, Id entity_id) {
+    int64_t indexer = 1;
+    for(int i = 0; i < 64; i++){
+        int64_t flag_value = (indexer << i) & flag; 
+        if(flag_value){
+            auto ids = flag_to_entities.find(flag_value);
+            if(ids != flag_to_entities.end()){
+                ids->second.push_back(entity_id);
+            } else {
+                flag_to_entities.insert({flag_value, {entity_id}});
+            }
+        }
+    }
+}
+
+void Ecs_m::remove_flag(flag flag, Id entity_id){
+    int64_t indexer = 1;
+    for(int i = 0; i < 64; i++){
+        int64_t flag_value = (indexer << i) & flag; 
+        if(flag_value){
+            auto ids = flag_to_entities.find(flag_value);
+            if(ids != flag_to_entities.end()){
+                ids->second.erase(std::find(ids->second.begin(), ids->second.end(), entity_id));
+            } 
+        }
     }
 }
 
@@ -115,6 +144,17 @@ void Ecs_m::add_intersections(Id entity_id, Typ type_added) {
                 goto dont_add;
             }
         }
+        if(Entity_individual_system* sys = dynamic_cast<Entity_individual_system*>(it->first)){
+            for(flag flag : sys->flags){
+                if( flag_to_entities.find(flag) == flag_to_entities.end()){
+                    goto dont_add;
+                }
+                if(!exists(flag_to_entities.at(flag), entity_id)){
+                    goto dont_add;
+                }
+            }
+        }
+
         it->second.insert(entity_id);
         first_frame_systems.insert({it->first, entity_id});
         
@@ -136,6 +176,13 @@ void Ecs_m::remove_intersections(Id entity_id){
                 goto remove;
             }
         }
+        if(Entity_individual_system* sys = dynamic_cast<Entity_individual_system*>(it->first)){
+            for(flag flag : sys->flags){
+                if(!exists(flag_to_entities.at(flag), entity_id)){
+                    goto remove;
+                }
+            }
+        }
         continue;
 
         remove:
@@ -151,10 +198,20 @@ void Ecs_m::remove_intersections(Id entity_id){
 }
 
 void Ecs_m::update() {
+
+    // Refresh any layers that need it:
+    for(auto& [layer_name, layer] : graphic_layers){
+        set_active_graphic_layer(layer_name);
+        if(graphic_layer_refreshes.at(layer_name)){
+            ClearBackground(BLANK);
+        }
+    }
+
     // Run first frame callbacks;
     for(System_instance sys_inst : first_frame_systems){
         processing_system = sys_inst.sys;
         processing_id = sys_inst.entity_id;
+        set_active_graphic_layer(sys_inst.sys->graphic_layer);
 
         if(Entity_individual_system* sys = dynamic_cast<Entity_individual_system*>(sys_inst.sys)){
             sys->first_frame(*this, sys_inst.entity_id);
@@ -170,12 +227,13 @@ void Ecs_m::update() {
         it->frames -= 1;
         if(it->frames <= 0){
             for(System* sub_sys : event_subscribers.at(it->event)){
+                set_active_graphic_layer(sub_sys->graphic_layer);
                 for(Id entity_id : intersections.at(sub_sys)){
                     if(Entity_individual_system* sys = dynamic_cast<Entity_individual_system*>(sub_sys)){
-                        sys->event_callbacks.at(it->event)(*this, entity_id);
+                        sys->event_callbacks.at(it->event)(*this, entity_id, it->data);
                     }
                     if(Entity_individual_system_with_data* sys = dynamic_cast<Entity_individual_system_with_data*>(sub_sys)){
-                        sys->event_callbacks.at(it->event)(*this, entity_id);
+                        sys->event_callbacks.at(it->event)(*this, entity_id, it->data);
                     }
                 }
             }
@@ -191,16 +249,19 @@ void Ecs_m::update() {
         if(it->frames <= 0){
             if(Entity_individual_system* sys = dynamic_cast<Entity_individual_system*>(it->system)){
                 if(exists(intersections.at(it->system), it->id)){
+                    set_active_graphic_layer(it->system->graphic_layer);
                     it->call();
                 }
             }
             else if(Entity_individual_system_with_data* sys = dynamic_cast<Entity_individual_system_with_data*>(it->system)){
                 if(exists(intersections.at(it->system), it->id)){
+                    set_active_graphic_layer(it->system->graphic_layer);
                     it->call();
                 }
             }
             else if(Component_individual_system* sys = dynamic_cast<Component_individual_system*>(it->system)){
                 if(comp_id_to_entity_id.find(it->id) != comp_id_to_entity_id.end()){
+                    set_active_graphic_layer(it->system->graphic_layer);
                     it->call();
                 }
             }
@@ -213,6 +274,8 @@ void Ecs_m::update() {
     // Run update callbacks;
     for(int i = 0; i < systems.size(); i++){
         processing_system = systems[i];
+        set_active_graphic_layer(systems[i]->graphic_layer);
+
         if(Entity_individual_system* sys = dynamic_cast<Entity_individual_system*>(systems[i])){
             for(Id entity_id : intersections.at(systems[i])){
                 processing_id = entity_id;
@@ -248,6 +311,7 @@ void Ecs_m::update() {
             sys->update(*this, els);
         }
     }
+    EndTextureMode();
 
     add_all_in_queues();
     remove_all_in_queues();
@@ -271,8 +335,32 @@ Id Ecs_m::get_entity_id(Id comp_id){
     throw NullPtrException("Component with id " + std::to_string(comp_id) + " has no corresponding entity");
 }
 
+V<Id> Ecs_m::get_all_entities_with_flag(flag flag) {
+    return flag_to_entities.at(flag);
+}
+
 bool Ecs_m::has_type(Id entity_id, Typ typ){
     return exists(entity_id_to_typs.at(entity_id), typ);
+}
+bool Ecs_m::contains_sibling_type(V<Id> comp_ids, Typ typ){
+    for(Id comp_id : comp_ids){
+        if(has_type(comp_id_to_entity_id.find(comp_id)->second, typ)){
+            return true;
+        }
+    }
+    return false;
+}
+std::optional<Id> Ecs_m::get_first_sibling_of_type(V<Id> comp_ids, Typ typ){
+    for(Id comp_id : comp_ids){
+        auto entity_id = comp_id_to_entity_id.find(comp_id);
+        if(entity_id != comp_id_to_entity_id.end() && has_type(entity_id->second, typ)){
+            return static_cast<Component*>(comps.at(typ).get_from_entity(entity_id->second))->comp_id;
+        }
+    }
+    return {};
+}
+bool Ecs_m::has_flag(Id entity_id, flag flag) {
+    return exists(flag_to_entities.at(flag), entity_id);
 }
 
 
@@ -289,7 +377,7 @@ void Ecs_m::timeout_time(float time, std::function<void(void)> call){
     timeout(static_cast<int>(round(time/fl)), call);
 }
 
-void Ecs_m::emit_event(Event event, Event_data data, int frames){
+void Ecs_m::emit_event(EVENT event, Event_data data, int frames){
     if(event_subscribers.find(event) == event_subscribers.end()){
         event_subscribers.insert({event, {}});
     }

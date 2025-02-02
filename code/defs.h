@@ -19,6 +19,11 @@ const int BLOCKS_X = 16;
 const int BLOCKS_Y = 11;
 const int BLOCK_SIZE = 16;
 
+const int8_t RIGHT = 1 << 0;
+const int8_t DOWN = 1 << 1;
+const int8_t LEFT = 1 << 2;
+const int8_t UP = 1 << 3;
+
 #define init_comp(compname) int compname::init = compname::initialize(); static Typ _ ## compname = typeid(compname);
 #define init_meta static int init; static int initialize() 
 #define default_meta(compname, shorthand) metadata(typeid(compname), #compname, sizeof(compname), shorthand); 
@@ -40,7 +45,7 @@ const int BLOCK_SIZE = 16;
 [](System_data* data_pointer){\
     delete static_cast<systemname*>(data_pointer);\
 },
-#define __system_events std::unordered_map<Event, std::function<void(Ecs_m& em, Id id)>>
+#define __system_events std::unordered_map<EVENT, std::function<void(Ecs_m&, Id, Event_data)>>
 #define __first_frame [](Ecs_m& em, Id id)
 #define __update [](Ecs_m& em, Id id)
 

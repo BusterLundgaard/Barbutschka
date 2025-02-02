@@ -86,10 +86,38 @@ CMakeFiles/main.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/main.dir/main.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/buster/Desktop/Bartbushka/main.cpp -o CMakeFiles/main.dir/main.cpp.s
 
+CMakeFiles/main.dir/code/globals.cpp.o: CMakeFiles/main.dir/flags.make
+CMakeFiles/main.dir/code/globals.cpp.o: /home/buster/Desktop/Bartbushka/code/globals.cpp
+CMakeFiles/main.dir/code/globals.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/main.dir/code/globals.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/globals.cpp.o -MF CMakeFiles/main.dir/code/globals.cpp.o.d -o CMakeFiles/main.dir/code/globals.cpp.o -c /home/buster/Desktop/Bartbushka/code/globals.cpp
+
+CMakeFiles/main.dir/code/globals.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/main.dir/code/globals.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/buster/Desktop/Bartbushka/code/globals.cpp > CMakeFiles/main.dir/code/globals.cpp.i
+
+CMakeFiles/main.dir/code/globals.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/main.dir/code/globals.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/buster/Desktop/Bartbushka/code/globals.cpp -o CMakeFiles/main.dir/code/globals.cpp.s
+
+CMakeFiles/main.dir/code/graphic_layers.cpp.o: CMakeFiles/main.dir/flags.make
+CMakeFiles/main.dir/code/graphic_layers.cpp.o: /home/buster/Desktop/Bartbushka/code/graphic_layers.cpp
+CMakeFiles/main.dir/code/graphic_layers.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/main.dir/code/graphic_layers.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/graphic_layers.cpp.o -MF CMakeFiles/main.dir/code/graphic_layers.cpp.o.d -o CMakeFiles/main.dir/code/graphic_layers.cpp.o -c /home/buster/Desktop/Bartbushka/code/graphic_layers.cpp
+
+CMakeFiles/main.dir/code/graphic_layers.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/main.dir/code/graphic_layers.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/buster/Desktop/Bartbushka/code/graphic_layers.cpp > CMakeFiles/main.dir/code/graphic_layers.cpp.i
+
+CMakeFiles/main.dir/code/graphic_layers.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/main.dir/code/graphic_layers.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/buster/Desktop/Bartbushka/code/graphic_layers.cpp -o CMakeFiles/main.dir/code/graphic_layers.cpp.s
+
 CMakeFiles/main.dir/code/input.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/code/input.cpp.o: /home/buster/Desktop/Bartbushka/code/input.cpp
 CMakeFiles/main.dir/code/input.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/main.dir/code/input.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/main.dir/code/input.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/input.cpp.o -MF CMakeFiles/main.dir/code/input.cpp.o.d -o CMakeFiles/main.dir/code/input.cpp.o -c /home/buster/Desktop/Bartbushka/code/input.cpp
 
 CMakeFiles/main.dir/code/input.cpp.i: cmake_force
@@ -103,7 +131,7 @@ CMakeFiles/main.dir/code/input.cpp.s: cmake_force
 CMakeFiles/main.dir/code/component_list.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/code/component_list.cpp.o: /home/buster/Desktop/Bartbushka/code/component_list.cpp
 CMakeFiles/main.dir/code/component_list.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/main.dir/code/component_list.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/main.dir/code/component_list.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/component_list.cpp.o -MF CMakeFiles/main.dir/code/component_list.cpp.o.d -o CMakeFiles/main.dir/code/component_list.cpp.o -c /home/buster/Desktop/Bartbushka/code/component_list.cpp
 
 CMakeFiles/main.dir/code/component_list.cpp.i: cmake_force
@@ -117,7 +145,7 @@ CMakeFiles/main.dir/code/component_list.cpp.s: cmake_force
 CMakeFiles/main.dir/code/ecs_m.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/code/ecs_m.cpp.o: /home/buster/Desktop/Bartbushka/code/ecs_m.cpp
 CMakeFiles/main.dir/code/ecs_m.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/main.dir/code/ecs_m.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/main.dir/code/ecs_m.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/ecs_m.cpp.o -MF CMakeFiles/main.dir/code/ecs_m.cpp.o.d -o CMakeFiles/main.dir/code/ecs_m.cpp.o -c /home/buster/Desktop/Bartbushka/code/ecs_m.cpp
 
 CMakeFiles/main.dir/code/ecs_m.cpp.i: cmake_force
@@ -131,7 +159,7 @@ CMakeFiles/main.dir/code/ecs_m.cpp.s: cmake_force
 CMakeFiles/main.dir/code/system.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/code/system.cpp.o: /home/buster/Desktop/Bartbushka/code/system.cpp
 CMakeFiles/main.dir/code/system.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/main.dir/code/system.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/main.dir/code/system.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/system.cpp.o -MF CMakeFiles/main.dir/code/system.cpp.o.d -o CMakeFiles/main.dir/code/system.cpp.o -c /home/buster/Desktop/Bartbushka/code/system.cpp
 
 CMakeFiles/main.dir/code/system.cpp.i: cmake_force
@@ -145,7 +173,7 @@ CMakeFiles/main.dir/code/system.cpp.s: cmake_force
 CMakeFiles/main.dir/code/component.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/code/component.cpp.o: /home/buster/Desktop/Bartbushka/code/component.cpp
 CMakeFiles/main.dir/code/component.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/main.dir/code/component.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/main.dir/code/component.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/component.cpp.o -MF CMakeFiles/main.dir/code/component.cpp.o.d -o CMakeFiles/main.dir/code/component.cpp.o -c /home/buster/Desktop/Bartbushka/code/component.cpp
 
 CMakeFiles/main.dir/code/component.cpp.i: cmake_force
@@ -159,7 +187,7 @@ CMakeFiles/main.dir/code/component.cpp.s: cmake_force
 CMakeFiles/main.dir/code/systems/position_and_collision.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/code/systems/position_and_collision.cpp.o: /home/buster/Desktop/Bartbushka/code/systems/position_and_collision.cpp
 CMakeFiles/main.dir/code/systems/position_and_collision.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/main.dir/code/systems/position_and_collision.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/main.dir/code/systems/position_and_collision.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/systems/position_and_collision.cpp.o -MF CMakeFiles/main.dir/code/systems/position_and_collision.cpp.o.d -o CMakeFiles/main.dir/code/systems/position_and_collision.cpp.o -c /home/buster/Desktop/Bartbushka/code/systems/position_and_collision.cpp
 
 CMakeFiles/main.dir/code/systems/position_and_collision.cpp.i: cmake_force
@@ -173,7 +201,7 @@ CMakeFiles/main.dir/code/systems/position_and_collision.cpp.s: cmake_force
 CMakeFiles/main.dir/code/systems/player.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/code/systems/player.cpp.o: /home/buster/Desktop/Bartbushka/code/systems/player.cpp
 CMakeFiles/main.dir/code/systems/player.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/main.dir/code/systems/player.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/main.dir/code/systems/player.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/systems/player.cpp.o -MF CMakeFiles/main.dir/code/systems/player.cpp.o.d -o CMakeFiles/main.dir/code/systems/player.cpp.o -c /home/buster/Desktop/Bartbushka/code/systems/player.cpp
 
 CMakeFiles/main.dir/code/systems/player.cpp.i: cmake_force
@@ -187,7 +215,7 @@ CMakeFiles/main.dir/code/systems/player.cpp.s: cmake_force
 CMakeFiles/main.dir/code/systems/moving_things.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/code/systems/moving_things.cpp.o: /home/buster/Desktop/Bartbushka/code/systems/moving_things.cpp
 CMakeFiles/main.dir/code/systems/moving_things.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/main.dir/code/systems/moving_things.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/main.dir/code/systems/moving_things.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/systems/moving_things.cpp.o -MF CMakeFiles/main.dir/code/systems/moving_things.cpp.o.d -o CMakeFiles/main.dir/code/systems/moving_things.cpp.o -c /home/buster/Desktop/Bartbushka/code/systems/moving_things.cpp
 
 CMakeFiles/main.dir/code/systems/moving_things.cpp.i: cmake_force
@@ -201,7 +229,7 @@ CMakeFiles/main.dir/code/systems/moving_things.cpp.s: cmake_force
 CMakeFiles/main.dir/code/systems/drawing.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/code/systems/drawing.cpp.o: /home/buster/Desktop/Bartbushka/code/systems/drawing.cpp
 CMakeFiles/main.dir/code/systems/drawing.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/main.dir/code/systems/drawing.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/main.dir/code/systems/drawing.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/code/systems/drawing.cpp.o -MF CMakeFiles/main.dir/code/systems/drawing.cpp.o.d -o CMakeFiles/main.dir/code/systems/drawing.cpp.o -c /home/buster/Desktop/Bartbushka/code/systems/drawing.cpp
 
 CMakeFiles/main.dir/code/systems/drawing.cpp.i: cmake_force
@@ -215,6 +243,8 @@ CMakeFiles/main.dir/code/systems/drawing.cpp.s: cmake_force
 # Object files for target main
 main_OBJECTS = \
 "CMakeFiles/main.dir/main.cpp.o" \
+"CMakeFiles/main.dir/code/globals.cpp.o" \
+"CMakeFiles/main.dir/code/graphic_layers.cpp.o" \
 "CMakeFiles/main.dir/code/input.cpp.o" \
 "CMakeFiles/main.dir/code/component_list.cpp.o" \
 "CMakeFiles/main.dir/code/ecs_m.cpp.o" \
@@ -229,6 +259,8 @@ main_OBJECTS = \
 main_EXTERNAL_OBJECTS =
 
 main: CMakeFiles/main.dir/main.cpp.o
+main: CMakeFiles/main.dir/code/globals.cpp.o
+main: CMakeFiles/main.dir/code/graphic_layers.cpp.o
 main: CMakeFiles/main.dir/code/input.cpp.o
 main: CMakeFiles/main.dir/code/component_list.cpp.o
 main: CMakeFiles/main.dir/code/ecs_m.cpp.o
@@ -242,7 +274,7 @@ main: CMakeFiles/main.dir/build.make
 main: CMakeFiles/main.dir/compiler_depend.ts
 main: /usr/lib/libraylib.so
 main: CMakeFiles/main.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/buster/Desktop/Bartbushka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CXX executable main"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/main.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

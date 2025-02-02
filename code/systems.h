@@ -4,13 +4,15 @@
 #include "system.h"
 
 extern Entity_individual_system sys_draw_sprite;
-extern Entity_individual_system sys_velocity;
+extern Entity_individual_system sys_velocity_adjustable;
+extern Entity_individual_system sys_velocity_non_adjustable;
+extern Entity_individual_system sys_velocity_solid;
 
 extern Entity_individual_system sys_update_collider_global_pos;
 
 extern Component_individual_system sys_set_prev_pos;
 
-extern Component_individual_system sys_draw_world;
+extern Entity_individual_system sys_draw_world;
 
 extern Entity_individual_system sys_draw_animation;
 

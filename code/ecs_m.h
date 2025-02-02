@@ -8,6 +8,7 @@
 #include "utils.h"
 #include "component_list.h"
 #include "events.h"
+#include <optional>
 
 struct Call_data {
     std::function<void(void)> call; 
@@ -17,7 +18,7 @@ struct Call_data {
 };
 
 struct Event_metadata {
-    Event event;
+    EVENT event;
     Event_data data; 
     int frames;
 };
@@ -29,6 +30,8 @@ class Ecs_m {
 
     Map<Id, Typ> comp_id_to_typ;
     Map<Id, V<Typ>> entity_id_to_typs;
+
+    Map<flag, V<Id>> flag_to_entities;
 
     V<System*> systems;
     std::map<System_instance, System_data*> systems_data = {};
@@ -45,7 +48,7 @@ class Ecs_m {
     System* processing_system;
 
     V<Event_metadata> events;
-    Map<Event, V<System*>> event_subscribers;
+    Map<EVENT, V<System*>> event_subscribers;
 
     void add_all_in_queues();
     void remove_all_in_queues();
@@ -66,6 +69,7 @@ class Ecs_m {
     void remove(Id comp_id);
     // Remove first component of Type typ from entity:
     void remove_typ(Id entity_id, Typ typ);
+    void remove_flag(flag flag, Id entity_id);
     
     //ADDERS:
     void add(Component* el, Id entity_id, Typ typ);
@@ -73,6 +77,7 @@ class Ecs_m {
     void add(T comp, Id entity_id){
         add(static_cast<Component*>(&comp), entity_id, typeid(T));
     }
+    void add_flag(flag flag, Id entity_id);
 
     //GETTERS:
     template <typename T>
@@ -107,13 +112,18 @@ class Ecs_m {
     }
     Id get_entity_id(Id comp_id);
 
+    V<Id> get_all_entities_with_flag(flag flag);
+
     bool has_type(Id entity_id, Typ typ);
+    bool contains_sibling_type(V<Id> comp_ids, Typ typ);
+    std::optional<Id> get_first_sibling_of_type(V<Id> comp_ids, Typ typ);
+    bool has_flag(Id entity_id, flag flag);
 
     //OTHER SPECIAL FEATURES:
     void timeout(int frames, std::function<void(void)> call);
     void timeout_time(float time, std::function<void(void)> call);
 
-    void emit_event(Event event, Event_data data, int frames);
+    void emit_event(EVENT event, Event_data data, int frames);
 
     //DEBUG:
     void print_table();

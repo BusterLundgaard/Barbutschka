@@ -11,6 +11,8 @@ include_directories(code)
 # Define the executable
 add_executable(main
     main.cpp
+    code/globals.cpp
+    code/graphic_layers.cpp 
     code/input.cpp
     code/component_list.cpp
     code/ecs_m.cpp 
@@ -20,7 +22,6 @@ add_executable(main
     code/systems/player.cpp 
     code/systems/moving_things.cpp 
     code/systems/drawing.cpp 
-    
 )
 
 # Link libraries
