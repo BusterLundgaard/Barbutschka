@@ -265,7 +265,8 @@ enum PLAYER_STATE {
     IDLE,
     JUMP_PREP,
     JUMP,
-    FALL
+    FALL,
+    WALK
 };
 
 class _Player : public Component {

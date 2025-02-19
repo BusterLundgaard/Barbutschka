@@ -61,10 +61,10 @@ int main(){
     entity_id++;
 
     //Collider 1:
-    em.add(_Transform(100, 40), entity_id);
-    em.add(_Collider(0, 0, 50, 50, false, false, true, true, 1), entity_id);
-    em.add_flag(F_Solid, entity_id);
-    entity_id++;
+    // em.add(_Transform(100, 40), entity_id);
+    // em.add(_Collider(0, 0, 50, 50, false, false, true, true, 1), entity_id);
+    // em.add_flag(F_Solid, entity_id);
+    // entity_id++;
 
     // // // Collider 2
     // em.add(_Transform(150, 30), entity_id);
@@ -84,11 +84,11 @@ int main(){
     em.add(_LevelBuilder("../assets/testing_slopes.csv", "../assets/basic_tilemap.png"), entity_id);
 
     //moving platform
-    // em.add(_Transform(80, 32), entity_id);
-    // em.add(_Collider(0, 0, 30, 10, false, false, true), entity_id);
-    // em.add(_Velocity(0,0), entity_id);
-    // em.add(_Oscillator(false, 40, 2.0f), entity_id);
-    // em.add_flag(F_Solid, entity_id);
+    em.add(_Transform(80, 32), entity_id);
+    em.add(_Collider(0, 0, 30, 10, false, false, true), entity_id);
+    em.add(_Velocity(0,0), entity_id);
+    em.add(_Oscillator(false, 40, 2.0f), entity_id);
+    em.add_flag(F_Solid, entity_id);
 
     em.update();
     em.update();
@@ -102,6 +102,8 @@ int main(){
     register_key(KEY_J);
     register_key(KEY_L);
     register_key(KEY_Z);
+    register_key(KEY_LEFT);
+    register_key(KEY_RIGHT);
 
     RenderTexture2D basic1 = LoadRenderTexture(GAME_WIDTH, GAME_HEIGTH);
     RenderTexture2D basic2 = LoadRenderTexture(GAME_WIDTH, GAME_HEIGTH);

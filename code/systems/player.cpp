@@ -35,6 +35,7 @@ Entity_individual_system debug_collision {
 
 static const float T_jump_prep = 0.5;
 static float jump_prep_t = 0.0f;
+static float jump_forward_t = 0.0f;
 
 static const float b = 2.5f; // Controls how "flat" the arc is, the arc follows y = t^b, so higher b means more flat, more "curved"
 static const float c = 1.4f; // the time stretch factor in y=(t/c)^b
@@ -79,6 +80,7 @@ Entity_individual_system sys_player_movement{
             p->grounded = true;
             p->state = PLAYER_STATE::IDLE;
             v->y = 0.0f;
+            v->x = 0.0f;
         }},
         {EVENT::PLAYER_UNGROUNDED, [](Id id, Event_data data){
             auto p = em.get_from_entity<_Player>(id);
@@ -87,6 +89,9 @@ Entity_individual_system sys_player_movement{
                 em.remove_typ(id, __ParentLink);
             }
             p->grounded = false;
+            if(p->state != PLAYER_STATE::JUMP){
+                p->state = PLAYER_STATE::FALL;
+            }
         }}
     },
     __update {
@@ -101,15 +106,48 @@ Entity_individual_system sys_player_movement{
                 if(Key_Press(KEY_Z)){
                     p->state = PLAYER_STATE::JUMP_PREP;
                     jump_prep_t = 0.0f;
+                    jump_forward_t = 0.0f;
+                }
+                if(Key_Press(KEY_LEFT) || Key_Press(KEY_RIGHT)){
+                    p->state = PLAYER_STATE::WALK;
+                }
+                break;
+
+            case PLAYER_STATE::WALK:
+                if(IsKeyDown(KEY_LEFT)){
+                    v->x = -50;
+                } 
+                else if (IsKeyDown(KEY_RIGHT)){
+                    v->x = 50;
+                }
+                else {
+                    p->state = PLAYER_STATE::IDLE;
+                    v->x = 0;
+                }
+
+                if(Key_Press(KEY_Z)){
+                    p->state = PLAYER_STATE::JUMP_PREP;
+                    jump_prep_t = 0.0f;
+                    jump_forward_t = 0.0f;
+                    v->x = 0;
                 }
                 break;
 
             case PLAYER_STATE::JUMP_PREP:
                 jump_prep_t += em.fl;
+                if(IsKeyDown(KEY_LEFT)){
+                    jump_forward_t -= em.fl;
+                } 
+                if(IsKeyDown(KEY_RIGHT)){
+                    jump_forward_t += em.fl;
+                }
+
                 if(Key_Up(KEY_Z)){
                     p->state = PLAYER_STATE::JUMP;
                     v->y = min_jump_v0 + (std::min(jump_prep_t, T_jump_prep) / T_jump_prep)*(max_jump_v0 - min_jump_v0);
+                    v->x = sign(jump_forward_t)*(abs(jump_forward_t)/jump_prep_t)*50;
                 }
+
                 break;
             
             case PLAYER_STATE::JUMP:
@@ -130,14 +168,6 @@ Entity_individual_system sys_player_movement{
                     v->y -= pow(c*abs(v->y)/b, (b-2)/(b-1))*b*(b-1)/(c*c);
                 }
                 break;
-        }
-
-        v->x = 0.0f;
-        if(IsKeyDown(KEY_LEFT)){
-            v->x = -50.0f;
-        }
-        else if(IsKeyDown(KEY_RIGHT)){
-            v->x = 50.0f;
         }
 
         p->pgrounded = p->grounded;

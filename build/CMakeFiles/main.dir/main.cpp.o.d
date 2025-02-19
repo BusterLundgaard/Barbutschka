@@ -1,5 +1,6 @@
-CMakeFiles/main.dir/main.cpp.o: /home/buster/Desktop/Bartbushka/main.cpp \
- /usr/include/stdc-predef.h /home/buster/Desktop/Bartbushka/code/defs.h \
+CMakeFiles/main.dir/main.cpp.o: \
+ /home/buster/Documents/Barbutschka/main.cpp /usr/include/stdc-predef.h \
+ /home/buster/Documents/Barbutschka/code/defs.h \
  /usr/include/c++/14.2.1/iostream \
  /usr/include/c++/14.2.1/bits/requires_hosted.h \
  /usr/include/c++/14.2.1/x86_64-pc-linux-gnu/bits/c++config.h \
@@ -157,32 +158,32 @@ CMakeFiles/main.dir/main.cpp.o: /home/buster/Desktop/Bartbushka/main.cpp \
  /usr/include/c++/14.2.1/bits/enable_special_members.h \
  /usr/include/c++/14.2.1/bits/node_handle.h \
  /usr/include/c++/14.2.1/bits/erase_if.h \
- /home/buster/Desktop/Bartbushka/code/input.h \
- /home/buster/Desktop/Bartbushka/code/ecs_m.h /usr/include/c++/14.2.1/map \
- /usr/include/c++/14.2.1/bits/stl_tree.h \
+ /home/buster/Documents/Barbutschka/code/input.h \
+ /home/buster/Documents/Barbutschka/code/ecs_m.h \
+ /usr/include/c++/14.2.1/map /usr/include/c++/14.2.1/bits/stl_tree.h \
  /usr/include/c++/14.2.1/bits/stl_map.h \
  /usr/include/c++/14.2.1/bits/stl_multimap.h \
  /usr/include/c++/14.2.1/deque /usr/include/c++/14.2.1/bits/stl_deque.h \
  /usr/include/c++/14.2.1/bits/deque.tcc \
- /home/buster/Desktop/Bartbushka/code/defs.h \
- /home/buster/Desktop/Bartbushka/code/system.h \
+ /home/buster/Documents/Barbutschka/code/defs.h \
+ /home/buster/Documents/Barbutschka/code/system.h \
  /usr/include/c++/14.2.1/functional \
  /usr/include/c++/14.2.1/bits/std_function.h \
  /usr/include/c++/14.2.1/array /usr/include/c++/14.2.1/compare \
  /usr/include/c++/14.2.1/set /usr/include/c++/14.2.1/bits/stl_set.h \
  /usr/include/c++/14.2.1/bits/stl_multiset.h \
- /home/buster/Desktop/Bartbushka/code/component.h \
- /home/buster/Desktop/Bartbushka/code/events.h \
+ /home/buster/Documents/Barbutschka/code/component.h \
+ /home/buster/Documents/Barbutschka/code/events.h \
  /usr/include/c++/14.2.1/variant \
  /usr/include/c++/14.2.1/bits/parse_numbers.h \
  /usr/include/c++/14.2.1/optional \
- /home/buster/Desktop/Bartbushka/code/flags.h \
+ /home/buster/Documents/Barbutschka/code/flags.h \
  /usr/include/c++/14.2.1/cstdint \
  /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/stdint.h \
  /usr/include/stdint.h /usr/include/bits/stdint-uintn.h \
  /usr/include/bits/stdint-least.h \
- /home/buster/Desktop/Bartbushka/code/graphic_layers.h \
- /usr/include/raylib.h /home/buster/Desktop/Bartbushka/code/utils.h \
+ /home/buster/Documents/Barbutschka/code/graphic_layers.h \
+ /usr/include/raylib.h /home/buster/Documents/Barbutschka/code/utils.h \
  /usr/include/c++/14.2.1/math.h /usr/include/c++/14.2.1/cmath \
  /usr/include/math.h /usr/include/bits/math-vector.h \
  /usr/include/bits/libm-simd-decl-stubs.h \
@@ -211,19 +212,19 @@ CMakeFiles/main.dir/main.cpp.o: /home/buster/Desktop/Bartbushka/main.cpp \
  /usr/include/c++/14.2.1/bits/stl_tempbuf.h \
  /usr/include/c++/14.2.1/pstl/glue_algorithm_defs.h \
  /usr/include/c++/14.2.1/pstl/execution_defs.h \
- /home/buster/Desktop/Bartbushka/code/component_list.h \
- /home/buster/Desktop/Bartbushka/code/systems.h \
- /home/buster/Desktop/Bartbushka/code/components.h \
+ /home/buster/Documents/Barbutschka/code/component_list.h \
+ /home/buster/Documents/Barbutschka/code/systems.h \
+ /home/buster/Documents/Barbutschka/code/components.h \
  /usr/include/c++/14.2.1/fstream /usr/include/c++/14.2.1/bits/codecvt.h \
  /usr/include/c++/14.2.1/x86_64-pc-linux-gnu/bits/basic_file.h \
  /usr/include/c++/14.2.1/x86_64-pc-linux-gnu/bits/c++io.h \
  /usr/include/c++/14.2.1/bits/fstream.tcc /usr/include/c++/14.2.1/sstream \
  /usr/include/c++/14.2.1/bits/sstream.tcc \
- /home/buster/Desktop/Bartbushka/code/ecs_m.h \
- /home/buster/Desktop/Bartbushka/code/globals.h \
- /home/buster/Desktop/Bartbushka/code/defs.h \
- /home/buster/Desktop/Bartbushka/code/ecs_m.h \
- /home/buster/Desktop/Bartbushka/code/initialize_components.h \
- /home/buster/Desktop/Bartbushka/code/components.h \
- /home/buster/Desktop/Bartbushka/code/globals.h \
- /home/buster/Desktop/Bartbushka/code/graphic_layers.h
+ /home/buster/Documents/Barbutschka/code/ecs_m.h \
+ /home/buster/Documents/Barbutschka/code/globals.h \
+ /home/buster/Documents/Barbutschka/code/defs.h \
+ /home/buster/Documents/Barbutschka/code/ecs_m.h \
+ /home/buster/Documents/Barbutschka/code/initialize_components.h \
+ /home/buster/Documents/Barbutschka/code/components.h \
+ /home/buster/Documents/Barbutschka/code/globals.h \
+ /home/buster/Documents/Barbutschka/code/graphic_layers.h

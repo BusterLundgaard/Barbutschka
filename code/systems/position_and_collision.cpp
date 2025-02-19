@@ -212,6 +212,7 @@ Entity_individual_system sys_velocity_solid{
                 for(Id hit : hits){
                     auto v_hit = em.get_sibling<_Velocity>(hit);
                     v_hit->x = (dir_x == 1) ? std::max(1.0f/em.fl, v_hit->x + 1.0f/em.fl) : std::min(-1.0f/em.fl, v_hit->x - 1.0f/em.fl);
+                    //it's problematic that we change the *velocity* of the hit object here...
                 }
                 vel_remaining.x--;
                 done=false;

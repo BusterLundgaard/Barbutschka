@@ -8,18 +8,18 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/buster/Desktop/Bartbushka/code/component.cpp" "CMakeFiles/main.dir/code/component.cpp.o" "gcc" "CMakeFiles/main.dir/code/component.cpp.o.d"
-  "/home/buster/Desktop/Bartbushka/code/component_list.cpp" "CMakeFiles/main.dir/code/component_list.cpp.o" "gcc" "CMakeFiles/main.dir/code/component_list.cpp.o.d"
-  "/home/buster/Desktop/Bartbushka/code/ecs_m.cpp" "CMakeFiles/main.dir/code/ecs_m.cpp.o" "gcc" "CMakeFiles/main.dir/code/ecs_m.cpp.o.d"
-  "/home/buster/Desktop/Bartbushka/code/globals.cpp" "CMakeFiles/main.dir/code/globals.cpp.o" "gcc" "CMakeFiles/main.dir/code/globals.cpp.o.d"
-  "/home/buster/Desktop/Bartbushka/code/graphic_layers.cpp" "CMakeFiles/main.dir/code/graphic_layers.cpp.o" "gcc" "CMakeFiles/main.dir/code/graphic_layers.cpp.o.d"
-  "/home/buster/Desktop/Bartbushka/code/input.cpp" "CMakeFiles/main.dir/code/input.cpp.o" "gcc" "CMakeFiles/main.dir/code/input.cpp.o.d"
-  "/home/buster/Desktop/Bartbushka/code/system.cpp" "CMakeFiles/main.dir/code/system.cpp.o" "gcc" "CMakeFiles/main.dir/code/system.cpp.o.d"
-  "/home/buster/Desktop/Bartbushka/code/systems/drawing.cpp" "CMakeFiles/main.dir/code/systems/drawing.cpp.o" "gcc" "CMakeFiles/main.dir/code/systems/drawing.cpp.o.d"
-  "/home/buster/Desktop/Bartbushka/code/systems/moving_things.cpp" "CMakeFiles/main.dir/code/systems/moving_things.cpp.o" "gcc" "CMakeFiles/main.dir/code/systems/moving_things.cpp.o.d"
-  "/home/buster/Desktop/Bartbushka/code/systems/player.cpp" "CMakeFiles/main.dir/code/systems/player.cpp.o" "gcc" "CMakeFiles/main.dir/code/systems/player.cpp.o.d"
-  "/home/buster/Desktop/Bartbushka/code/systems/position_and_collision.cpp" "CMakeFiles/main.dir/code/systems/position_and_collision.cpp.o" "gcc" "CMakeFiles/main.dir/code/systems/position_and_collision.cpp.o.d"
-  "/home/buster/Desktop/Bartbushka/main.cpp" "CMakeFiles/main.dir/main.cpp.o" "gcc" "CMakeFiles/main.dir/main.cpp.o.d"
+  "/home/buster/Documents/Barbutschka/code/component.cpp" "CMakeFiles/main.dir/code/component.cpp.o" "gcc" "CMakeFiles/main.dir/code/component.cpp.o.d"
+  "/home/buster/Documents/Barbutschka/code/component_list.cpp" "CMakeFiles/main.dir/code/component_list.cpp.o" "gcc" "CMakeFiles/main.dir/code/component_list.cpp.o.d"
+  "/home/buster/Documents/Barbutschka/code/ecs_m.cpp" "CMakeFiles/main.dir/code/ecs_m.cpp.o" "gcc" "CMakeFiles/main.dir/code/ecs_m.cpp.o.d"
+  "/home/buster/Documents/Barbutschka/code/globals.cpp" "CMakeFiles/main.dir/code/globals.cpp.o" "gcc" "CMakeFiles/main.dir/code/globals.cpp.o.d"
+  "/home/buster/Documents/Barbutschka/code/graphic_layers.cpp" "CMakeFiles/main.dir/code/graphic_layers.cpp.o" "gcc" "CMakeFiles/main.dir/code/graphic_layers.cpp.o.d"
+  "/home/buster/Documents/Barbutschka/code/input.cpp" "CMakeFiles/main.dir/code/input.cpp.o" "gcc" "CMakeFiles/main.dir/code/input.cpp.o.d"
+  "/home/buster/Documents/Barbutschka/code/system.cpp" "CMakeFiles/main.dir/code/system.cpp.o" "gcc" "CMakeFiles/main.dir/code/system.cpp.o.d"
+  "/home/buster/Documents/Barbutschka/code/systems/drawing.cpp" "CMakeFiles/main.dir/code/systems/drawing.cpp.o" "gcc" "CMakeFiles/main.dir/code/systems/drawing.cpp.o.d"
+  "/home/buster/Documents/Barbutschka/code/systems/moving_things.cpp" "CMakeFiles/main.dir/code/systems/moving_things.cpp.o" "gcc" "CMakeFiles/main.dir/code/systems/moving_things.cpp.o.d"
+  "/home/buster/Documents/Barbutschka/code/systems/player.cpp" "CMakeFiles/main.dir/code/systems/player.cpp.o" "gcc" "CMakeFiles/main.dir/code/systems/player.cpp.o.d"
+  "/home/buster/Documents/Barbutschka/code/systems/position_and_collision.cpp" "CMakeFiles/main.dir/code/systems/position_and_collision.cpp.o" "gcc" "CMakeFiles/main.dir/code/systems/position_and_collision.cpp.o.d"
+  "/home/buster/Documents/Barbutschka/main.cpp" "CMakeFiles/main.dir/main.cpp.o" "gcc" "CMakeFiles/main.dir/main.cpp.o.d"
   "" "main" "gcc" "CMakeFiles/main.dir/link.d"
   )
 

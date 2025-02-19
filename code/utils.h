@@ -10,6 +10,18 @@
 
 #include "defs.h"
 
+inline int sign(float x){
+    if(x > 0){return 1;}
+    if(x==0){return 0;}
+    else return -1;
+}
+
+inline int sign(int x){
+    if(x > 0){return 1;}
+    if(x==0){return 0;}
+    else return -1;
+}
+
 template <typename T>
 V<T*> static_cast_all(V<Component*> els){
     V<T*> comp_typ_pointers(els.size());
