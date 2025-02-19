@@ -34,7 +34,8 @@ class _Transform : public Component {
     public:
     float x, y;
     float px, py;
-    _Transform(float x, float y) : x(x), y(y) {};
+    float safe_x, safe_y;
+    _Transform(float x, float y) : x(x), y(y), safe_x(0), safe_y(0) {};
 
     static int initialize() {
         default_meta(_Transform, "T");
@@ -119,14 +120,14 @@ class _Collider : public Component {
         return
         ox + ow > gx - 1 &&
         ox + ow < gx + w + 1 && 
-        oy > gy - 0.5 &&
-        oy < gy + (ox+ow - gx) + 0.5;
+        oy > gy &&
+        oy < gy + (h/w)*(ox+ow - gx);
         }
         return 
         ox > gx - 1 &&
         ox < gx + w + 1 && 
-        oy > gy - 0.5 &&
-        oy < gy + (gx+w-ox);
+        oy > gy &&
+        oy < gy + (h/w)*(gx+w-ox);
     }
 
     bool is_point_inside(float x, float y){
@@ -259,12 +260,21 @@ class _LevelBuilder : public Component {
 };
 static Typ __LevelBuilder = typeid(_LevelBuilder);
 
+
+enum PLAYER_STATE {
+    IDLE,
+    JUMP_PREP,
+    JUMP,
+    FALL
+};
+
 class _Player : public Component {
     public:
     bool grounded, pgrounded;
     bool on_oscillator;
+    PLAYER_STATE state;
 
-    _Player() : grounded(false), pgrounded(false), on_oscillator(false) {}
+    _Player() : grounded(false), pgrounded(false), on_oscillator(false), state(PLAYER_STATE::IDLE) {}
 
     static int initialize() {
         default_meta(_Player, "Pl");

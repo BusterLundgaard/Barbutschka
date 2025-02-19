@@ -43,12 +43,12 @@ V<int> terrain_hit(_Transform* t, V<_Collider*> cols) {
 
 //If these colliders hit some solid, return the id of the solid they hit. Otherwise return -1
 // This is very poorly optimized, and should be made specific to what direction you actually move in!
-V<Id> solid_hit(_Transform* t, V<_Collider*> cols, V<_Collider*> solids){
-    V<Id> hits = {};
+V<_Collider*> solid_hit(_Transform* t, V<_Collider*> cols, V<_Collider*> solids){
+    V<_Collider*> hits = {};
     for(_Collider* col : cols){
         for(_Collider* sol : solids){
             if(sol->is_inside(t->x + col->x, t->y + col->y, col->w, col->h)){
-                hits.push_back(sol->comp_id);
+                hits.push_back(sol);
             }
         }
     }
@@ -64,6 +64,18 @@ V<Id> adjustable_hit(_Transform* t, V<_Collider*> solids, V<_Collider*> adjustab
         }
     }
     return hits;
+}
+
+std::optional<_Collider*> slope_hit(_Transform* t, _Collider* c0, V<_Collider*>& solid_hits){
+    auto slope_col = std::find_if(solid_hits.begin(), solid_hits.end(), [](_Collider* sol){return sol->is_slope;});
+    if(slope_col != solid_hits.end()){
+        solid_hits.erase(slope_col);
+        if(t->y + c0->y < (*slope_col)->gy + ((*slope_col)->h / (*slope_col)->w)*(t->x + c0->x + c0->w - (*slope_col)->gx)){ //only covers one direction
+            return std::optional<_Collider*>{*slope_col};
+        }
+        return std::nullopt;
+    }
+    return std::nullopt;
 }
 
 Entity_individual_system sys_velocity_adjustable{
@@ -87,6 +99,7 @@ Entity_individual_system sys_velocity_adjustable{
         int dir_x = -1 + (v->x >= 0)*2;
         int dir_y = -1 + (v->y >= 0)*2;
 
+        // Prevent from moving into collisions in the first frame by moving one pixel at a time:
         bool done = false;
         while (!done) {
             done = true;
@@ -97,22 +110,13 @@ Entity_individual_system sys_velocity_adjustable{
                 t->x += dir_x*std::min(1.0f, vel_remaining.x);
                 
                 V<int> ter_hits = terrain_hit(t, cs);
-                if(exists(ter_hits, 5)){
-                    int slope_y = (int(t->y + cs[0]->y)/BLOCK_SIZE)*BLOCK_SIZE;
-                    int slope_x = (int(t->x + cs[0]->x)/BLOCK_SIZE)*BLOCK_SIZE;
-                    int extra_margin = 0;
-                    if(t->x + cs[0]->x > slope_x + 3 && t->y + cs[0]->y < slope_y + 1*(t->x + cs[0]->x + cs[0]->w - slope_x) + extra_margin){
-                        if(id==PLAYER_ID){
-                            auto player = em.get_from_entity<_Player>(id);
-                            if(player->grounded){
-                                t->y += dir_x;
-                                vel_remaining.y = std::abs(dir_x);
-                            }
-                        }
-                    }
-                    ter_hits.erase(std::find(ter_hits.begin(), ter_hits.end(), 5));
+                V<_Collider*> solid_hits = solid_hit(t, cs, solids);
+
+                if(auto slope_col = slope_hit(t, cs[0], solid_hits)){
+                    t->y += dir_x;
+                    vel_remaining.y = std::abs(dir_x);
                 }
-                if(solid_hit(t, cs, solids).size() != 0 || ter_hits.size() != 0){
+                if(solid_hits.size() != 0 || ter_hits.size() != 0){
                     t->x = x_before;
                 }
                 vel_remaining.x -= 1;
@@ -120,51 +124,59 @@ Entity_individual_system sys_velocity_adjustable{
             if(vel_remaining.y > 0){
                 done=false;
                 float y_before = t->y;
-                bool stopped = false;
-                std::optional<Id> hit_oscillator = {};
                 t->y += dir_y*std::min(1.0f, vel_remaining.y);
 
                 V<int> ter_hits = terrain_hit(t, cs);
-                V<Id> solid_hits = solid_hit(t, cs, solids);
-                if(exists(ter_hits, 5)){
-                    int slope_y = ((int(t->y + cs[0]->y+1) - 1)/BLOCK_SIZE)*BLOCK_SIZE;
-                    int slope_x = (int(t->x + cs[0]->x + cs[0]->w)/BLOCK_SIZE)*BLOCK_SIZE;
-                    if(t->y + cs[0]->y < slope_y + 1.05*(t->x + cs[0]->x + cs[0]->w - slope_x)){
-                        t->y = slope_y + 1.05*(t->x + cs[0]->x + cs[0]->w - slope_x) - cs[0]->y;
-                        stopped=true;
-                    }
-                    ter_hits.erase(std::find(ter_hits.begin(), ter_hits.end(), 5));
-                    vel_remaining.y = 0;
-                }
-        
-                if(solid_hits.size() != 0){
+                V<_Collider*> solid_hits = solid_hit(t, cs, solids);
+                if(auto slope_col = slope_hit(t, cs[0], solid_hits) || solid_hits.size() != 0 || ter_hits.size() != 0){
                     t->y = y_before;
-                    stopped=true;
-                    hit_oscillator = em.get_first_sibling_of_type(solid_hits, __Oscillator);
                     vel_remaining.y = 0;
                 }
-                else if(ter_hits.size() != 0){
-                    t->y = y_before;
-                    stopped=true;
-                    vel_remaining.y = 0;
-                }
+
                 vel_remaining.y -= 1;
-    
-                if(id==PLAYER_ID){
-                    auto player = em.get_from_entity<_Player>(id);
-                    if (!player->grounded && stopped && dir_y == -1){
-                        if(hit_oscillator){
-                            em.emit_event(EVENT::PLAYER_GROUNDED, Event_data {PLAYER_GROUNDED_data {hit_oscillator}}, 0);
-                        } else {
-                            em.emit_event(EVENT::PLAYER_GROUNDED, Event_data {PLAYER_GROUNDED_data {{}}}, 0);
-                        }
-                    } 
-                    else if (player->grounded && !stopped && std::abs(t->y - t->py) >= 1 && vel_remaining.y <= 0){
-                        em.emit_event(EVENT::PLAYER_UNGROUNDED, Event_data {NO_DATA {}}, 0);
-                    }
+            }
+        }
+
+        //Check if somehow still inside collision, respawn to last safe position:
+        {
+        V<int> ter_hits = terrain_hit(t, cs);         
+        V<_Collider*> solid_hits = solid_hit(t, cs, solids);
+        if(auto slope_col = slope_hit(t, cs[0], solid_hits) || ter_hits.size() != 0 || solid_hits.size() != 0){
+            t->x = t->safe_x;
+            t->y = t->safe_y;
+        } else {
+            t->safe_x = t->x;
+            t->safe_y = t->y;
+        }
+        }
+
+        //Check if grounded:
+        if(id == PLAYER_ID){
+            t->y -= 1;
+            auto player = em.get_from_entity<_Player>(id);
+
+            // Grounded
+            if(!player->grounded && dir_y == -1){ 
+                V<int> ter_hits = terrain_hit(t, cs);                
+                V<_Collider*> solid_hits = solid_hit(t, cs, solids);
+                if(auto slope_col = slope_hit(t, cs[0], solid_hits) || solid_hits.size() != 0 || ter_hits.size() != 0){
+                    auto oscillator_it = std::find_if(solid_hits.begin(), solid_hits.end(), [](_Collider* sol){ 
+                        return em.has_type(sol->entity_id, __Oscillator);
+                    });
+                    auto hit_oscillator = oscillator_it == solid_hits.end() ? std::nullopt : std::optional<Id>((*oscillator_it)->comp_id);
+                    em.emit_event(EVENT::PLAYER_GROUNDED, Event_data {PLAYER_GROUNDED_data {hit_oscillator}}, 0);
+                }
+            } 
+            // Ungrounded
+            else if(player->grounded && (std::abs(t->y + 1 - t->py) >= 0.1 || std::abs(t->x - t->px) >= 0.1)){
+                V<int> ter_hits = terrain_hit(t, cs);
+                V<_Collider*> solid_hits = solid_hit(t, cs, solids);
+                auto slope_col = slope_hit(t, cs[0], solid_hits);
+                if(!slope_col.has_value() && solid_hits.size() == 0 && ter_hits.size() == 0){
+                    em.emit_event(EVENT::PLAYER_UNGROUNDED, Event_data {NO_DATA {}}, 0);
                 }
             }
-
+            t->y += 1;
         }
 
     }
@@ -223,7 +235,7 @@ Entity_individual_system sys_update_collider_global_pos{
     "update_collider_global_pos", 
     {__Collider, __Transform}, {},
     GRAPHIC_LAYER::none,
-    [](Ecs_m& em, Id id){
+    [](Id id){
         auto t = em.get_from_entity<_Transform>(id);
         auto cols = em.get_all_from_entity<_Collider>(id);
         for(_Collider* col : cols){
@@ -237,7 +249,7 @@ Component_individual_system sys_set_prev_pos{
     "set_prev_pos",
     __Transform, 
     GRAPHIC_LAYER::none,
-    [](Ecs_m& em, Component* el){
+    [](Component* el){
         auto t = static_cast<_Transform*>(el);
         t->px = t->x;
         t->py = t->y;
@@ -271,7 +283,7 @@ Component_for_all_system sys_collision{
     "collision",
     __Collider, 
     GRAPHIC_LAYER::none,
-    [](Ecs_m& em, V<Component*> els){
+    [](V<Component*> els){
         auto cs = static_cast_all<_Collider>(els);
         auto lvl = em.get_singleton<_LevelBuilder>();
 
@@ -315,6 +327,8 @@ Component_for_all_system sys_collision{
                 cs[i]->hit_terrain=true;
             }
         }
+
+        
 
         auto needs_adjustment = filter<_Collider*>(cs, [](_Collider* h){
             return h->adjustable && h->hit.size() > 0;
@@ -375,45 +389,8 @@ Component_for_all_system sys_collision{
                     }
                 }
                 
-                //V<Vector2> deltas = {};
-                // for(Vector2 corner : corners){
-                //     deltas.push_back(solid->closest_edge_delta(corner.x,corner.y));
-                // }
-                // int min_i = -1;
-                // int min = std::numeric_limits<float>::max();
-                // for(int i = 0; i < 4; i++){
-                //     float size = std::abs(deltas[i].x) + std::abs(deltas[i].y);
-                //     if(size != 0 && size < min){
-                //         min_i = i; 
-                //         min = size;
-                //     }
-                // }
-                // if(min_i != -1){
-                //     t->x -= deltas[min_i].x;
-                //     t->y -= deltas[min_i].y;
-                // } 
             }
-            // for(auto solid : solids){
-            //     _Transform* st = em.get_sibling<_Transform>(solid->comp_id);
-            //     float delta_x = st->x - st->px;
-            //     float delta_y = st->y - st->py;
-            //     if(!solid->is_inside(px + delta_x, col->gy, col->w, col->h)){
-            //         if(t->x - t->px - delta_x > 0) { //to the left before
-            //             t->x -= (col->gx + col->w) - solid->gx; 
-            //         } else { //to the right before
-            //             t->x -= col->gx - (solid->gx + solid->w);
-            //         }
-            //     }
-            //     if(!solid->is_inside(col->gx, py + delta_y, col->w, col->h)){
-            //         if(t->y - t->py - delta_y > 0) { //below before
-            //             t->y -= (col->gy + col->h) - solid->gy; 
-            //         } else { // above before
-            //             t->y -= col->gy - (solid->gy + solid->h);
-            //         }   
-            //     }
 
-            //     update_collider_global_pos(em, t);
-            // }
         }
     }
 };

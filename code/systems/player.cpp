@@ -5,6 +5,7 @@
 #include "defs.h"
 #include "events.h"
 #include "flags.h"
+#include "input.h"
 
 Entity_individual_system debug_collision {
     "debug_collision",
@@ -31,26 +32,59 @@ Entity_individual_system debug_collision {
     }
 };
 
+
+static const float T_jump_prep = 0.5;
+static float jump_prep_t = 0.0f;
+
+static const float b = 2.5f; // Controls how "flat" the arc is, the arc follows y = t^b, so higher b means more flat, more "curved"
+static const float c = 1.4f; // the time stretch factor in y=(t/c)^b
+static const float small_gravity = 1.5f; //controls the factor of the reduced gravity between max_jump_v0 speed and min_jump_v0 speed
+static const float max_jump_v0 = 100;
+static const float min_jump_v0 = 80;
+static const float max_fall_speed = 400;
+
+// static const float T_arc = 1.2;
+// static const float H_min = 10.5;
+// static const float H_max = 33.5;
+// static const float a = 1.5;
+// static const float max_fall_slope = 5.5;
+
+// static const float _t_max_slope = std::pow(max_fall_slope / a, 1/(a-1));
+// static const float _C = std::pow(_t_max_slope, a) + (T_arc/2 > _t_max_slope)*max_fall_slope*(T_arc/2 - _t_max_slope); //Just a nasty constant we need
+
+
+// static float jump_t = 0.0f;
+// static float fall_t = 0.0f;
+// static float H = 0.0f;
+
 Entity_individual_system sys_player_movement{
     "player_movement",
     {__Player, __Transform, __Velocity, __Animation_player}, {},
     GRAPHIC_LAYER::none,
-    __first_frame {},
+    __first_frame {
+        auto p = em.get_from_entity<_Player>(id);
+        auto v = em.get_from_entity<_Velocity>(id);
+        p->grounded = false;
+        p->state = PLAYER_STATE::FALL;
+    },
     __system_events {
-        {EVENT::PLAYER_GROUNDED, [](Ecs_m& em, Id id, Event_data data){
+        {EVENT::PLAYER_GROUNDED, [](Id id, Event_data data){
             auto p = em.get_from_entity<_Player>(id);
+            auto v = em.get_from_entity<_Velocity>(id);
             auto grounded_data = std::get<PLAYER_GROUNDED_data>(data);
             if(grounded_data.oscillator){
-                std::cout << "Grounded on oscilattor!\n";
                 p->on_oscillator = true;
+                em.add(_ParentLink(em.get_entity_id(*grounded_data.oscillator)), id);
             }
             p->grounded = true;
+            p->state = PLAYER_STATE::IDLE;
+            v->y = 0.0f;
         }},
-        {EVENT::PLAYER_UNGROUNDED, [](Ecs_m& em, Id id, Event_data data){
+        {EVENT::PLAYER_UNGROUNDED, [](Id id, Event_data data){
             auto p = em.get_from_entity<_Player>(id);
             if(p->on_oscillator){
-                std::cout << "Ungrounded from oscilattor!\n";
                 p->on_oscillator = false;
+                em.remove_typ(id, __ParentLink);
             }
             p->grounded = false;
         }}
@@ -62,6 +96,42 @@ Entity_individual_system sys_player_movement{
         auto anim = em.get_from_entity<_Animation_player>(id);
         auto col = em.get_from_entity<_Collider>(id);
 
+        switch(p->state) {
+            case PLAYER_STATE::IDLE:
+                if(Key_Press(KEY_Z)){
+                    p->state = PLAYER_STATE::JUMP_PREP;
+                    jump_prep_t = 0.0f;
+                }
+                break;
+
+            case PLAYER_STATE::JUMP_PREP:
+                jump_prep_t += em.fl;
+                if(Key_Up(KEY_Z)){
+                    p->state = PLAYER_STATE::JUMP;
+                    v->y = min_jump_v0 + (std::min(jump_prep_t, T_jump_prep) / T_jump_prep)*(max_jump_v0 - min_jump_v0);
+                }
+                break;
+            
+            case PLAYER_STATE::JUMP:
+                if(v->y > min_jump_v0){
+                    v->y -= small_gravity;
+                } else if (v->y > 0){
+                    v->y -= pow(c*abs(v->y)/b, (b-2)/(b-1))*b*(b-1)/(c*c); //this is the second derivative of y=t^b rewritten in terms of it's first derivative, the speed. This way, we don't need to keep track of time.
+                } else {
+                    p->state = PLAYER_STATE::FALL;
+                }
+                break;
+
+            case PLAYER_STATE::FALL:
+                if(abs(v->y) < 0.1){
+                    v->y = -0.1f;
+                }
+                if(v->y > -max_fall_speed){
+                    v->y -= pow(c*abs(v->y)/b, (b-2)/(b-1))*b*(b-1)/(c*c);
+                }
+                break;
+        }
+
         v->x = 0.0f;
         if(IsKeyDown(KEY_LEFT)){
             v->x = -50.0f;
@@ -69,63 +139,6 @@ Entity_individual_system sys_player_movement{
         else if(IsKeyDown(KEY_RIGHT)){
             v->x = 50.0f;
         }
-
-        if(p->grounded && IsKeyDown(KEY_SPACE)){
-            v->y = 100.0f;
-        }
-        else if(!p->grounded){
-            v->y -= 4.0f;
-        } else {
-            v->y = -1.0f;
-        }
-
-
-
-        // bool grounded = GRID[int() ][int(t->x + col->x)/BLOCK_SIZE]
-        
-        // _Collider* col_ground = em.get_from_comp<_Collider>(p->ground_trigger_col_id);
-        // bool grounded = col_ground->hits_solid(em);
-        // bool p_grounded = col_ground->phits_solid(em);
-
-        // _Collider* col_fall = em.get_from_comp<_Collider>(p->falling_trigger_col_id);
-        // bool falling = !(col_fall->hits_solid(em));
-
-        // if(IsKeyDown(KEY_LEFT)){
-        //     if(grounded){anim->change_animation("walk");}
-        //     v->x = -50.0f;
-        // }
-        // else if(IsKeyDown(KEY_RIGHT)){ 
-        //     if(grounded){anim->change_animation("walk");}
-        //     v->x = 50.0f;
-        // }
-        // else if(grounded){
-        //     v->x = 0.0f;
-        //     if(grounded){anim->change_animation("idle");}
-        // }
-
-        // auto moving_platform = col_ground->get_typ_in_hits(__Oscillator, em);
-        // if(moving_platform){
-        //     auto osc = static_cast<_Oscillator*>(*moving_platform);
-        //     if(!osc->dir){ //Moves in x direction
-        //         float max_speed = abs(osc->get_speed())+50.0f;
-        //         v->x = std::clamp(v->x, -50.0f, 50.0f);
-        //         v->x = std::clamp(v->x + osc->get_speed(), -max_speed, max_speed);
-        //     }
-        // }
-
-        // if(grounded && IsKeyDown(KEY_SPACE)){
-        //     v->y = 145.0f;
-        //     anim->change_animation("jump_start");
-        // }
-        // else if(!p_grounded && grounded){
-        //     em.timeout(3, [&em,id](){    
-        //         auto v = em.get_from_entity<_Velocity>(id);
-        //         if(v->y < 0){v->y = 0.0f;}
-        //     });
-        // }
-        // else if(!p->grounded){
-        //     v->y -= 3.0f;
-        // }
 
         p->pgrounded = p->grounded;
 

@@ -6,8 +6,10 @@
 -[x] Write the update function in the new ecs_m
 -[x] Actually write the new components_list
 -[x] Get the shit refactored in different files and get it to run 
--[] Potentially rewrite the whole collision system, it's a bloody unstable mess.
-    -[] I think dependency on "previous frame" is really bad 
+-[x] Potentially rewrite the whole collision system, it's a bloody unstable mess.
+    -[x] I think dependency on "previous frame" is really bad 
+
+-[] Plot the idea for the jump arc in geogebra so that you can actually tweak parameters and test against what your system computes. 
 
 -[] Add support in the ComponentList for having more than MaxElements elements??
 -[] Change the collision system so that it works on layers, where you specify a matrix of which layers interact
@@ -37,27 +39,6 @@ where the numbers are how many are in the list, so these are lists of one elemen
 -[X] Create and test collision hit algorithm with static terrain
 -[X] Test that checking for collision events in a basic player charachter without gravity works well enough
 
--[] Refactor the component class so that instead of storing the type as a string, we store it as a type_index. Then they won't need to give all these functions the types explicitly if they just pass in a component! And in fact, you can make a general "typecasting" function that just takes a component and gives you the correct type out of it! Might be able to infer what it should return given 
-context like auto t = get_sibling<_Transform>(comp)
--[] Refactor so that by writing just, for example __Level you refer to a global static variable with value typeid(_Level).
-
--[] Create SolidCollision component
--[] Create the collision adjustment algorithm
-    See if it can somehow work so that we get moving platforms for free!
--[] Create entity with SolidCollision that you can move around with arrow keys in large chunks
--[] Check and fix the collision adjustment algorithm against static terrain
--[] Check and fix the collision adjustment against dynamic objects (use a system of "weight" where we assume only one moves the other)
-
--[] Create the basic movement of the player charachter
-
--[] Figure out moving platform dynamics
-
--[] Figure out system for going from room to room and keeping track of permanent world events
-
--[] Figure out a simple but flexible system for animations 
-
--[] Polish up main charachter movement
-
--[] Add attack. Test it against very simple "enemy" that is just a red square (ie, test the enemy loses health if hit, and that you loose health if walking into enemy)
-
--[] Figure out moving platforms
+-[] Eventually you have to *also* add a more "static" collision system that just looks at position and not velocity
+    This is unfortunately neccesary for rare cases very you might get stuck in blocks from the other system
+    You've sort of already implemented it, at least for adjustables against solids. Now you just need it for adjustables against static terrain. 

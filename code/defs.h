@@ -45,8 +45,8 @@ const int8_t UP = 1 << 3;
 [](System_data* data_pointer){\
     delete static_cast<systemname*>(data_pointer);\
 },
-#define __system_events std::unordered_map<EVENT, std::function<void(Ecs_m&, Id, Event_data)>>
-#define __first_frame [](Ecs_m& em, Id id)
-#define __update [](Ecs_m& em, Id id)
+#define __system_events std::unordered_map<EVENT, std::function<void(Id, Event_data)>>
+#define __first_frame [](Id id)
+#define __update [](Id id)
 
 #endif

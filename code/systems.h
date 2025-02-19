@@ -11,6 +11,7 @@ extern Entity_individual_system sys_velocity_solid;
 extern Entity_individual_system sys_update_collider_global_pos;
 
 extern Component_individual_system sys_set_prev_pos;
+extern Entity_individual_system sys_add_movement_from_parent;
 
 extern Entity_individual_system sys_draw_world;
 

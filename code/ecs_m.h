@@ -60,6 +60,7 @@ class Ecs_m {
     Map<Typ, Component_list> comps = {};
     float fl;
 
+    Ecs_m();
     Ecs_m(V<System*> systems);
     
     void update();
@@ -80,6 +81,8 @@ class Ecs_m {
     void add_flag(flag flag, Id entity_id);
 
     //GETTERS:
+    void* get_from_comp_with_typ(Id component_id, Typ typ);
+
     template <typename T>
     T* get_from_comp(Id component_id){
         return (static_cast<T*>(comps.at(typeid(T)).get_from_comp(component_id)));

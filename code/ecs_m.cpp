@@ -4,6 +4,7 @@
 #include "exceptions.h"
 #include <optional>
 
+Ecs_m::Ecs_m() : systems({}) {}
 Ecs_m::Ecs_m(V<System*> systems) : systems(systems), fl(1.0/60.0) {
     for(int i = 0; i < systems.size(); i++){
         if(Entity_individual_system* sys = dynamic_cast<Entity_individual_system*>(systems[i])){
@@ -214,10 +215,10 @@ void Ecs_m::update() {
         set_active_graphic_layer(sys_inst.sys->graphic_layer);
 
         if(Entity_individual_system* sys = dynamic_cast<Entity_individual_system*>(sys_inst.sys)){
-            sys->first_frame(*this, sys_inst.entity_id);
+            sys->first_frame(sys_inst.entity_id);
         }
         if(Entity_individual_system_with_data* sys = dynamic_cast<Entity_individual_system_with_data*>(sys_inst.sys)){
-            sys->first_frame(*this, sys_inst.entity_id);
+            sys->first_frame(sys_inst.entity_id);
         }
     }
     first_frame_systems={};
@@ -228,14 +229,22 @@ void Ecs_m::update() {
         if(it->frames <= 0){
             for(System* sub_sys : event_subscribers.at(it->event)){
                 set_active_graphic_layer(sub_sys->graphic_layer);
-                for(Id entity_id : intersections.at(sub_sys)){
-                    if(Entity_individual_system* sys = dynamic_cast<Entity_individual_system*>(sub_sys)){
-                        sys->event_callbacks.at(it->event)(*this, entity_id, it->data);
-                    }
-                    if(Entity_individual_system_with_data* sys = dynamic_cast<Entity_individual_system_with_data*>(sub_sys)){
-                        sys->event_callbacks.at(it->event)(*this, entity_id, it->data);
-                    }
+                if(General_system* sys = dynamic_cast<General_system*>(sub_sys)){
+                    sys->event_callbacks.at(it->event)(it->data);
+                } 
+                else if(General_system_with_data* sys = dynamic_cast<General_system_with_data*>(sub_sys)){
+                    sys->event_callbacks.at(it->event)(it->data);
                 }
+                else {
+                    for(Id entity_id : intersections.at(sub_sys)){
+                        if(Entity_individual_system* sys = dynamic_cast<Entity_individual_system*>(sub_sys)){
+                            sys->event_callbacks.at(it->event)(entity_id, it->data);
+                        }
+                        if(Entity_individual_system_with_data* sys = dynamic_cast<Entity_individual_system_with_data*>(sub_sys)){
+                            sys->event_callbacks.at(it->event)(entity_id, it->data);
+                        }
+                    }
+                }  
             }
             it = events.erase(it);
         } else {
@@ -265,6 +274,14 @@ void Ecs_m::update() {
                     it->call();
                 }
             }
+            else if(General_system* sys = dynamic_cast<General_system*>(it->system)){
+                set_active_graphic_layer(it->system->graphic_layer);
+                it->call();
+            }
+            else if(General_system_with_data* sys = dynamic_cast<General_system_with_data*>(it->system)){
+                set_active_graphic_layer(it->system->graphic_layer);
+                it->call();
+            }
             it = next_frame_calls.erase(it);
         } else {
             ++it;
@@ -279,36 +296,42 @@ void Ecs_m::update() {
         if(Entity_individual_system* sys = dynamic_cast<Entity_individual_system*>(systems[i])){
             for(Id entity_id : intersections.at(systems[i])){
                 processing_id = entity_id;
-                sys->update(*this, entity_id);
+                sys->update(entity_id);
             }   
             continue;
         }
-        if(Entity_individual_system_with_data* sys = dynamic_cast<Entity_individual_system_with_data*>(systems[i])){
+        else if(Entity_individual_system_with_data* sys = dynamic_cast<Entity_individual_system_with_data*>(systems[i])){
             for(Id entity_id : intersections.at(systems[i])){
                 processing_id = entity_id;
-                sys->update(*this, entity_id, systems_data.at({systems[i], entity_id}));
+                sys->update(entity_id, systems_data.at({systems[i], entity_id}));
             }   
             continue;
         }
-        if(Entity_for_all_system* sys = dynamic_cast<Entity_for_all_system*>(systems[i])){
-            sys->update(*this, intersections.at(systems[i]));
+        else if(Entity_for_all_system* sys = dynamic_cast<Entity_for_all_system*>(systems[i])){
+            sys->update(intersections.at(systems[i]));
             continue;
         }
-        if(Component_individual_system* sys = dynamic_cast<Component_individual_system*>(systems[i])){
+        else if(Component_individual_system* sys = dynamic_cast<Component_individual_system*>(systems[i])){
             for(int j = 0; j < comps.at(sys->typs.at(0)).size; j++){
                 Component* comp = comps.at(sys->typs.at(0)).get(j);
                 processing_id = comp->comp_id;
-                sys->update(*this, comp);
+                sys->update(comp);
             }                
         }
-        if(Component_for_all_system* sys = dynamic_cast<Component_for_all_system*>(systems[i])){
+        else if(Component_for_all_system* sys = dynamic_cast<Component_for_all_system*>(systems[i])){
             Typ ty = sys->typs.at(0);
             auto lst = comps.at(sys->typs.at(0));
             V<Component*> els(lst.size);
             for(int j = 0; j < lst.size; j++){
                 els[j] = lst.get(j);
             }  
-            sys->update(*this, els);
+            sys->update(els);
+        }
+        else if(General_system* sys = dynamic_cast<General_system*>(systems[i])){
+            sys->update();
+        }
+        if(General_system_with_data* sys = dynamic_cast<General_system_with_data*>(systems[i])){
+            sys->update(systems_data.at({systems[i], 0}));
         }
     }
     EndTextureMode();
@@ -325,6 +348,10 @@ void Ecs_m::set_time_scale(float scale){
 
 Component* Ecs_m::get_from_entity(Id entity_id, Typ typ){
     return static_cast<Component*>(comps.at(typ).get_from_entity(entity_id)); 
+}
+
+void* Ecs_m::get_from_comp_with_typ(Id component_id, Typ typ){
+    return comps.at(typ).get_from_comp(component_id);
 }
 
 Id Ecs_m::get_entity_id(Id comp_id){

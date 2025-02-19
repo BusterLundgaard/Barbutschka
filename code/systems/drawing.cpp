@@ -9,7 +9,7 @@ Entity_individual_system sys_draw_sprite{
     "draw_sprite",
     {__Sprite, __Transform}, {},
     GRAPHIC_LAYER::dynamic,
-    [](Ecs_m& em, Id id){
+    [](Id id){
         auto spr = em.get_from_entity<_Sprite>(id);
         auto t = em.get_from_entity<_Transform>(id);
         DrawTexture(spr->tex, t->x, GAME_HEIGTH - t->y - spr->tex.height, WHITE);
@@ -22,7 +22,7 @@ Entity_individual_system sys_draw_world {
     GRAPHIC_LAYER::static_level, 
     __first_frame {}, 
     __system_events {
-        {EVENT::NEW_SCREEN, [](Ecs_m& em, Id id, Event_data data){
+        {EVENT::NEW_SCREEN, [](Id id, Event_data data){
             NEW_SCREEN_data new_screen_data = std::get<NEW_SCREEN_data>(data); // We will actually use this data later ...
             auto lvl_builder = em.get_singleton<_LevelBuilder>();
 
@@ -81,7 +81,7 @@ Component_individual_system sys_DEBUG_draw_hit_collider(
     "DEBUG_draw_hit_collider",
     __Collider, 
     GRAPHIC_LAYER::dynamic,
-    [](Ecs_m& em, Component* el){
+    [](Component* el){
         auto col = static_cast<_Collider*>(el);
 
         if(!col->is_slope){
