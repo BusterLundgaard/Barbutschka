@@ -159,12 +159,15 @@ Entity_individual_system sys_velocity_adjustable{
             if(!player->grounded && dir_y == -1){ 
                 V<int> ter_hits = terrain_hit(t, cs);                
                 V<_Collider*> solid_hits = solid_hit(t, cs, solids);
-                if(auto slope_col = slope_hit(t, cs[0], solid_hits) || solid_hits.size() != 0 || ter_hits.size() != 0){
+                auto slope_col = slope_hit(t, cs[0], solid_hits);
+                if(slope_col.has_value() || solid_hits.size() != 0 || ter_hits.size() != 0){
                     auto oscillator_it = std::find_if(solid_hits.begin(), solid_hits.end(), [](_Collider* sol){ 
                         return em.has_type(sol->entity_id, __Oscillator);
                     });
+                    auto hit_slope = slope_col.has_value() ? std::optional<Id>((*slope_col)->comp_id) : std::nullopt;
                     auto hit_oscillator = oscillator_it == solid_hits.end() ? std::nullopt : std::optional<Id>((*oscillator_it)->comp_id);
-                    em.emit_event(EVENT::PLAYER_GROUNDED, Event_data {PLAYER_GROUNDED_data {hit_oscillator}}, 0);
+
+                    em.emit_event(EVENT::PLAYER_GROUNDED, Event_data {PLAYER_GROUNDED_data {hit_oscillator, hit_slope}}, 0);
                 }
             } 
             // Ungrounded
@@ -176,6 +179,25 @@ Entity_individual_system sys_velocity_adjustable{
                     em.emit_event(EVENT::PLAYER_UNGROUNDED, Event_data {NO_DATA {}}, 0);
                 }
             }
+            
+            //Left slope
+            if(player->slope_angle.has_value()){
+                V<_Collider*> solid_hits = solid_hit(t, cs, solids);
+                auto slope_col = slope_hit(t, cs[0], solid_hits);
+                if(!slope_col.has_value()){
+                    em.emit_event(EVENT::PLAYER_LEFT_SLOPE, Event_data {NO_DATA {}}, 0);
+                }
+            } 
+            // Entered slope
+            else {
+                V<_Collider*> solid_hits = solid_hit(t, cs, solids);
+                auto slope_col = slope_hit(t, cs[0], solid_hits);
+                if(slope_col.has_value()){
+                    auto hit_slope = slope_col.has_value() ? std::optional<Id>((*slope_col)->comp_id) : std::nullopt;
+                    em.emit_event(EVENT::PLAYER_ENTERED_SLOPE, Event_data {PLAYER_ENTERED_SLOPE_data {(*slope_col)->comp_id}}, 0);
+                }
+            }
+
             t->y += 1;
         }
 

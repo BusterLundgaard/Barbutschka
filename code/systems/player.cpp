@@ -72,18 +72,44 @@ Entity_individual_system sys_player_movement{
         {EVENT::PLAYER_GROUNDED, [](Id id, Event_data data){
             auto p = em.get_from_entity<_Player>(id);
             auto v = em.get_from_entity<_Velocity>(id);
+            auto anim = em.get_from_entity<_Animation_player>(id);
             auto grounded_data = std::get<PLAYER_GROUNDED_data>(data);
+            
+            if(abs(v->y) > 100){
+                p->state = PLAYER_STATE::LAND;
+                anim->current_anim = "land";
+                em.timeout_time(0.5, [id](){  
+                    auto p = em.get_from_entity<_Player>(id);
+                    auto anim = em.get_from_entity<_Animation_player>(id);
+                    p->state = PLAYER_STATE::IDLE;
+                    anim->current_anim = "idle";
+                });
+            } else {
+                p->state = PLAYER_STATE::IDLE;
+                anim->current_anim = "idle";
+            }
+
             if(grounded_data.oscillator){
                 p->on_oscillator = true;
                 em.add(_ParentLink(em.get_entity_id(*grounded_data.oscillator)), id);
+                v->y = 0.0f;
+                v->x = 0.0f;
+            } else if(grounded_data.slope){
+                //std::cout << "entered slope!" << std::endl;
+                auto slope = em.get_from_comp<_Collider>(*grounded_data.slope);
+                float slope_angle = atan2(slope->h, slope->slope_dir*slope->w);
+                v->x = -cos(*(p->slope_angle))*abs(v->y)*0.4;
+                v->y = -sin(*(p->slope_angle))*abs(v->y)*0.4;
+            } else {
+                v->y = 0.0f;
+                v->x = 0.0f;
             }
             p->grounded = true;
-            p->state = PLAYER_STATE::IDLE;
-            v->y = 0.0f;
-            v->x = 0.0f;
         }},
         {EVENT::PLAYER_UNGROUNDED, [](Id id, Event_data data){
             auto p = em.get_from_entity<_Player>(id);
+            auto anim = em.get_from_entity<_Animation_player>(id);
+            p->slope_angle = std::nullopt;
             if(p->on_oscillator){
                 p->on_oscillator = false;
                 em.remove_typ(id, __ParentLink);
@@ -91,7 +117,19 @@ Entity_individual_system sys_player_movement{
             p->grounded = false;
             if(p->state != PLAYER_STATE::JUMP){
                 p->state = PLAYER_STATE::FALL;
+                anim->current_anim="fall";
             }
+        }},
+        {EVENT::PLAYER_LEFT_SLOPE, [](Id id, Event_data data){
+            auto p = em.get_from_entity<_Player>(id);
+            p->slope_angle = std::nullopt;
+            std::cout << "left slope yay!\n";
+        }},
+        {EVENT::PLAYER_ENTERED_SLOPE, [](Id id, Event_data data){
+            auto p = em.get_from_entity<_Player>(id);
+            auto slope = em.get_from_comp<_Collider>(std::get<PLAYER_ENTERED_SLOPE_data>(data).slope);
+            p->slope_angle = std::optional<float>(atan2(slope->h, slope->slope_dir*slope->w));
+            std::cout << "entered slope the other way!\n";
         }}
     },
     __update {
@@ -103,26 +141,69 @@ Entity_individual_system sys_player_movement{
 
         switch(p->state) {
             case PLAYER_STATE::IDLE:
+                v->x = 0.95*v->x;
+                v->y = 0.95*v->y;
+                if(abs(v->x) < 0.1){v->x = 0;}
+                if(abs(v->y) < 0.1){v->y = 0;}
+
                 if(Key_Press(KEY_Z)){
                     p->state = PLAYER_STATE::JUMP_PREP;
                     jump_prep_t = 0.0f;
                     jump_forward_t = 0.0f;
+                    anim->current_anim="jump_prep";
                 }
-                if(Key_Press(KEY_LEFT) || Key_Press(KEY_RIGHT)){
+                if(IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_RIGHT)){
                     p->state = PLAYER_STATE::WALK;
+                    anim->current_anim = "walk";
+                    if(IsKeyDown(KEY_LEFT)){anim->flipped=1;}
+                    else{anim->flipped=0;}
+                }
+
+                if(IsKeyDown(KEY_DOWN)){
+                    p->state = PLAYER_STATE::CROUCH;
+                    anim->change_animation("crouch");
+                }
+
+                break;
+            case PLAYER_STATE::CROUCH:
+                v->x = 0.95*v->x;
+                v->y = 0.95*v->y;
+                if(abs(v->x) < 0.1){v->x = 0;}
+                if(abs(v->y) < 0.1){v->y = 0;}
+
+                if(Key_Up(KEY_DOWN)){
+                    p->state = PLAYER_STATE::IDLE;
+                    anim->change_animation("idle");
                 }
                 break;
 
             case PLAYER_STATE::WALK:
                 if(IsKeyDown(KEY_LEFT)){
-                    v->x = -50;
+                    anim->flipped=1;
+                    if(p->slope_angle){
+                        float steepness = std::min(1.0, abs(tan(*(p->slope_angle)))/tan(60*3.14/180));
+                        float speed = (*(p->slope_angle) > 3.14/2) ? 50*(1-steepness) : 50*(1+steepness*1.8);
+                        v->y = -sin(*(p->slope_angle))*speed;
+                        v->x = -speed;
+                    } else {
+                        v->x = -50;
+                    }
                 } 
                 else if (IsKeyDown(KEY_RIGHT)){
-                    v->x = 50;
+                    anim->flipped=0;
+                    if(p->slope_angle){
+                        float steepness = std::min(1.0, abs(tan(*(p->slope_angle)))/tan(60*3.14/180));
+                        float speed = (*(p->slope_angle) < 3.14/2) ? 50*(1-steepness) : 50*(1+steepness*1.8);
+                        v->y = -sin(*(p->slope_angle))*speed;
+                        v->x = speed;
+                    } else {
+                        v->x = 50;
+                    }
                 }
                 else {
                     p->state = PLAYER_STATE::IDLE;
                     v->x = 0;
+                    anim->current_anim = "idle";
                 }
 
                 if(Key_Press(KEY_Z)){
@@ -130,6 +211,7 @@ Entity_individual_system sys_player_movement{
                     jump_prep_t = 0.0f;
                     jump_forward_t = 0.0f;
                     v->x = 0;
+                    anim->current_anim="jump_prep";
                 }
                 break;
 
@@ -145,7 +227,8 @@ Entity_individual_system sys_player_movement{
                 if(Key_Up(KEY_Z)){
                     p->state = PLAYER_STATE::JUMP;
                     v->y = min_jump_v0 + (std::min(jump_prep_t, T_jump_prep) / T_jump_prep)*(max_jump_v0 - min_jump_v0);
-                    v->x = sign(jump_forward_t)*(abs(jump_forward_t)/jump_prep_t)*50;
+                    v->x = v->x + sign(jump_forward_t)*(abs(jump_forward_t)/jump_prep_t)*50;
+                    anim->current_anim="jump_rise";
                 }
 
                 break;
@@ -157,6 +240,8 @@ Entity_individual_system sys_player_movement{
                     v->y -= pow(c*abs(v->y)/b, (b-2)/(b-1))*b*(b-1)/(c*c); //this is the second derivative of y=t^b rewritten in terms of it's first derivative, the speed. This way, we don't need to keep track of time.
                 } else {
                     p->state = PLAYER_STATE::FALL;
+                    std::cout << "Set to fall\n";
+                    anim->current_anim="fall";
                 }
                 break;
 
@@ -168,6 +253,10 @@ Entity_individual_system sys_player_movement{
                     v->y -= pow(c*abs(v->y)/b, (b-2)/(b-1))*b*(b-1)/(c*c);
                 }
                 break;
+
+            case PLAYER_STATE::LAND:
+                break;
+
         }
 
         p->pgrounded = p->grounded;

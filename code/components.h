@@ -19,8 +19,10 @@
 class _Sprite : public Component {
     public:
     Texture2D tex;
+    bool flipped;
 
     _Sprite(std::string path) : tex(LoadTexture(path.c_str())) {};
+    _Sprite(std::string path, bool flipped) : tex(LoadTexture(path.c_str())), flipped(flipped) {};
 
     static int initialize() {
         default_meta(_Sprite, "Sprt");
@@ -266,13 +268,16 @@ enum PLAYER_STATE {
     JUMP_PREP,
     JUMP,
     FALL,
-    WALK
+    LAND,
+    WALK,
+    CROUCH
 };
 
 class _Player : public Component {
     public:
     bool grounded, pgrounded;
     bool on_oscillator;
+    std::optional<float> slope_angle = std::nullopt;
     PLAYER_STATE state;
 
     _Player() : grounded(false), pgrounded(false), on_oscillator(false), state(PLAYER_STATE::IDLE) {}
@@ -320,6 +325,10 @@ struct animation {
     Texture2D spritesheet;
     float frame_speed;
     bool loops;
+    int width;
+    int height;
+    float offset_x;
+    float offset_y;
 };
 
 class _Animation_player : public Component {
@@ -327,7 +336,6 @@ class _Animation_player : public Component {
     Map<std::string, animation> anims;
     std::string current_anim;
     float time_per_frame;
-    int sprite_width, sprite_height;
 
     int offset_x, offset_y;
 
@@ -337,9 +345,9 @@ class _Animation_player : public Component {
     int flipped;
 
     _Animation_player(Map<std::string, animation> anims, float time_per_frame, int sprite_width, int sprite_height, int offset_x, int offset_y, std::string starting_animation) : 
-        anims(anims), time_per_frame(time_per_frame), sprite_width(sprite_width), sprite_height(sprite_height), offset_x(offset_x), offset_y(offset_y),
+        anims(anims), time_per_frame(time_per_frame), offset_x(offset_x), offset_y(offset_y),
         current_anim(starting_animation), time(0), frame(0), flipped(1) {}
-    _Animation_player(_Animation_player* anim) : Component(anim->comp_id, anim->entity_id), anims(anim->anims), current_anim(anim->current_anim), time_per_frame(anim->time_per_frame), time(anim->time), frame(anim->frame), sprite_width(anim->sprite_width), sprite_height(anim->sprite_height), offset_x(anim->offset_x), offset_y(anim->offset_y), flipped(anim->flipped) {}
+    _Animation_player(_Animation_player* anim) : Component(anim->comp_id, anim->entity_id), anims(anim->anims), current_anim(anim->current_anim), time_per_frame(anim->time_per_frame), time(anim->time), frame(anim->frame), offset_x(anim->offset_x), offset_y(anim->offset_y), flipped(anim->flipped) {}
 
     void change_animation(std::string new_animation){
         if(!(current_anim == new_animation)){

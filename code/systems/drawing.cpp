@@ -12,7 +12,16 @@ Entity_individual_system sys_draw_sprite{
     [](Id id){
         auto spr = em.get_from_entity<_Sprite>(id);
         auto t = em.get_from_entity<_Transform>(id);
-        DrawTexture(spr->tex, t->x, GAME_HEIGTH - t->y - spr->tex.height, WHITE);
+        DrawTextureRec(
+            spr->tex, 
+            Rectangle{
+                float((spr->tex).width)*spr->flipped, 0.0, (1 - 2*spr->flipped)*float((spr->tex).width), float((spr->tex).height)
+            }, 
+            Vector2{t->x, GAME_HEIGTH - t->y - spr->tex.height},
+            WHITE
+        );
+        //DrawTexture(spr->tex, t->x, GAME_HEIGTH - t->y - spr->tex.height, WHITE);
+
     }
 };
 
@@ -53,11 +62,13 @@ Entity_individual_system sys_draw_animation{
         auto t = em.get_from_entity<_Transform>(id);
         auto anim = em.get_from_entity<_Animation_player>(id);
 
+        animation cur_anim = anim->anims.at(anim->current_anim);
+
         anim->time += em.fl;
-        if(anim->time > anim->anims.at(anim->current_anim).frame_speed){
+        if(anim->time > cur_anim.frame_speed){
             anim->time=0;
-            int amount_of_frames = anim->anims.at(anim->current_anim).spritesheet.width/anim->sprite_width;
-            if(anim->anims.at(anim->current_anim).loops){
+            int amount_of_frames = cur_anim.spritesheet.width/cur_anim.width;
+            if(cur_anim.loops){
                 anim->frame = (anim->frame + 1) % amount_of_frames;
             } else {
                 anim->frame = std::min(amount_of_frames-1, anim->frame + 1);
@@ -66,11 +77,13 @@ Entity_individual_system sys_draw_animation{
         }
 
         DrawTextureRec(
-            anim->anims.at(anim->current_anim).spritesheet, 
+            cur_anim.spritesheet, 
             Rectangle{
-                float(anim->sprite_width*anim->frame), 0, 
-                float(anim->sprite_width), float(anim->sprite_height)},
-            Vector2{t->x + anim->offset_x, GAME_HEIGTH - t->y - anim->offset_y - anim->sprite_height}, 
+                float(cur_anim.width * anim->frame) + cur_anim.width*anim->flipped, 0, 
+                (1 - 2*anim->flipped)*float(cur_anim.width), float(cur_anim.height)},
+            Vector2{
+                t->x + anim->offset_x + cur_anim.offset_x, 
+                GAME_HEIGTH - (t->y + anim->offset_y + cur_anim.offset_y) - cur_anim.height}, 
             WHITE
         );
     }

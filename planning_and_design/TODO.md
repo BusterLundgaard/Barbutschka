@@ -9,14 +9,11 @@
 -[x] Potentially rewrite the whole collision system, it's a bloody unstable mess.
     -[x] I think dependency on "previous frame" is really bad 
 
--[] Plot the idea for the jump arc in geogebra so that you can actually tweak parameters and test against what your system computes. 
-
--[] Add support in the ComponentList for having more than MaxElements elements??
--[] Change the collision system so that it works on layers, where you specify a matrix of which layers interact
-    -[] Make a document/file for "Project settings" like these where it's all just constants 
-
--[] Make collision adjustment with the static environment work
--[] Make collision adjustment with "stairs" in the staic environment work / diagonal slopes
+-[] Make it so that you can set the width/height of individual animations and also set an offset
+-[] Get basic walk and jump and idle animations working for grandma
+-[] Get interaction with moving objects and slopes working properly for grandma 
+-[] Get slap and thrust attack working (at least animation and movement wise)
+-[] Create a simple enemy you can test attacks against. 
 
 # LONG TERM:
 -[x] Backup "old code" somewhere else
