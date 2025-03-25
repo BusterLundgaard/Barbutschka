@@ -44,18 +44,18 @@ int main(){
     PLAYER_ID=entity_id;
     ROOM_X = 1;
     ROOM_Y = 1;
-    em.add(_Transform(61.060257, 100), entity_id);
+    em.add(_Transform(16, 17), entity_id);
     em.add(_Velocity(0,0), entity_id);
-    em.add(_Collider(0, 0, 12, 18, true, true, false), entity_id);
+    em.add(_Collider(0, 0, 9, 18, true, true, false), entity_id);
     em.add(_Player(), entity_id);
     em.add(
         _Animation_player(
-            {{"idle", {LoadTexture("../assets/tmp/Attempt2/front_view.png"), 1.0/2.0, true, 13, 20, 3, 0}},
-             {"walk", {LoadTexture("../assets/tmp/Attempt2/walk.png"), 1.0/15.0, true, 10, 20, 5, 0}},
-             {"jump_prep", {LoadTexture("../assets/tmp/Attempt2/jump_prep.png"), 1.0/15.0, false, 11, 22, 0, 0}},
-             {"jump_rise", {LoadTexture("../assets/tmp/Attempt2/jump_rise.png"), 1.0/15.0, false, 11, 22, 0, 0}},
-             {"fall", {LoadTexture("../assets/tmp/Attempt2/fall.png"), 1.0/15.0, true, 11, 22, 0, 0}},
-             {"land", {LoadTexture("../assets/tmp/Attempt2/landing.png"), 1.0/2.0, false, 11, 22, 0, 0}},
+            {{"idle", {LoadTexture("../assets/tmp/Attempt2/front_view.png"), 1.0/2.0, true, 13, 20, 1, 0}},
+             {"walk", {LoadTexture("../assets/tmp/Attempt2/walk.png"), 1.0/15.0, true, 10, 20, 3, 0}},
+             {"jump_prep", {LoadTexture("../assets/tmp/Attempt2/jump_prep.png"), 1.0/15.0, false, 11, 22, 3, 0}},
+             {"jump_rise", {LoadTexture("../assets/tmp/Attempt2/jump_rise.png"), 1.0/15.0, false, 11, 22, 3, 0}},
+             {"fall", {LoadTexture("../assets/tmp/Attempt2/fall.png"), 1.0/15.0, true, 11, 22, 3, 0}},
+             {"land", {LoadTexture("../assets/tmp/Attempt2/landing.png"), 1.0/2.0, false, 11, 22, 3, 0}},
              {"slap", {LoadTexture("../assets/tmp/Attempt2/slap.png"), 1.0/5.0, false, 13, 20, 0, 0}},
              {"attack", {LoadTexture("../assets/tmp/Attempt2/kitchen_roll_attack.png"), 1.0/5.0, false, 20, 20, 0, 0}},
              {"crouch", {LoadTexture("../assets/tmp/Attempt2/shield.png"), 1.0/1.0, false, 18, 20, 0, 0}},
@@ -66,16 +66,16 @@ int main(){
     entity_id++;
 
     //Slope 1:
-    em.add(_Transform(5*16, 16), entity_id);
-    em.add(_Collider(0, 0, 3*16, 16, false, false, true, true, 1), entity_id);
+    em.add(_Transform(6*16, 16), entity_id);
+    em.add(_Collider(0, 0, 2*16, 16, false, false, true, true, 1), entity_id);
     em.add_flag(F_Solid, entity_id);
     entity_id++;
 
     //Slope 2:
-    em.add(_Transform(10*16, 2*16), entity_id);
-    em.add(_Collider(0, 0, 3*16, 2*16, false, false, true, true, 1), entity_id);
-    em.add_flag(F_Solid, entity_id);
-    entity_id++;
+    // em.add(_Transform(10*16, 2*16), entity_id);
+    // em.add(_Collider(0, 0, 3*16, 2*16, false, false, true, true, 1), entity_id);
+    // em.add_flag(F_Solid, entity_id);
+    // entity_id++;
 
     //Some random sprite:
     em.add(_Transform(40, 50), entity_id);

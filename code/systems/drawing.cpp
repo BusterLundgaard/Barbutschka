@@ -20,8 +20,6 @@ Entity_individual_system sys_draw_sprite{
             Vector2{t->x, GAME_HEIGTH - t->y - spr->tex.height},
             WHITE
         );
-        //DrawTexture(spr->tex, t->x, GAME_HEIGTH - t->y - spr->tex.height, WHITE);
-
     }
 };
 

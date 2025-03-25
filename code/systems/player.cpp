@@ -33,6 +33,8 @@ Entity_individual_system debug_collision {
 };
 
 
+static const float walk_speed = 40;
+
 static const float T_jump_prep = 0.5;
 static float jump_prep_t = 0.0f;
 static float jump_forward_t = 0.0f;
@@ -40,7 +42,7 @@ static float jump_forward_t = 0.0f;
 static const float b = 2.5f; // Controls how "flat" the arc is, the arc follows y = t^b, so higher b means more flat, more "curved"
 static const float c = 1.4f; // the time stretch factor in y=(t/c)^b
 static const float small_gravity = 1.5f; //controls the factor of the reduced gravity between max_jump_v0 speed and min_jump_v0 speed
-static const float max_jump_v0 = 100;
+static const float max_jump_v0 = 105;
 static const float min_jump_v0 = 80;
 static const float max_fall_speed = 400;
 
@@ -182,22 +184,22 @@ Entity_individual_system sys_player_movement{
                     anim->flipped=1;
                     if(p->slope_angle){
                         float steepness = std::min(1.0, abs(tan(*(p->slope_angle)))/tan(60*3.14/180));
-                        float speed = (*(p->slope_angle) > 3.14/2) ? 50*(1-steepness) : 50*(1+steepness*1.8);
+                        float speed = (*(p->slope_angle) > 3.14/2) ? walk_speed*(1-steepness) : walk_speed*(1+steepness*1.8);
                         v->y = -sin(*(p->slope_angle))*speed;
                         v->x = -speed;
                     } else {
-                        v->x = -50;
+                        v->x = -walk_speed;
                     }
                 } 
                 else if (IsKeyDown(KEY_RIGHT)){
                     anim->flipped=0;
                     if(p->slope_angle){
                         float steepness = std::min(1.0, abs(tan(*(p->slope_angle)))/tan(60*3.14/180));
-                        float speed = (*(p->slope_angle) < 3.14/2) ? 50*(1-steepness) : 50*(1+steepness*1.8);
+                        float speed = (*(p->slope_angle) < 3.14/2) ? walk_speed*(1-steepness) : walk_speed*(1+steepness*1.8);
                         v->y = -sin(*(p->slope_angle))*speed;
                         v->x = speed;
                     } else {
-                        v->x = 50;
+                        v->x = walk_speed;
                     }
                 }
                 else {
@@ -227,7 +229,7 @@ Entity_individual_system sys_player_movement{
                 if(Key_Up(KEY_Z)){
                     p->state = PLAYER_STATE::JUMP;
                     v->y = min_jump_v0 + (std::min(jump_prep_t, T_jump_prep) / T_jump_prep)*(max_jump_v0 - min_jump_v0);
-                    v->x = v->x + sign(jump_forward_t)*(abs(jump_forward_t)/jump_prep_t)*50;
+                    v->x = v->x + sign(jump_forward_t)*(abs(jump_forward_t)/jump_prep_t)*walk_speed;
                     anim->current_anim="jump_rise";
                 }
 
